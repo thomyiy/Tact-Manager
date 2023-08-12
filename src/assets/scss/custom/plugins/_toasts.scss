@@ -1,0 +1,15 @@
+// 
+// toasts.scss
+//
+
+.toast{
+    background-color: var(--#{$prefix}tertiary-bg);
+    box-shadow: var(--#{$prefix}box-shadow);
+
+    .toast-header{
+        background-color: var(--#{$prefix}tertiary-bg);
+    }
+    .toast-body{
+        background-color: var(--#{$prefix}tertiary-bg);
+    }
+}

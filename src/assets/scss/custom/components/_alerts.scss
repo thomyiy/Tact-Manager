@@ -1,0 +1,142 @@
+//
+// alerts.scss
+//
+
+.alert-top-border {
+  background-color: $card-bg;
+  border-color: var(--#{$prefix}border-color);
+  border-top: 2px solid $light;
+}
+
+.alert-outline {
+  background-color: $white;
+}
+
+// alert-label-icon
+
+.alert-label-icon {
+  position: relative;
+  padding-left: 60px;
+  border: 0;
+
+  .label-icon {
+    position: absolute;
+    width: 45px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgba($white, 0.1);
+    border-right: 1px solid rgba($white, 0.1);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // label arrow
+  &.label-arrow {
+    overflow: hidden;
+
+    .label-icon {
+      color: $white;
+
+      &:after {
+        content: "";
+        position: absolute;
+        border: 6px solid transparent;
+        right: -12px;
+      }
+    }
+  }
+}
+
+.toast-container{
+  z-index: 0;
+}
+
+
+
+
+.alert-light {
+  color: $text-muted;
+}
+
+@each $color,
+$value in $theme-colors {
+  .alert-top-border {
+    &.alert-#{$color} {
+      border-top-color: $value;
+      color: $value;
+    }
+  }
+
+  .alert-outline {
+    &.alert-#{$color} {
+      border: 1px solid rgba($value, .8);
+      color: $value;
+    }
+  }
+
+  // alert border left
+  .alert-border-left {
+    &.alert-#{$color} {
+      border-left-color: $value;
+    }
+  }
+
+  // label arrow
+  .label-arrow {
+    &.alert-#{$color} {
+      .label-icon {
+        background-color: $value;
+
+        &:after {
+          border-left-color: $value !important;
+        }
+      }
+    }
+  }
+}
+
+// Alert border left example
+
+.alert-border-left {
+  border-left: 3px solid;
+}
+
+.alert-top-border,
+.alert-outline {
+  &.alert-light {
+    color: $text-muted;
+  }
+}
+
+body[data-bs-theme="dark"] {
+
+  .alertify .ajs-footer .ajs-buttons .ajs-button{
+    
+      &.ajs-cancel{
+      color: $white;
+    }
+  } 
+
+
+  .alertify .ajs-header{
+      border-bottom: var(--#{$prefix}border-color-translucent);
+  }
+
+  .alertify .ajs-footer {
+    border-top: var(--#{$prefix}border-color-translucent);
+  }
+
+  .alert-outline {
+    background-color: $gray-800;
+  }
+
+  .ajs-header,
+  .ajs-body,
+  .ajs-content {
+    color: $card-title-color;
+    border-top: var(--#{$prefix}border-color);
+  }
+}
