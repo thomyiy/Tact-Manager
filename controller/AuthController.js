@@ -1,4 +1,5 @@
-const User = require("../models/UserModel");
+const db = require("../models");
+const User = db.users;
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/email")
 
@@ -12,30 +13,25 @@ const login = (req, res) => {
 
 // check login credential
 const validate = async (req, res) => {
-
     var userEmail = req.body.email;
     var userPassword = req.body.password;
 
-    const user = User.findOne({ email: userEmail }, async function (err, currentUser) {
-        if (err) {
-            console.log("errors", err);
-            return res.redirect('/login');
-        }
-
-        if (!currentUser || ! await bcrypt.compare(userPassword, currentUser.password)) {
+    await User.findOne({where: {email: userEmail}}).then(async function (currentUser) {//, async function (err, currentUser) {
+        if (!currentUser || !await bcrypt.compare(userPassword, currentUser.password)) {
             console.log("user not found");
             req.flash("error", "Invalid Email or Password.");
             return res.redirect('/login');
         }
-
-        // Set current user data in session 
+        // Set current user data in session
         const usersession = req.session;
         usersession.userid = currentUser._id;
         usersession.username = currentUser.name;
         usersession.useremail = currentUser.email;
         return res.redirect('/');
+    }).catch(function (err) {
+        console.log("errors", err);
+        return res.redirect('/login');
     });
-
 }
 
 // registration
@@ -45,7 +41,7 @@ const signup = async (req, res) => {
     var userpassword = req.body.password;
 
     // check user exists or not
-    const existsUser = await User.findOne({ email: userEmail });
+    const existsUser = await User.findOne({email: userEmail});
 
     if (existsUser) {
         req.flash("error", "Account already register.");
@@ -77,7 +73,7 @@ const forgotpassword = async (req, res) => {
     const userEmail = req.body.email;
     // console.log(userEmail);
 
-    const user = await User.findOne({ email: userEmail });
+    const user = await User.findOne({email: userEmail});
 
     if (!user) {
         console.log("user not exists");
@@ -90,14 +86,14 @@ const forgotpassword = async (req, res) => {
     var resetToken = user.createPasswordResetToken();
     // console.log("token", resetToken);
 
-    await user.save({ validateBeforeSave: false });
+    await user.save({validateBeforeSave: false});
 
     const resetPasswordUrl = `${req.protocol}://${req.get('host')}/resetpassword?token=${resetToken}`;
     console.log("resetPasswordUrl", resetPasswordUrl)
 
     const message = 'Reset your password with given link: <a href="' + resetPasswordUrl + '">' + resetPasswordUrl + "</a>";
     try {
-        var subject= process.env.EMAIL_FORGET_PSWD_SUBJECT
+        var subject = process.env.EMAIL_FORGET_PSWD_SUBJECT
         await sendEmail({
             email: user.email,
             subject: subject,
@@ -108,7 +104,7 @@ const forgotpassword = async (req, res) => {
         console.log(err);
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
-        await user.save({ validateBeforeSave: false });
+        await user.save({validateBeforeSave: false});
         req.flash("error", err.message)
     }
 
@@ -126,12 +122,20 @@ const resetpswdview = async (req, res) => {
     let decodeStr = token.split("|");
     // console.log("After split", decodeStr[0], decodeStr[1]);
 
-    const user = await User.findOne({ _id: decodeStr[1], passwordResetToken: decodeStr[0], passwordResetExpires: { $gt: Date.now() } });
+    const user = await User.findOne({
+        _id: decodeStr[1],
+        passwordResetToken: decodeStr[0],
+        passwordResetExpires: {$gt: Date.now()}
+    });
 
     if (!user) {
         return res.redirect("/error");
     }
-    return res.render("auth/resetpassword", { token: user._id, title: 'Change Password', layout: 'layout/layout-without-nav' });
+    return res.render("auth/resetpassword", {
+        token: user._id,
+        title: 'Change Password',
+        layout: 'layout/layout-without-nav'
+    });
 }
 
 // Change password
@@ -141,7 +145,7 @@ const changepassword = async (req, res) => {
     const password = req.body.password;
     // console.log(userId, password);
 
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({_id: userId});
     if (!user) {
         return res.redirect("/error");
     }
@@ -154,4 +158,4 @@ const changepassword = async (req, res) => {
     return res.redirect("/login");
 
 }
-module.exports = { login, validate, logout, signup, forgotpassword, resetpswdview, changepassword }
+module.exports = {login, validate, logout, signup, forgotpassword, resetpswdview, changepassword}

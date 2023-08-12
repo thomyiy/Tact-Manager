@@ -49,7 +49,7 @@ module.exports = function (route) {
 
 
     route.get('/', (req, res, next) => {
-        res.render('index', { title: 'Dashboard', page_title: 'Dashboard', folder: 'Dashboards' });
+        res.render('layouts-vertical', { title: 'Dashboard', page_title: 'Dashboard', folder: 'Dashboards' });
     })
     route.get('/index', (req, res, next) => {
         res.render('index', { title: 'Dashboard', page_title: 'Dashboard', folder: 'Dashboards' });
