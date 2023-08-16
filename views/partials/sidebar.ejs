@@ -1,66 +1,77 @@
 <!-- ========== Left Sidebar Start ========== -->
 <div class="vertical-menu">
 
-  <!-- LOGO -->
-  <div class="navbar-brand-box">
-    <a href="/index" class="logo logo-dark">
+    <!-- LOGO -->
+    <div class="navbar-brand-box">
+        <a href="/index" class="logo logo-dark">
       <span class="logo-sm">
         <img src="/assets/images/tact-logo.png" alt="" height="22">
       </span>
+            <span class="logo-lg">
+        <img src="/assets/images/tact-logo.png" alt="" height="22">
+      </span>
+        </a>
+
+        <a href="/index" class="logo logo-light">
       <span class="logo-lg">
         <img src="/assets/images/tact-logo.png" alt="" height="22">
       </span>
-    </a>
-
-    <a href="/index" class="logo logo-light">
-      <span class="logo-lg">
+            <span class="logo-sm">
         <img src="/assets/images/tact-logo.png" alt="" height="22">
       </span>
-      <span class="logo-sm">
-        <img src="/assets/images/tact-logo.png" alt="" height="22">
-      </span>
-    </a>
-  </div>
-
-  <button type="button" class="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn">
-    <i class="fa fa-fw fa-bars"></i>
-  </button>
-
-  <div data-simplebar class="sidebar-menu-scroll">
-
-    <!--- Sidemenu -->
-    <div id="sidebar-menu">
-      <!-- Left Menu Start -->
-      <ul class="metismenu list-unstyled" id="side-menu">
-        <li class="menu-title" data-key="t-menu">Menu</li>
-
-        <li>
-          <a href="/">
-            <i class="bx bx-layout icon nav-icon"></i>
-            <span class="menu-item" data-key="t-vertical">Dashboard</span>
-          </a>
-        </li>
-        <li class="menu-title" data-key="t-components"><%=translation.t_components %></li>
-    
-        <li>
-          <a href="javascript: void(0);" class="has-arrow">
-            <i class="bx bx-share-alt icon nav-icon"></i>
-            <span class="menu-item" data-key="t-multi-level"><%=translation.t_multi_level %></span>
-          </a>
-          <ul class="sub-menu" aria-expanded="true">
-            <li><a href="javascript: void(0);" data-key="t-level-1.1"><%=translation.t_level_1_1 %></a></li>
-            <li><a href="javascript: void(0);" class="has-arrow" data-key="t-level-1.2"><%=translation.t_level_1_2 %></a>
-              <ul class="sub-menu" aria-expanded="true">
-                <li><a href="javascript: void(0);" data-key="t-level-2.1"><%=translation.t_level_2_1 %></a></li>
-                <li><a href="javascript: void(0);" data-key="t-level-2.2"><%=translation.t_level_2_2 %></a></li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-
-      </ul>
+        </a>
     </div>
-    <!-- Sidebar -->
-  </div>
+
+    <button type="button" class="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn">
+        <i class="fa fa-fw fa-bars"></i>
+    </button>
+
+    <div data-simplebar class="sidebar-menu-scroll">
+
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <!-- Left Menu Start -->
+            <ul class="metismenu list-unstyled" id="side-menu">
+                <li>
+                    <div class="col-md-12">
+                        <select class="form-select">
+                            <option>Select</option>
+                            <option>Large select</option>
+                            <option>Small select</option>
+                        </select>
+                    </div>
+                </li>
+                <li class="menu-title" data-key="t-menu">Menu</li>
+                <li>
+                    <a href="/">
+                        <i class="bx bx-layout icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-vertical">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-title" data-key="t-components"><%= translation.t_components %></li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i class="bx bx-share-alt icon nav-icon"></i>
+                        <span class="menu-item" data-key="t-multi-level"><%= translation.t_multi_level %></span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="true">
+                        <li><a href="javascript: void(0);" data-key="t-level-1.1"><%= translation.t_level_1_1 %></a>
+                        </li>
+                        <li><a href="javascript: void(0);" class="has-arrow"
+                               data-key="t-level-1.2"><%= translation.t_level_1_2 %></a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <li><a href="javascript: void(0);"
+                                       data-key="t-level-2.1"><%= translation.t_level_2_1 %></a></li>
+                                <li><a href="javascript: void(0);"
+                                       data-key="t-level-2.2"><%= translation.t_level_2_2 %></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
 </div>
 <!-- Left Sidebar End -->
