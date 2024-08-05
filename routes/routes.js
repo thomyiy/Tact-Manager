@@ -4,7 +4,12 @@ const path = require('path');
 const fs = require('fs');
 
 const AuthController = require("../controller/AuthController");
-const { Console } = require('console');
+const ProductController = require("../controller/ProductController");
+const User = require("../models/UserModel");
+const mongoose = require("mongoose");
+const uuid = require("uuid");
+const jwt = require('jsonwebtoken')
+const Product = require("../models/ProductModel");
 
 module.exports = function (route) {
     route.use((req, res, next) => {
@@ -14,54 +19,62 @@ module.exports = function (route) {
             if (uemail != null && uemail != undefined) {
                 return res.redirect('/');
             }
-
         } else if (!uemail) {
             return res.redirect('/login');
         }
         next();
     })
 
-
     route.get('/auth-confirm-mail', (req, res, next) => {
-        res.render('auth-confirm-mail', { layout: 'layout/layout-without-nav' });
+        res.render('auth-confirm-mail', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-email-verification', (req, res, next) => {
-        res.render('auth-email-verification', { layout: 'layout/layout-without-nav' });
+        res.render('auth-email-verification', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-lock-screen', (req, res, next) => {
-        res.render('auth-lock-screen', { layout: 'layout/layout-without-nav' });
+        res.render('auth-lock-screen', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-login', (req, res, next) => {
-        res.render('auth-login', { layout: 'layout/layout-without-nav' });
+        res.render('auth-login', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-logout', (req, res, next) => {
-        res.render('auth-logout', { layout: 'layout/layout-without-nav' });
+        res.render('auth-logout', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-recoverpw', (req, res, next) => {
-        res.render('auth-recoverpw', { layout: 'layout/layout-without-nav' });
+        res.render('auth-recoverpw', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-register', (req, res, next) => {
-        res.render('auth-register', { layout: 'layout/layout-without-nav' });
+        res.render('auth-register', {layout: 'layout/layout-without-nav'});
     })
     route.get('/auth-two-step-verification', (req, res, next) => {
-        res.render('auth-two-step-verification', { layout: 'layout/layout-without-nav' });
+        res.render('auth-two-step-verification', {layout: 'layout/layout-without-nav'});
     })
 
-
-    route.get('/', (req, res, next) => {
-        res.render('layouts-vertical', { title: 'Dashboard', page_title: 'Dashboard', folder: 'Dashboards' });
+    route.get('/', async (req, res, next) => {
+        const user = {
+            role: req.session.role,
+            firstname: req.session.firstname,
+            lastname: req.session.lastname,
+        }
+        res.render('index', {user: user})
     })
+
     route.get('/index', (req, res, next) => {
-        res.render('index', { title: 'Dashboard', page_title: 'Dashboard', folder: 'Dashboards' });
+        res.redirect('/');
     })
-    
+
     route.get('/layouts-vertical', (req, res, next) => {
-        res.render('layouts-vertical', { layout: 'layout/layout-vertical' });
+        res.render('layouts-vertical');//, {layout: 'layout/layout-vertical'});
     })
 
     // Auth
     route.get('/login', (req, res, next) => {
-        res.render('Auth/login', { title: 'Login', layout: 'layout/layout-without-nav', 'message': req.flash('message'), error: req.flash('error') })
+        res.render('auth/login', {
+            title: 'Login',
+            layout: 'layout/layout-without-nav',
+            'message': req.flash('message'),
+            error: req.flash('error')
+        })
     })
 
     // validate login form
@@ -71,7 +84,12 @@ module.exports = function (route) {
     route.get("/logout", AuthController.logout);
 
     route.get('/register', (req, res, next) => {
-        res.render('auth/register', { title: 'Register', layout: 'layout/layout-without-nav', 'message': req.flash('message'), 'error': req.flash('error') })
+        res.render('auth/register', {
+            title: 'Register',
+            layout: 'layout/layout-without-nav',
+            'message': req.flash('message'),
+            'error': req.flash('error')
+        })
     })
 
     // validate register form
@@ -79,7 +97,12 @@ module.exports = function (route) {
 
 
     route.get('/forgotpassword', (req, res, next) => {
-        res.render('auth/forgotpassword', { title: 'Forgot password', layout: 'layout/layout-without-nav', message: req.flash('message'), error: req.flash('error') })
+        res.render('auth/forgotpassword', {
+            title: 'Forgot password',
+            layout: 'layout/layout-without-nav',
+            message: req.flash('message'),
+            error: req.flash('error')
+        })
     })
 
     // send forgot password link on user email
@@ -92,6 +115,21 @@ module.exports = function (route) {
 
     //500
     route.get('/error', (req, res, next) => {
-        res.render('auth/auth-500', { title: '500 Error', layout: 'layout/layout-without-nav' });
+        res.render('auth/auth-500', {title: '500 Error', layout: 'layout/layout-without-nav'});
     })
+
+    route.get('/products', (req, res, next) => {
+        res.render('ecommerce-products')
+    })
+
+    route.get('/products/create', (req, res, next) => {
+        res.render('product-create');
+    })
+
+    route.post('/products/create', ProductController.create)
+
+    route.get('/products/getimage/:id', ProductController.getImage)
+
+
+
 }
