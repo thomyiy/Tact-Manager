@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 const dotenv = require('dotenv');
-dotenv.config({path: __dirname+"/config.env"});
+dotenv.config({path: "./config.env"});
 
 const express = require('express');
 const app = express();
