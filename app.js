@@ -7,7 +7,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const pageRouter = require('./routes/routes');
-const formationRouter = require('./routes/formationRoutes');
 const userRouter = require('./routes/userRoutes');
 const teamRouter = require('./routes/teamRoutes');
 const sportRouter = require('./routes/sportRoutes');
@@ -75,7 +74,6 @@ app.use((err, req, res, next) => {
 
 // Define All Route
 pageRouter(app);
-formationRouter(app);
 userRouter(app);
 teamRouter(app);
 sportRouter(app);

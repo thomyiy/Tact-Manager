@@ -1,9 +1,7 @@
-const Formation = require("../models/FormationModel");
 const User = require("../models/UserModel");
 const mongoose = require('mongoose');
 const path = require("path");
 const {v4: uuidv4} = require('uuid');
-const Product = require("../models/ProductModel");
 const FILE_STORAGE_PATH = process.env.FILE_STORAGE_PATH
 
 

@@ -4,12 +4,10 @@ const path = require('path');
 const fs = require('fs');
 
 const AuthController = require("../controller/AuthController");
-const ProductController = require("../controller/ProductController");
 const User = require("../models/UserModel");
 const mongoose = require("mongoose");
 const uuid = require("uuid");
 const jwt = require('jsonwebtoken')
-const Product = require("../models/ProductModel");
 
 module.exports = function (route) {
     route.use((req, res, next) => {
@@ -117,19 +115,5 @@ module.exports = function (route) {
     route.get('/error', (req, res, next) => {
         res.render('auth/auth-500', {title: '500 Error', layout: 'layout/layout-without-nav'});
     })
-
-    route.get('/products', (req, res, next) => {
-        res.render('ecommerce-products')
-    })
-
-    route.get('/products/create', (req, res, next) => {
-        res.render('product-create');
-    })
-
-    route.post('/products/create', ProductController.create)
-
-    route.get('/products/getimage/:id', ProductController.getImage)
-
-
 
 }
