@@ -26,5 +26,16 @@ module.exports = function (route) {
         })
     })
 
+    route.get('/team/:sport', async (req, res, next) => {
+        try {
+            const sport = await Sport.findOne({ name: 'football' });            
+            const teams = await Team.find({ sport: sport._id }).populate('school sport');
+            res.send(teams);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Erreur lors de la récupération des équipes de football');
+        }
+    });
+    
     route.post('/team/create', TeamController.create)
 }

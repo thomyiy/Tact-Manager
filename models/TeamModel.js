@@ -16,6 +16,13 @@ const TeamSchema = new mongoose.Schema({
         ref: "sports",
         required: true
     },
+    sexe: {
+        type: String,
+        required: true,
+    },
+    poule: {
+        type: String,
+    },
     created_at: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

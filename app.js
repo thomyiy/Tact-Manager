@@ -11,6 +11,7 @@ const userRouter = require('./routes/userRoutes');
 const teamRouter = require('./routes/teamRoutes');
 const sportRouter = require('./routes/sportRoutes');
 const schoolRouter = require('./routes/schoolRoutes');
+const tournamentRouter = require('./routes/tournamentRoutes');
 
 
 
@@ -78,6 +79,7 @@ userRouter(app);
 teamRouter(app);
 sportRouter(app);
 schoolRouter(app);
+tournamentRouter(app);
 app.all('*', function (req, res) {
     res.locals = {title: 'Error 404'};
     res.render('auth-404', {layout: "layout/layout"});

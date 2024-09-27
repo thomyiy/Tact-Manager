@@ -1,0 +1,294 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<!-- <div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Teams</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Teams</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div> -->
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Football</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="createTournament()">Créer un nouveau tournoi</button>
+                    
+                    <!-- Table Content -->
+                    <div class="col-lg-12 mt-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Liste des équipes</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-pagination"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <!-- end row -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%- contentFor('FooterJs') %>
+
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+
+function randomizeTeams(data) {
+    for (let i = 0; i < data.length; i++) {
+        let newIndex = Math.floor(Math.random() * data.length);
+        [data[i], data[newIndex]] = [data[newIndex], data[i]];
+    }
+    return data;
+}
+
+function createTournament() {
+    fetch("/team/getHandball", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error('Erreur réseau');
+        }
+        return response.json();
+    })
+    .then((data) => {
+        let finalTeamsTab = [];
+        let newDatas = randomizeTeams(data);
+
+        for (let i = 0; i < newDatas.length; i += 2) {
+            let team = [];
+            team.push(newDatas[i]);
+            team.push(newDatas[i + 1]);
+            finalTeamsTab.push(team);
+        }
+
+        // Envoi des équipes au backend
+        return fetch("/tournament/create", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                sport: "handball",
+                matchs: finalTeamsTab 
+            })
+        });
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur réseau lors de l\'envoi des équipes');
+        }
+        return response.json();
+    })
+    .then(data => {
+        window.location.reload();
+    })
+    .catch((error) => {
+        console.error("Erreur :", error);
+    });
+}
+
+var grid = new gridjs.Grid({
+    columns: [
+        "Equipe 1", 
+        "Equipe 2", 
+        {
+            name: "Score",
+            formatter: (cell, row) => {
+                return gridjs.html(`<span class="editable-value" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+            }
+        },
+        {
+            name: "Vainqueur",
+            formatter: (cell, row) => {
+                return gridjs.html(`<span class="editable-value" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+            }
+        },
+        {
+            name: "Temps Total",
+            formatter: (cell, row) => {
+                return gridjs.html(`<span class="editable-value" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+            }
+        }
+    ],
+    pagination: { limit: 30 },
+    data: async () => {
+        var data = await fetch("/tournament/handball/getAll", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then((response) => response.json());
+
+        return data.map((e) => [
+            e.team1, 
+            e.team2, 
+            `${e.score.team1Score} - ${e.score.team2Score}`,
+            e.winnerTeam,
+            e.time
+        ]);
+    },
+    sort: true
+}).render(document.getElementById("table-pagination"));
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('editable-value')) {
+        handleClick(event.target);
+    }
+});
+
+function isScoreGood(newScore) {
+    if (typeof newScore !== 'string') {
+        return false;
+    }
+
+    const scorePattern = /^\d+-\d+$/;
+    
+    if (!scorePattern.test(newScore)) {
+        return false;
+    }
+
+    const scores = newScore.split('-');
+
+    const team1Score = parseInt(scores[0].trim(), 10);
+    const team2Score = parseInt(scores[1].trim(), 10);
+
+    if (isNaN(team1Score) || isNaN(team2Score) || team1Score < 0 || team2Score < 0) {
+        return false;
+    }
+
+    return true;
+}
+
+function isTimeGood(newTime) {
+    const time = parseInt(newTime, 10);
+
+    if (isNaN(time) || time < 0 || time > 200) {
+        return false;
+    }
+
+    return true;
+}
+
+function getWinner(team1, team1Score, team2, team2Score) {
+    if (team1Score === team2Score)
+        return undefined;
+    if (team1Score > team2Score)
+        return team1;
+    return team2;
+}
+
+function handleClick(scoreElement) {
+    const Data = scoreElement.getAttribute('data-id').split('-');
+    const team1 = Data[0];
+    const team2 = Data[1];
+
+    const newScore = prompt("Entrez le score sous la forme 'score1-score2' pour " + team1 + " vs " + team2 + ":");
+
+    if (isScoreGood(newScore)) {
+        const [team1Score, team2Score] = newScore.split('-').map(num => parseInt(num.trim()));
+
+        const newTime = prompt("Entrez le temps final du match :");
+        if (isTimeGood(newTime)) {
+            
+            const winnerTeam = getWinner(team1, team1Score, team2, team2Score);
+
+            fetch("/tournament/handball/updateMatch", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    team1,
+                    team2,
+                    score: {
+                        team1Score,
+                        team2Score
+                    },
+                    teamWinner: winnerTeam,
+                    time: newTime
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau lors de la mise à jour du match');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+            });
+        } else {
+            alert("Le format du temps est incorrect. Veuillez entrer un temps valide.");
+        }
+    } else {
+        alert("Le format du score est incorrect. Veuillez entrer un score au format 'score1-score2'.");
+    }
+}
+
+</script>
