@@ -3,6 +3,76 @@ const Match = require("../models/MatchModel");
 const Team = require("../models/TeamModel");
 const Sport = require("../models/SportModel");
 
+const pouleFactory = {
+    8: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 4);
+        poules[`Poule 2`] = teams.slice(4, 8);
+        return poules;
+    },
+    9: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 3);
+        poules[`Poule 2`] = teams.slice(3, 6);
+        poules[`Poule 3`] = teams.slice(6, 9);
+        return poules;
+    },
+    10: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 4);
+        poules[`Poule 2`] = teams.slice(4, 7);
+        poules[`Poule 3`] = teams.slice(7, 10);
+        return poules;
+    },
+    11: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 4);
+        poules[`Poule 2`] = teams.slice(4, 8);
+        poules[`Poule 3`] = teams.slice(8, 11);
+        return poules;
+    },
+    12: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 3);
+        poules[`Poule 2`] = teams.slice(3, 6);
+        poules[`Poule 3`] = teams.slice(6, 9);
+        poules[`Poule 4`] = teams.slice(9, 12);
+        return poules;
+    },
+    13: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 3);
+        poules[`Poule 2`] = teams.slice(3, 6);
+        poules[`Poule 3`] = teams.slice(6, 9);
+        poules[`Poule 4`] = teams.slice(9, 13);
+        return poules;
+    },
+    14: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 3);
+        poules[`Poule 2`] = teams.slice(3, 6);
+        poules[`Poule 3`] = teams.slice(6, 10);
+        poules[`Poule 4`] = teams.slice(10, 14);
+        return poules;
+    },
+    15: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 4);
+        poules[`Poule 2`] = teams.slice(4, 8);
+        poules[`Poule 3`] = teams.slice(8, 12);
+        poules[`Poule 4`] = teams.slice(12, 15);
+        return poules;
+    },
+    16: function(teams) {
+        let poules = {};
+        poules[`Poule 1`] = teams.slice(0, 4);
+        poules[`Poule 2`] = teams.slice(4, 8);
+        poules[`Poule 3`] = teams.slice(8, 12);
+        poules[`Poule 4`] = teams.slice(12, 16);
+        return poules;
+    }
+};
+
 function getTheWinner(team1, team2, score) {
     if (score.team1Score == score.team2Score || score.team1Score == undefined || score.team2Score == undefined) {
         return null;
@@ -13,18 +83,8 @@ function getTheWinner(team1, team2, score) {
 }
 
 function createPoules(teams) {
-    let poules = new Map();
     const randomTeams = teams.sort(() => 0.5 - Math.random());
-    let pouleIndex = 1
-
-    while (randomTeams.length > 0) {
-        let pouleName = pouleIndex;
-        let poule = randomTeams.splice(0, 2);
-        poules.set(pouleName, poule);
-        pouleIndex++;
-    }
-
-    return poules;
+    return pouleFactory[randomTeams.length](randomTeams);
 }
 
 const create = async (req, res) => {
@@ -32,19 +92,24 @@ const create = async (req, res) => {
         const sport = await Sport.findOne({ name: req.body.sport });
         const teams = await Team.find({ sport: sport._id });
 
-        const allMatches = createPoules(teams);
+        // creer un nb de poules en fonction du nb de teams
+        const poules = createPoules(teams);
 
-        for (const [pouleName, teams] of allMatches) {
-            for (let i = 0; i < teams.length; i++) {
-                for (let j = i + 1; j < teams.length; j++) {
+        // algo de creation de match pour chaque poule
+        for (let poule in poules) {
+            const teamsInPoule = poules[poule];
+        
+            for (let i = 0; i < teamsInPoule.length; i++) {
+                for (let j = i + 1; j < teamsInPoule.length; j++) {
                     const match = {
-                        team1: teams[i].name,
-                        team2: teams[j].name,
+                        team1: teamsInPoule[i].name,
+                        team2: teamsInPoule[j].name,
                         sport: sport._id,
-                        pool: pouleName
+                        pool: poule
                     };
+        
                     await Match.create(match);
-                    console.log(`Match créé: ${match.team1} vs ${match.team2} dans ${match.poule}`);
+                    console.log(`Match créé: ${match.team1} vs ${match.team2} dans ${poule}`);
                 }
             }
         }

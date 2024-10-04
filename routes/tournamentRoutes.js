@@ -23,7 +23,7 @@ module.exports = function (route) {
         }
     });
 
-    route.get('/tournament/:sport/getAll', async (req, res, next) => {
+    route.get('/tournament/:sport/getAllMatches', async (req, res, next) => {
         try{
             const sportName = req.params.sport;
             const sport = await Sport.findOne({ name: sportName });
@@ -35,6 +35,21 @@ module.exports = function (route) {
             return res.status(500).json({ error: 'Erreur serveur lors de la recuperation des donnes de tournoi.' });
         }
     });
+
+    route.get('/tournament/:sport/getPoule/:number', async (req, res, next) => {
+        try{
+            const sportName = req.params.sport;
+            const poolNumber = "Poule " + req.params.number;
+            const sport = await Sport.findOne({ name: sportName });
+    
+            const matches = await Match.find({ sport: sport._id, pool: poolNumber});
+            res.json(matches);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Erreur serveur lors de la recuperation des donnes de tournoi.' });
+        }
+    });
+
 
     route.post('/tournament/:sport/updateMatch', TournamentController.update)
     

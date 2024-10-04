@@ -16,10 +16,10 @@ const TeamSchema = new mongoose.Schema({
         ref: "sports",
         required: true
     },
-    sexe: {
-        type: String,
-        required: true,
-    },
+    // sexe: {
+    //     type: String,
+    //     required: true,
+    // },
     poule: {
         type: String,
     },
