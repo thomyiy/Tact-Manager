@@ -4,13 +4,11 @@ const { sassNull } = require('sass');
 const MatchSchema = new mongoose.Schema({
     team1: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
     },
     team2: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
     },
     score: {
         team1Score: {

@@ -50,8 +50,9 @@ module.exports = function (route) {
         }
     });
 
-
     route.post('/tournament/:sport/updateMatch', TournamentController.update)
     
-    route.post('/tournament/create',TournamentController.create)
+    route.post('/tournament/create/:sport',TournamentController.create)
+
+    route.delete('/tournament/delete/:sport',TournamentController.deleteTournament)
 }

@@ -1,3 +1,4 @@
+const { request } = require('express');
 const mongoose = require('mongoose');
 
 const TeamSchema = new mongoose.Schema({
@@ -20,8 +21,13 @@ const TeamSchema = new mongoose.Schema({
     //     type: String,
     //     required: true,
     // },
-    poule: {
+    pool: {
         type: String,
+        default: null
+    },
+    points: {
+        type: Number,
+        default: 0
     },
     created_at: Date,
     passwordResetToken: String,
