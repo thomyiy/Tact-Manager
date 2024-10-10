@@ -37,13 +37,14 @@ module.exports = function (route) {
         }
     });
 
-    route.get('/team/:sport/getRanking/:number', async (req, res, next) => {
+    route.get('/team/:sport/:sexe/getRanking/:number', async (req, res, next) => {
         try {
+            const sportName = req.params.sport;
+            const sexeType = req.params.sexe;
             const poolNumber = req.params.number;
             const poolWanted = "Poule " + poolNumber;
-            const sportName = req.params.sport;
             const sport = await Sport.findOne({ name: sportName });
-            const teams = await Team.find({ sport: sport._id, pool: poolWanted }).populate('school sport');
+            const teams = await Team.find({ sport: sport._id, pool: poolWanted, sexe: sexeType }).populate('school sport');
             
             res.send(teams);
         } catch (error) {

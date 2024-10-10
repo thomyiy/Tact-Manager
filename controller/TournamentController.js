@@ -99,33 +99,34 @@ function createPoules(teams) {
 
 const create = async (req, res) => {
     try {
+        const sexe = req.params.sexe;
         const sport = await Sport.findOne({ name: req.params.sport });
-        const teams = await Team.find({ sport: sport._id });
-
+        const teams = await Team.find({ sport: sport._id, sexe: sexe }).populate('school', 'name').exec();
+        
         // creer un nb de poules en fonction du nb de teams
         const poules = createPoules(teams);
 
         // algo de creation de match pour chaque poule
         for (let poule in poules) {
             const teamsInPoule = poules[poule];
-        
             for (let i = 0; i < teamsInPoule.length; i++) {
                 for (let j = i + 1; j < teamsInPoule.length; j++) {
                     const match = {
-                        team1: teamsInPoule[i].name,
-                        team2: teamsInPoule[j].name,
+                        team1: teamsInPoule[i].school.name,
+                        team2: teamsInPoule[j].school.name,
                         sport: sport._id,
-                        pool: poule
+                        pool: poule,
+                        sexe: sexe
                     };
         
                     await Match.create(match);
                     await Team.findOneAndUpdate(
-                        { name: teamsInPoule[i].name },
+                        { school: teamsInPoule[i].school._id, sport: sport._id, sexe: sexe },
                         { $set: { pool: poule } }
                     );
-            
+                    
                     await Team.findOneAndUpdate(
-                        { name: teamsInPoule[j].name },
+                        { school: teamsInPoule[j].school._id, sport: sport._id, sexe: sexe },
                         { $set: { pool: poule } }
                     );
 
@@ -133,7 +134,7 @@ const create = async (req, res) => {
                 }
             }
         }
-        return res.redirect(`/tournament/${sport.name}`);
+        return res.redirect(`/tournament/${sport.name}/${sexe}`);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erreur lors de la création du tournoi.' });
@@ -143,6 +144,7 @@ const create = async (req, res) => {
 // met a jour le score d'un match et les points des participants
 const update = async (req, res) => {
     const { team1, team2, score, time } = req.body;
+    const sexe = req.params.sexe;
     const sport = await Sport.findOne({ name: req.params.sport });
     const winnerTeam = getTheWinner(team1, team2, score);
     const looserTeam = getTheLooser(team1, team2, score);
@@ -151,25 +153,25 @@ const update = async (req, res) => {
         // maj des points
         if (winnerTeam === "Match nul" && looserTeam === "Match nul") {
             await teamController.updatePoints({
-                body: { teamName: team1, points: 1 }
+                body: { teamName: team1, sexe: sexe, points: 1 }
             }, res);
 
             await teamController.updatePoints({
-                body: { teamName: team2, points: 1 }
+                body: { teamName: team2, sexe: sexe, points: 1 }
             }, res);
         } else {
             await teamController.updatePoints({
-                body: { teamName: winnerTeam, points: 3 }
+                body: { teamName: winnerTeam, sexe: sexe, points: 3 }
             }, res);
 
             await teamController.updatePoints({
-                body: { teamName: looserTeam, points: 0 }
+                body: { teamName: looserTeam, sexe: sexe, points: 0 }
             }, res);
         }
 
         // maj des scores
         const tournament = await Match.findOneAndUpdate(
-            { team1: team1, team2: team2 },
+            { team1: team1, team2: team2, sexe: sexe },
             {
                 score: {
                     team1Score: score.team1Score,
@@ -192,7 +194,7 @@ const update = async (req, res) => {
 const deleteTournament = async (req, res) => {
     try {
         const sport = await Sport.findOne({ name: req.params.sport });
-        await Match.deleteMany({ sport: sport._id });
+        await Match.deleteMany({ sport: sport._id, sexe: req.params.sexe });
         await Team.updateMany(
             { sport: sport._id },
             { $set: { pool: null, points: 0 } }

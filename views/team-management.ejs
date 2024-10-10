@@ -72,25 +72,13 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3 row">
-                                                <label class="col-md-2 col-form-label">Sport</label>
+                                                <label class="col-md-2 col-form-label">Sexe</label>
                                                 <div class="col-md-10">
-                                                    <select class="form-select" id="sportId" name="sportId">
+                                                    <select class="form-select" id="sexeType" name="sexeType">
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label" for="lastname">Nom</label>
-                                                        <input type="text" class="form-control" name="name" id="name"
-                                                               placeholder="Nom" required>
-                                                        <div class="invalid-feedback">
-                                                            Veuillez entrer le nom de l'equipe
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button class="btn btn-primary" type="submit">Submit form</button>
+                                            <button class="btn btn-primary" type="submit">Valider</button>
                                         </form>
                                     </div><!-- /.modal-content -->
                                 </div><!-- /.modal-dialog -->
@@ -154,27 +142,24 @@
         });
     });
 
-
-    fetch("/sport/getAll", {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    })
-        .then((response) => {
-            return response.json();
-        }).then((data) => {
-        let selectTag = document.getElementById('sportId');
-        data.map((d) => {
+    document.addEventListener("DOMContentLoaded", function() {
+        let selectTag = document.getElementById('sexeType');
+        
+        const options = [
+            { value: 'Masculin', label: 'Masculin' },
+            { value: 'Feminin', label: 'Féminin' }
+        ];
+        
+        options.forEach((option) => {
             let opt = document.createElement("option");
-            opt.value = d._id;
-            opt.innerHTML = d.name;
+            opt.value = option.value;
+            opt.innerHTML = option.label;
             selectTag.append(opt);
         });
     });
 
     var grid = new gridjs.Grid({
-        columns: ["Nom", "Ecole", "Sport"],
+        columns: ["Ecole", "Sport", "Sexe"],
         pagination: {limit: 30},
         data: async () => {
             var data = await fetch("/team/getAll", {
@@ -186,9 +171,10 @@
                 .then((response) => {
                     return response.json()
                 });
-            return data.map((e) => [e.name, e.school.name, e.sport.name]);
+            return data.map((e) => [e.school.name, e.sport.name, e.sexe]);
         },
         sort: true
     }).render(document.getElementById("table-pagination"));
+
 </script>
 

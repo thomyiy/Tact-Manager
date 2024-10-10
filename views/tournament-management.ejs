@@ -108,7 +108,7 @@
 <script>
     async function createTournament() {
         try {
-            await fetch("/tournament/create/<%= sport %>", {
+            await fetch("/tournament/create/<%= sport %>/<%= sexe %>", {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -123,7 +123,7 @@
 
     async function deleteTournament() {
         try {
-            await fetch(`/tournament/delete/<%= sport %>`, {
+            await fetch(`/tournament/delete/<%= sport %>/<%= sexe %>`, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -159,6 +159,7 @@
             },
             "Vainqueur",
             "Poule",
+            "Sexe",
             {
                 name: "Temps Final",
                 formatter: (cell, row) => {
@@ -173,7 +174,7 @@
             }
         ],
         data: async () => {
-            var data = await fetch("/tournament/<%= sport %>/getPoule/1", {
+            var data = await fetch("/tournament/<%= sport %>/<%= sexe %>/getPoule/1", {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -188,6 +189,7 @@
                 `${e.score.team2Score}`,
                 e.winnerTeam,
                 e.pool,
+                e.sexe,
                 e.time
             ]);
 
@@ -200,10 +202,11 @@
         columns: [
             "Equipe", 
             "Poule",
+            "Sexe",
             "Score"
         ],
         data: async () => {
-            var data = await fetch("/team/<%= sport %>/getRanking/1", {
+            var data = await fetch("/team/<%= sport %>/<%= sexe %>/getRanking/1", {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -213,8 +216,9 @@
 
             var sortData = sortTeams(data);
             const filteredData = sortData.filter(e => e.pool === 'Poule 1').map(e => [
-                e.name,
+                e.school.name,
                 e.pool,
+                e.sexe,
                 e.points
             ]);
 
@@ -308,11 +312,11 @@
         const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
 
         const team1Score = parseInt(score1Element.textContent.trim());
-        const team2Score =parseInt(score2Element.textContent.trim());
+        const team2Score = parseInt(score2Element.textContent.trim());
         const time = parseInt(timeElement.textContent.trim());
 
         if (!isNaN(team1Score) || !isNaN(team2Score)) {
-            fetch("/tournament/<%= sport %>/updateMatch", {
+            fetch("/tournament/updateMatch/<%= sport %>/<%= sexe %>", {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -348,7 +352,7 @@
 
     async function getPouleNumber() {
         try {
-            var response = await fetch("/tournament/<%= sport %>/getAllMatches", {
+            var response = await fetch("/tournament/<%= sport %>/<%= sexe %>/getAllMatches", {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -364,7 +368,7 @@
 
     async function updateGrid(poolNumber) {
         try {
-            const scoreResponse = await fetch(`/tournament/<%= sport %>/getPoule/${poolNumber}`, {
+            const scoreResponse = await fetch(`/tournament/<%= sport %>/<%= sexe %>/getPoule/${poolNumber}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -373,7 +377,7 @@
             
             const scoreData = await scoreResponse.json();
 
-            const rankingResponse = await fetch(`/team/<%= sport %>/getRanking/${poolNumber}`, {
+            const rankingResponse = await fetch(`/team/<%= sport %>/<%= sexe %>/getRanking/${poolNumber}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -389,6 +393,7 @@
                 `${e.score.team2Score}`,
                 e.winnerTeam,
                 e.pool,
+                e.sexe,
                 e.time
             ]);
 
@@ -397,7 +402,7 @@
             const sortedRanking = sortTeams(filteredRanking);
 
             const filteredDataForRanking = sortedRanking.map(e => [
-                e.name,
+                e.school.name,
                 e.pool,
                 e.points
             ]);

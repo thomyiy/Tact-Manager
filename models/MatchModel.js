@@ -32,6 +32,10 @@ const MatchSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    sexe: {
+        type: String,
+        required: true,
+    },
     time: {
         type: Number,
         default: 0

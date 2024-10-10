@@ -2,11 +2,6 @@ const { request } = require('express');
 const mongoose = require('mongoose');
 
 const TeamSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     school: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "schools",
@@ -17,10 +12,10 @@ const TeamSchema = new mongoose.Schema({
         ref: "sports",
         required: true
     },
-    // sexe: {
-    //     type: String,
-    //     required: true,
-    // },
+    sexe: {
+        type: String,
+        required: true,
+    },
     pool: {
         type: String,
         default: null
