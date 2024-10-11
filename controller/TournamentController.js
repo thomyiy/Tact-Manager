@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Match = require("../models/MatchModel");
 const Team = require("../models/TeamModel");
 const Sport = require("../models/SportModel");
+const School = require("../models/SchoolModel");
 const teamController = require("./TeamController");
 
 const pouleFactory = {
@@ -73,6 +74,11 @@ const pouleFactory = {
         return poules;
     }
 };
+
+function checkPoolWinner(pool) {
+    // regarder chaque match de la poule, ...
+    console.log(pool);
+}
 
 function getTheWinner(team1, team2, score) {
     if (score.team1Score == score.team2Score || score.team1Score == undefined || score.team2Score == undefined) {
@@ -151,8 +157,13 @@ const update = async (req, res) => {
     const winnerTeam = getTheWinner(team1, team2, score);
     const looserTeam = getTheLooser(team1, team2, score);
 
+    const school = await School.findOne({ name: winnerTeam });
+
+    const winningTeam = await Team.findOne({ school: school._id });
+    const pool = winningTeam.pool;
+
     try {
-        // maj des points
+        // // maj des points
         if (winnerTeam === "Match nul" && looserTeam === "Match nul") {
             await teamController.updatePoints({
                 body: { teamName: team1, sexe: sexe, points: 1 }
@@ -171,23 +182,23 @@ const update = async (req, res) => {
             }, res);
         }
 
-        // maj des scores
-        const tournament = await Match.findOneAndUpdate(
-            { team1: team1, team2: team2, sexe: sexe },
-            {
-                score: {
-                    team1Score: score.team1Score,
-                    team2Score: score.team2Score
-                },
-                winnerTeam: winnerTeam,
-                sport: sport._id,
-                time: time
-            },
-            { new: true }
-        );
+        // // maj des scores
+        // const tournament = await Match.findOneAndUpdate(
+        //     { team1: team1, team2: team2, sexe: sexe },
+        //     {
+        //         score: {
+        //             team1Score: score.team1Score,
+        //             team2Score: score.team2Score
+        //         },
+        //         winnerTeam: winnerTeam,
+        //         sport: sport._id,
+        //         time: time
+        //     },
+        //     { new: true }
+        // );
         // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
-        // checkPoolWinner();
-        return res.status(200).json(tournament);
+        checkPoolWinner(pool);
+        // return res.status(200).json(tournament);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du match.' });
