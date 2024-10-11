@@ -187,7 +187,7 @@ const update = async (req, res) => {
         );
         // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
         // checkPoolWinner();
-        // return res.status(200).json(tournament);
+        return res.status(200).json(tournament);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du match.' });
