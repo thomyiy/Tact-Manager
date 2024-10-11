@@ -75,9 +75,28 @@ const pouleFactory = {
     }
 };
 
-function checkPoolWinner(pool) {
-    // regarder chaque match de la poule, ...
-    console.log(pool);
+function getMinimumTime(sport) {
+    if (sport == "Football")
+        return 90;
+    if (sport == "Handball")
+        return 90;
+    if (sport == "Basketball")
+        return 90;
+    }
+
+function checkAllMatchsFinished(matchs, sport) {
+    console.log(sport.name);
+    // for (const match of matchs) {
+    //     // console.log("voila match : ", match);
+    //     if (match.time < getMinimumTime(sport))
+    //         return false;
+    // }
+    return true;
+}
+
+async function checkPoolWinner(pool, sport) {
+    const matchs = await Match.find({ pool: pool });
+    checkAllMatchsFinished(matchs, sport);
 }
 
 function getTheWinner(team1, team2, score) {
@@ -107,8 +126,7 @@ const create = async (req, res) => {
     try {
         const sexe = req.params.sexe;
         const sports = await Sport.find(); 
-        
-        
+
         // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
         for (const sport of sports) {
             const teams = await Team.find({ sport: sport._id, sexe: sexe }).populate('school', 'name').exec();
@@ -197,7 +215,7 @@ const update = async (req, res) => {
         //     { new: true }
         // );
         // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
-        checkPoolWinner(pool);
+        checkPoolWinner(pool, sport);
         // return res.status(200).json(tournament);
     } catch (err) {
         console.error(err);
