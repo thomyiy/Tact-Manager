@@ -100,37 +100,39 @@ function createPoules(teams) {
 const create = async (req, res) => {
     try {
         const sexe = req.params.sexe;
-        const sport = await Sport.findOne({ name: req.params.sport });
-        const teams = await Team.find({ sport: sport._id, sexe: sexe }).populate('school', 'name').exec();
+        const sports = await Sport.find(); 
         
-        // creer un nb de poules en fonction du nb de teams
-        const poules = createPoules(teams);
-
-        // algo de creation de match pour chaque poule
-        for (let poule in poules) {
-            const teamsInPoule = poules[poule];
-            for (let i = 0; i < teamsInPoule.length; i++) {
-                for (let j = i + 1; j < teamsInPoule.length; j++) {
-                    const match = {
-                        team1: teamsInPoule[i].school.name,
-                        team2: teamsInPoule[j].school.name,
-                        sport: sport._id,
-                        pool: poule,
-                        sexe: sexe
-                    };
         
-                    await Match.create(match);
-                    await Team.findOneAndUpdate(
-                        { school: teamsInPoule[i].school._id, sport: sport._id, sexe: sexe },
-                        { $set: { pool: poule } }
-                    );
-                    
-                    await Team.findOneAndUpdate(
-                        { school: teamsInPoule[j].school._id, sport: sport._id, sexe: sexe },
-                        { $set: { pool: poule } }
-                    );
-
-                    console.log(`Match créé: ${match.team1} vs ${match.team2} dans ${poule}`);
+        // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
+        for (const sport of sports) {
+            const teams = await Team.find({ sport: sport._id, sexe: sexe }).populate('school', 'name').exec();
+            // creer un nb de poules en fonction du nb de teams
+            const poules = createPoules(teams);
+            for (let poule in poules) {
+                const teamsInPoule = poules[poule];
+                for (let i = 0; i < teamsInPoule.length; i++) {
+                    for (let j = i + 1; j < teamsInPoule.length; j++) {
+                        const match = {
+                            team1: teamsInPoule[i].school.name,
+                            team2: teamsInPoule[j].school.name,
+                            sport: sport._id,
+                            pool: poule,
+                            sexe: sexe
+                        };
+            
+                        await Match.create(match);
+                        await Team.findOneAndUpdate(
+                            { school: teamsInPoule[i].school._id, sport: sport._id, sexe: sexe },
+                            { $set: { pool: poule } }
+                        );
+                        
+                        await Team.findOneAndUpdate(
+                            { school: teamsInPoule[j].school._id, sport: sport._id, sexe: sexe },
+                            { $set: { pool: poule } }
+                        );
+    
+                        console.log(`Match créé: ${match.team1} vs ${match.team2} dans ${poule}`);
+                    }
                 }
             }
         }
@@ -183,8 +185,9 @@ const update = async (req, res) => {
             },
             { new: true }
         );
-        
-        return res.status(200).json(tournament);
+        // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
+        // checkPoolWinner();
+        // return res.status(200).json(tournament);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du match.' });
@@ -193,12 +196,16 @@ const update = async (req, res) => {
 
 const deleteTournament = async (req, res) => {
     try {
-        const sport = await Sport.findOne({ name: req.params.sport });
-        await Match.deleteMany({ sport: sport._id, sexe: req.params.sexe });
-        await Team.updateMany(
-            { sport: sport._id },
-            { $set: { pool: null, points: 0 } }
-        );
+        const sports = await Sport.find();
+
+        for (const sport of sports) {
+            await Match.deleteMany({ sport: sport._id, sexe: req.params.sexe });
+            await Team.updateMany(
+                { sport: sport._id },
+                { $set: { pool: null, points: 0 } }
+            );  
+            console.log(`Tous les matchs de ${sport.name} pour le programme ${req.params.sexe} ont été supprimés`);
+        }
         return res.status(200).json({ message: 'Tous les matches ont été supprimés.' });
     } catch (err) {
         console.error(err);

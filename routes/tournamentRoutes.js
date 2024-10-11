@@ -16,6 +16,23 @@ module.exports = function (route) {
                 lastname: req.session.lastname,
             }
 
+            res.render('tournament-view', {user: user, sport: sport, sexe: sexe});
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
+        }
+    });
+
+    route.get('/tournament/management', async (req, res, next) => {
+        try {
+            const sport = req.params.sport;
+            const sexe = req.params.sexe;
+            const user = {
+                role: req.session.role,
+                firstname: req.session.firstname,
+                lastname: req.session.lastname,
+            }
+
             res.render('tournament-management', {user: user, sport: sport, sexe: sexe});
         } catch (err) {
             console.error(err);
@@ -52,9 +69,9 @@ module.exports = function (route) {
         }
     });
 
-    route.post('/tournament/updateMatch/:sport/:sexe', TournamentController.update)
+    route.post('/tournament/create/:sexe',TournamentController.create)
     
-    route.post('/tournament/create/:sport/:sexe',TournamentController.create)
+    route.post('/tournament/updateMatch/:sport/:sexe', TournamentController.update)
 
-    route.delete('/tournament/delete/:sport/:sexe',TournamentController.deleteTournament)
+    route.delete('/tournament/delete/:sexe',TournamentController.deleteTournament)
 }

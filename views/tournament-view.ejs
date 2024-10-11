@@ -1,0 +1,426 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<!-- <div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Teams</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Teams</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div> -->
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5><%= sport %></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <!-- Matchs Table Content -->
+                    <div class="col-lg-12 mt-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Listes des matches</h5>
+                            </div><!-- end card header -->
+                            <div id="button-container" class="d-flex justify-content-center"></div>
+                            <div class="card-body">
+                                <div id="match-table-pagination"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <!-- end row -->
+
+                    <!-- Ranking Table Content -->
+                    <div class="col-lg-12 mt-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Classement des équipes</h5>
+                            </div><!-- end card header -->
+                            <div id="button-container" class="d-flex justify-content-center"></div>
+                            <div class="card-body">
+                                <div id="ranking-table-pagination"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <!-- end row -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+
+<script>
+
+    function sortTeams(data) {
+        return data.sort((a, b) => b.points - a.points);
+    }
+
+    var scoreGrid = new gridjs.Grid({
+        columns: [
+            "Equipe 1", 
+            "Equipe 2", 
+            {
+                name: "Score Equipe 1",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<span class="editable-score1" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                }
+            },
+            {
+                name: "Score Equipe 2",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<span class="editable-score2" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                }
+            },
+            "Vainqueur",
+            {
+                name: "Temps Final",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<span class="editable-time" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                }
+            },
+            {
+                name: "Validation",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Valider score</button>`);
+                }
+            }
+        ],
+        data: async () => {
+            var data = await fetch("/tournament/<%= sport %>/<%= sexe %>/getPoule/1", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then((response) => response.json());
+
+            const filteredData = data.filter(e => e.pool === 'Poule 1').map(e => [
+                e.team1, 
+                e.team2, 
+                `${e.score.team1Score}`,
+                `${e.score.team2Score}`,
+                e.winnerTeam,
+                e.time
+            ]);
+
+            return filteredData;
+        },
+        sort: true
+    }).render(document.getElementById("match-table-pagination"));
+
+    var rankingGrid = new gridjs.Grid({
+        columns: [
+            "Equipe", 
+            "Score"
+        ],
+        data: async () => {
+            var data = await fetch("/team/<%= sport %>/<%= sexe %>/getRanking/1", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then((response) => response.json());
+
+            var sortData = sortTeams(data);
+            const filteredData = sortData.filter(e => e.pool === 'Poule 1').map(e => [
+                e.school.name,
+                e.points
+            ]);
+
+            return filteredData;
+        },
+        sort: true
+    }).render(document.getElementById("ranking-table-pagination"));
+
+    function isScoreGood(newScore) {
+        if (typeof newScore !== 'string') {
+            return false;
+        }
+
+        if (isNaN(newScore) || newScore < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function isTimeGood(newTime) {
+        const time = parseInt(newTime, 10);
+
+        if (isNaN(time) || time < 0 || time > 200) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function getWinner(team1, team1Score, team2, team2Score) {
+        if (team1Score === team2Score)
+            return undefined;
+        if (team1Score > team2Score)
+            return team1;
+        return team2;
+    }
+
+    function handleScore(Element, team) {
+        const Data = Element.getAttribute('data-id').split('-');
+        const team1 = Data[0], team2 = Data[1];
+        let team1Score, team2Score;
+        let currentScore = parseInt(Element.textContent.trim());
+
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+        let currentTime = timeElement ? parseInt(timeElement.textContent.trim()) : null;
+
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
+        team1Score = timeElement ? parseInt(score1Element.textContent.trim()) : null;
+        
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
+        team2Score = timeElement ? parseInt(score2Element.textContent.trim()) : null;
+
+        const newScore = prompt(`Entrez le nouveau score pour l'équipe ${team === 1 ? team1 : team2}`, currentScore);
+
+        if (team == 1) {
+            team1Score = parseInt(newScore);
+        } else if (team == 2) {
+            team2Score = parseInt(newScore);
+        }
+
+        if (isScoreGood(newScore)) {
+            Element.textContent = newScore;
+        } else {
+            alert("Le format du score est incorrect. Veuillez entrer un score valide sous forme d'entier.");
+        }
+    }
+
+    function handleTime(Element) {
+        const Data = Element.getAttribute('data-id').split('-');
+        const team1 = Data[0], team2 = Data[1];
+
+        let currentTime = parseInt(Element.textContent.trim());
+
+        const newTime = prompt(`Entrez le temps final du match entre ${team1} et ${team2}`, currentTime);
+
+        if (isTimeGood(newTime)) {
+            Element.textContent = newTime;
+        } else {
+            alert("Le format du temps est incorrect. Veuillez entrer un temps valide sous forme d'entier.");
+        }
+    }
+
+    function handleValidation(buttonElement) {
+        const Data = buttonElement.getAttribute('data-id').split('-');
+        const team1 = Data[0];
+        const team2 = Data[1];
+
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+
+        const team1Score = parseInt(score1Element.textContent.trim());
+        const team2Score = parseInt(score2Element.textContent.trim());
+        const time = parseInt(timeElement.textContent.trim());
+
+        if (!isNaN(team1Score) || !isNaN(team2Score)) {
+            fetch("/tournament/updateMatch/<%= sport %>/<%= sexe %>", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    team1,
+                    team2,
+                    score: {
+                        team1Score,
+                        team2Score,
+                    },
+                    time,
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau lors de la validation du match');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+                alert("Une erreur est survenue lors de la validation du match.");
+            });
+        } else {
+            alert("Veuillez entrer des scores et un temps valides avant de valider.");
+        }
+    }
+
+    async function getPouleNumber() {
+        try {
+            var response = await fetch("/tournament/<%= sport %>/<%= sexe %>/getAllMatches", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            const data = await response.json();
+        
+            return new Set(data.map(e => e.pool)).size;;
+        } catch(error) {
+            console.error("Erreur :", error.message);
+        }
+    }
+
+    async function updateGrid(poolNumber) {
+        try {
+            const scoreResponse = await fetch(`/tournament/<%= sport %>/<%= sexe %>/getPoule/${poolNumber}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const scoreData = await scoreResponse.json();
+
+            const rankingResponse = await fetch(`/team/<%= sport %>/<%= sexe %>/getRanking/${poolNumber}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const rankingData = await rankingResponse.json();
+
+            const filteredDataForScore = scoreData.map(e => [
+                e.team1,
+                e.team2,
+                `${e.score.team1Score}`,
+                `${e.score.team2Score}`,
+                e.winnerTeam,
+                e.time
+            ]);
+
+            const filteredRanking = rankingData.filter(team => team.pool === `Poule ${poolNumber}`);
+            
+            const sortedRanking = sortTeams(filteredRanking);
+
+            const filteredDataForRanking = sortedRanking.map(e => [
+                e.school.name,
+                e.points
+            ]);
+
+            scoreGrid.updateConfig({
+                data: filteredDataForScore
+            }).forceRender();
+
+            rankingGrid.updateConfig({
+                data: filteredDataForRanking
+            }).forceRender();
+
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour des grilles:", error);
+        }
+    }
+
+    function buttonHandling(PouleNumber) {
+        // creer dynamiquement un btn en fonction du nbr de poules
+        const buttonContainer = document.getElementById("button-container");
+        
+        for (let i = 1; i <= PouleNumber; i++) {
+            const buttonDiv = document.createElement("div");
+            buttonDiv.classList.add("d-inline-block", "me-1");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "btn btn-primary";
+            button.dataset.bsToggle = "tooltip";
+            button.dataset.bsPlacement = "top";
+            button.title = `Poule ${i}`;
+            button.innerText = `Poule ${i}`;
+            
+            button.addEventListener('click', () => {
+                const allButtons = buttonContainer.querySelectorAll("button");
+                allButtons.forEach(btn => btn.classList.remove("active"));
+
+                event.currentTarget.classList.add("active");
+                updateGrid(i);
+            });
+
+            buttonDiv.appendChild(button);
+            buttonContainer.appendChild(buttonDiv);
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('validate-button')) {
+            handleValidation(event.target);
+        } else if (event.target.classList.contains('editable-score1')) {
+            handleScore(event.target, 1);
+        } else if (event.target.classList.contains('editable-score2')) {
+            handleScore(event.target, 2);
+        } else if (event.target.classList.contains('editable-time')) {
+            handleTime(event.target);
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        const PouleNumber = await getPouleNumber();
+        buttonHandling(PouleNumber);
+    });
+
+</script>
