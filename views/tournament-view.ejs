@@ -137,10 +137,16 @@
                 formatter: (cell, row) => {
                     return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Valider score</button>`);
                 }
+            },
+            {
+                name: "Réinitialiser",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<button class="btn btn-danger  clear-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Réinitialiser score</button>`);
+                }
             }
         ],
         data: async () => {
-            var data = await fetch("/tournament/<%= sport %>/<%= sexe %>/getPoule/1", {
+            var data = await fetch("/tournament/<%= sport %>/<%= program %>/getPoule/Poule 1", {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -148,13 +154,13 @@
             })
             .then((response) => response.json());
 
-            const filteredData = data.filter(e => e.pool === 'Poule 1').map(e => [
-                e.team1, 
-                e.team2, 
+            const filteredData = data.filter(e => e.pool.name === 'Poule 1').map(e => [
+                e.team1?.school?.name || "",
+                e.team2?.school?.name || "",
                 `${e.score.team1Score}`,
                 `${e.score.team2Score}`,
-                e.winnerTeam,
-                e.time
+                e.winnerTeam === null ? "Match nul" : e.winnerTeam?.school?.name || "",
+                e.timePlayed
             ]);
 
             return filteredData;
@@ -168,7 +174,7 @@
             "Score"
         ],
         data: async () => {
-            var data = await fetch("/team/<%= sport %>/<%= sexe %>/getRanking/1", {
+            var data = await fetch("/team/<%= sport %>/<%= program %>/getRanking/Poule 1", {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -177,7 +183,7 @@
             .then((response) => response.json());
 
             var sortData = sortTeams(data);
-            const filteredData = sortData.filter(e => e.pool === 'Poule 1').map(e => [
+            const filteredData = sortData.filter(e => e.pool.name === "Poule 1").map(e => [
                 e.school.name,
                 e.points
             ]);
@@ -276,7 +282,7 @@
         const time = parseInt(timeElement.textContent.trim());
 
         if (!isNaN(team1Score) || !isNaN(team2Score)) {
-            fetch("/tournament/updateMatch/<%= sport %>/<%= sexe %>", {
+            fetch("/tournament/updateMatch/<%= sport %>/<%= program %>", {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -310,25 +316,91 @@
         }
     }
 
-    async function getPouleNumber() {
-        try {
-            var response = await fetch("/tournament/<%= sport %>/<%= sexe %>/getAllMatches", {
+    function handleClear(buttonElement) {
+        const Data = buttonElement.getAttribute('data-id').split('-');
+        const team1 = Data[0];
+        const team2 = Data[1];
+
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+
+        const team1Score = parseInt(score1Element.textContent.trim());
+        const team2Score = parseInt(score2Element.textContent.trim());
+        const time = parseInt(timeElement.textContent.trim());
+
+        if (!isNaN(team1Score) || !isNaN(team2Score)) {
+            fetch("/tournament/clearMatch/<%= sport %>/<%= program %>", {
+                method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
+                body: JSON.stringify({
+                    team1,
+                    team2,
+                    score: {
+                        team1Score,
+                        team2Score,
+                    },
+                    time,
+                })
             })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau lors de la réinitialisation du match');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+                alert("Une erreur est survenue lors de la validation du match.");
+            });
+        } else {
+            alert("Vous ne pouvez pas réinitialiser un match vide");
+        }
+    }
+
+    async function getPoules() {
+        try {
+            var response = await fetch("/tournament/<%= sport %>/<%= program %>/getAllMatches", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            });
             const data = await response.json();
-        
-            return new Set(data.map(e => e.pool)).size;;
-        } catch(error) {
+            const pouleNames = Array.from(new Set(data.map(e => e.pool.name)));
+
+            const sortedPoules = pouleNames.sort((a, b) => {
+                if (a.includes('Finale') && !a.includes('Demi-Finale')) return 1;
+                if (b.includes('Finale') && !b.includes('Demi-Finale')) return -1;
+
+                const demiFinaleA = a.match(/Demi-Finale (\d+)/);
+                const demiFinaleB = b.match(/Demi-Finale (\d+)/);
+
+                if (demiFinaleA && demiFinaleB) {
+                    return parseInt(demiFinaleA[1]) - parseInt(demiFinaleB[1]);
+                }
+
+                if (demiFinaleA) return 1;
+                if (demiFinaleB) return -1;
+
+                return a.localeCompare(b);
+            });
+
+            return sortedPoules;
+        } catch (error) {
             console.error("Erreur :", error.message);
         }
     }
 
-    async function updateGrid(poolNumber) {
+    async function updateGrid(poolName) {
         try {
-            const scoreResponse = await fetch(`/tournament/<%= sport %>/<%= sexe %>/getPoule/${poolNumber}`, {
+            const scoreResponse = await fetch(`/tournament/<%= sport %>/<%= program %>/getPoule/${poolName}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -337,7 +409,9 @@
             
             const scoreData = await scoreResponse.json();
 
-            const rankingResponse = await fetch(`/team/<%= sport %>/<%= sexe %>/getRanking/${poolNumber}`, {
+            console.log("scoreDatas : ", scoreData);
+
+            const rankingResponse = await fetch(`/team/<%= sport %>/<%= program %>/getRanking/${poolName}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -347,15 +421,15 @@
             const rankingData = await rankingResponse.json();
 
             const filteredDataForScore = scoreData.map(e => [
-                e.team1,
-                e.team2,
+                e.team1?.school?.name || "",
+                e.team2?.school?.name || "",
                 `${e.score.team1Score}`,
                 `${e.score.team2Score}`,
-                e.winnerTeam,
-                e.time
+                e.winnerTeam === null ? "Match nul" : e.winnerTeam?.school?.name || "",
+                e.timePlayed
             ]);
 
-            const filteredRanking = rankingData.filter(team => team.pool === `Poule ${poolNumber}`);
+            const filteredRanking = rankingData.filter(team => team.pool.name === poolName);
             
             const sortedRanking = sortTeams(filteredRanking);
 
@@ -377,11 +451,11 @@
         }
     }
 
-    function buttonHandling(PouleNumber) {
+    function buttonHandling(poules) {
         // creer dynamiquement un btn en fonction du nbr de poules
         const buttonContainer = document.getElementById("button-container");
-        
-        for (let i = 1; i <= PouleNumber; i++) {
+
+        poules.forEach((pouleName, index) => {
             const buttonDiv = document.createElement("div");
             buttonDiv.classList.add("d-inline-block", "me-1");
 
@@ -390,25 +464,31 @@
             button.className = "btn btn-primary";
             button.dataset.bsToggle = "tooltip";
             button.dataset.bsPlacement = "top";
-            button.title = `Poule ${i}`;
-            button.innerText = `Poule ${i}`;
-            
-            button.addEventListener('click', () => {
-                const allButtons = buttonContainer.querySelectorAll("button");
-                allButtons.forEach(btn => btn.classList.remove("active"));
+            button.title = pouleName;
+            button.innerText = pouleName;
 
-                event.currentTarget.classList.add("active");
-                updateGrid(i);
+            button.addEventListener('click', (event) => {
+                const allButtons = buttonContainer.querySelectorAll("button");
+                allButtons.forEach(btn => {
+                    btn.classList.remove("btn-secondary", "btn-info");
+                    btn.classList.add("btn-primary");
+                });
+
+                event.currentTarget.classList.remove("btn-primary");
+                event.currentTarget.classList.add("btn-secondary"); 
+                updateGrid(pouleName);
             });
 
             buttonDiv.appendChild(button);
             buttonContainer.appendChild(buttonDiv);
-        }
+        });
     }
 
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('validate-button')) {
             handleValidation(event.target);
+        } else if (event.target.classList.contains('clear-button')) {
+            handleClear(event.target);
         } else if (event.target.classList.contains('editable-score1')) {
             handleScore(event.target, 1);
         } else if (event.target.classList.contains('editable-score2')) {
@@ -419,7 +499,7 @@
     });
 
     document.addEventListener("DOMContentLoaded", async function() {
-        const PouleNumber = await getPouleNumber();
+        const PouleNumber = await getPoules();
         buttonHandling(PouleNumber);
     });
 

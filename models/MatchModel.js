@@ -1,14 +1,20 @@
 const mongoose = require('mongoose');
 const { sassNull } = require('sass');
+const arbitrator = require('./ArbitratorModel');
 
 const MatchSchema = new mongoose.Schema({
+    arbitrator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "arbitrator"
+    },
+    // TODO: arbitre
     team1: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "team"
     },
     team2: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "team"
     },
     score: {
         team1Score: {
@@ -21,30 +27,41 @@ const MatchSchema = new mongoose.Schema({
         },
     },
     winnerTeam: {
-        type: String,
-        default: null
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "team",
+        default: undefined
     },
     sport: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "sport",
+        required: true
     },
     pool: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "pool",
+        required: true
     },
-    sexe: {
-        type: String,
-        required: true,
+    program: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "program",
+        required: true
     },
-    time: {
+    timePlayed: {
         type: Number,
         default: 0
     },
-
+    isFinished: {
+        type: Boolean,
+        default: false
+    },
+    field: {
+        type: String,
+        default: null
+    },
     created_at: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
 })
 
-const Match = mongoose.model('matchs', MatchSchema);
+const Match = mongoose.model('matches', MatchSchema);
 module.exports = Match;

@@ -11,5 +11,5 @@ const SchoolSchema = new mongoose.Schema({
     passwordResetExpires: Date,
 })
 
-const school = mongoose.model('schools', SchoolSchema);
+const school = mongoose.model('school', SchoolSchema);
 module.exports = school;

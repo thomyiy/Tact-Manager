@@ -2,6 +2,9 @@ const express = require('express');
 const TeamController = require("../controller/TeamController");
 const Team = require("../models/TeamModel");
 const Sport = require("../models/SportModel");
+const Pool = require("../models/PoolModel");
+const Program = require("../models/ProgramModel");
+const { get } = require('browser-sync');
 const route = express.Router();
 
 module.exports = function (route) {
@@ -16,13 +19,13 @@ module.exports = function (route) {
     })
 
     route.get('/team/getAll', async (req, res, next) => {
-        const teams = await Team.find({}).populate('school').populate('sport').exec((err,teams)=>{
-            if (err) {
-                console.log(err, res);
-                return res.status(500).send(err);
-            }
-            return res.send(teams)
-        })
+        try {
+            const teams = await Team.find().populate('school sport program');
+            res.send(teams);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Erreur lors de la récupération des équipes de football');
+        }
     })
 
     route.get('/team/:sport', async (req, res, next) => {
@@ -37,16 +40,18 @@ module.exports = function (route) {
         }
     });
 
-    route.get('/team/:sport/:sexe/getRanking/:number', async (req, res, next) => {
+    route.get('/team/:sport/:program/getRanking/:name', async (req, res, next) => {
         try {
-            const sportName = req.params.sport;
-            const sexeType = req.params.sexe;
-            const poolNumber = req.params.number;
-            const poolWanted = "Poule " + poolNumber;
-            const sport = await Sport.findOne({ name: sportName });
-            const teams = await Team.find({ sport: sport._id, pool: poolWanted, sexe: sexeType }).populate('school sport');
-            
-            res.send(teams);
+            const program = await Program.findOne({ name: req.params.program });
+            const sport = await Sport.findOne({ name: req.params.sport });
+            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id });
+            // pool vaut rien si aucun match n'a été crée
+            if (pool) {
+                const teams = await Team.find({ sport: sport._id, pool: pool._id, program: program._id })
+                .populate('school sport pool');
+    
+                res.send(teams);
+            }
         } catch (error) {
             console.error(error);
             res.status(500).send('Erreur lors de la récupération des équipes de football');

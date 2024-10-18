@@ -67,14 +67,14 @@
                                             <div class="mb-3 row">
                                                 <label class="col-md-2 col-form-label">Ecole</label>
                                                 <div class="col-md-10">
-                                                    <select class="form-select" id="schoolId" name="schoolId">
+                                                    <select class="form-select" id="school" name="school">
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="mb-3 row">
-                                                <label class="col-md-2 col-form-label">Sexe</label>
+                                                <label class="col-md-2 col-form-label">Program</label>
                                                 <div class="col-md-10">
-                                                    <select class="form-select" id="sexeType" name="sexeType">
+                                                    <select class="form-select" id="program" name="program">
                                                     </select>
                                                 </div>
                                             </div>
@@ -133,7 +133,7 @@
         .then((response) => {
             return response.json();
         }).then((data) => {
-        let selectTag = document.getElementById('schoolId');
+        let selectTag = document.getElementById('school');
         data.map((d) => {
             let opt = document.createElement("option");
             opt.value = d._id;
@@ -143,11 +143,11 @@
     });
 
     document.addEventListener("DOMContentLoaded", function() {
-        let selectTag = document.getElementById('sexeType');
+        let selectTag = document.getElementById('program');
         
         const options = [
             { value: 'Masculin', label: 'Masculin' },
-            { value: 'Feminin', label: 'Féminin' }
+            { value: 'Féminin', label: 'Féminin' }
         ];
         
         options.forEach((option) => {
@@ -159,7 +159,7 @@
     });
 
     var grid = new gridjs.Grid({
-        columns: ["Ecole", "Sport", "Sexe"],
+        columns: ["Ecole", "Sport", "Program"],
         pagination: {limit: 30},
         data: async () => {
             var data = await fetch("/team/getAll", {
@@ -167,11 +167,10 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-            })
-                .then((response) => {
-                    return response.json()
-                });
-            return data.map((e) => [e.school.name, e.sport.name, e.sexe]);
+            }).then((response) => {
+                return response.json()
+            });
+            return data.map((e) => [e.school.name, e.sport.name, e.program.name]);
         },
         sort: true
     }).render(document.getElementById("table-pagination"));

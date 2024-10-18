@@ -1,15 +1,15 @@
+const { request } = require('express');
 const mongoose = require('mongoose');
 
-const SportSchema = new mongoose.Schema({
+const ProgramSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     created_at: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
 })
 
-const sport = mongoose.model('sport', SportSchema);
-module.exports = sport;
+const program = mongoose.model('program', ProgramSchema);
+module.exports = program;

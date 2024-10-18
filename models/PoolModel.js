@@ -1,11 +1,10 @@
 const { request } = require('express');
 const mongoose = require('mongoose');
 
-const TeamSchema = new mongoose.Schema({
-    school: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "school",
-        required: true
+const PoolSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
     },
     sport: {
         type: mongoose.Schema.Types.ObjectId,
@@ -17,18 +16,10 @@ const TeamSchema = new mongoose.Schema({
         ref: "program",
         required: true
     },
-    pool: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "pool"
-    },
-    points: {
-        type: Number,
-        default: 0
-    },
     created_at: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
 })
 
-const team = mongoose.model('team', TeamSchema);
-module.exports = team;
+const pool = mongoose.model('pool', PoolSchema);
+module.exports = pool;

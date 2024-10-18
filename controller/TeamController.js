@@ -4,12 +4,16 @@ const path = require("path");
 const School = require("../models/SchoolModel");
 const Team = require("../models/TeamModel");
 const Sport = require("../models/SportModel")
+const Program = require("../models/ProgramModel")
 const FILE_STORAGE_PATH = process.env.FILE_STORAGE_PATH
 
 const create = async (req, res) => {
-    var schoolId = req.body.schoolId
-    var sexe = req.body.sexeType;
+    console.log("body : ",  req.body);
+    var schoolId = req.body.school;
+    var programParam = req.body.program;
 
+    const program = await Program.findOne({ name: programParam });
+    console.log(program);
     const football = await Sport.findOne({ name: "Football" });
     const basketball = await Sport.findOne({ name: "Basketball" });
     const handball = await Sport.findOne({ name: "Handball" });
@@ -19,19 +23,19 @@ const create = async (req, res) => {
     const handballId = handball._id;
 
 
-    Team.create({sport: footballId, school: schoolId, sexe: sexe}, function (err, res) {
+    Team.create({sport: footballId, school: schoolId, program: program}, function (err, res) {
         if (err) {
             console.log(err, res);
             return res.status(500).send(err);
         }
     });
-    Team.create({sport: basketballId, school: schoolId, sexe: sexe}, function (err, res) {
+    Team.create({sport: basketballId, school: schoolId, program: program}, function (err, res) {
         if (err) {
             console.log(err, res);
             return res.status(500).send(err);
         }
     });
-    Team.create({sport: handballId, school: schoolId, sexe: sexe}, function (err, res) {
+    Team.create({sport: handballId, school: schoolId, program: program}, function (err, res) {
         if (err) {
             console.log(err, res);
             return res.status(500).send(err);
@@ -42,12 +46,12 @@ const create = async (req, res) => {
 }
 
 const updatePoints = async (req, res) => {
-    const { teamName, points, sexe } = req.body;
+    const { teamName, points, program, pool } = req.body;
     const school = await School.findOne({ name: teamName });
 
     try {
         const updatedTeam = await Team.findOneAndUpdate(
-            { school: school._id, sexe: sexe },
+            { school: school._id, program: program, pool: pool },
             { $inc: { points: points } },
             { new: true }
         );

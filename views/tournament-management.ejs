@@ -29,45 +29,65 @@
                         </div>
                     </div>
                     <!-- end row -->
-                    <div class="container text-center">
-                        <div class="row justify-content-center">
-                            <div class="d-flex flex-column align-items-center col-md-6 mb-4 male-button-container">
-                                <button type="button" class="btn btn-primary waves-effect waves-light mb-3" onclick="createTournament('Masculin')">Créer un tournoi (Homme) </button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="deleteTournament('Masculin')">Supprimer tournoi actuel (Homme)</button>
-                            </div>
-                            <div class="d-flex flex-column align-items-center col-md-6 mb-4 female-button-container">
-                                <button type="button" class="btn btn-primary waves-effect waves-light mb-3" onclick="createTournament('Feminin')">Créer un tournoi (Femme) </button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="deleteTournament('Feminin')">Supprimer tournoi actuel (Femme)</button>
-                            </div>
+                    <div class="row justify-content-center">
+                        <div class="d-flex flex-column align-items-center col-md-6 mb-4 male-button-container">
+                            <button type="button" class="btn btn-primary waves-effect waves-light mb-3" onclick="createTournament()">Créer les tournois</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="deleteTournament()">Supprimer les tournois</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="button-container" class="d-flex justify-content-center"></div>
+                        <div class="card-body">
+                            <div id="match-table-pagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
     </div>
 </div>
 
 <%- contentFor('FooterJs') %>
 
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
 <script>
-        async function createTournament(sexeType) {
+    async function createTournament() {
         try {
-            await fetch(`/tournament/create/${sexeType}`, {
+            await fetch(`/tournament/create/Masculin`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
             });
+            await fetch(`/tournament/create/Féminin`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            });
+            
             window.location.reload();
         } catch (error) {
             console.error('Erreur:', error);
         }
     }
 
-    async function deleteTournament(sexeType) {
+    async function deleteTournament() {
         try {
-            await fetch(`/tournament/delete/${sexeType}`, {
+            await fetch(`/tournament/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -80,4 +100,63 @@
             console.error('Erreur:', error);
         }
     }
+
+    // var scoreGrid = new gridjs.Grid({
+    //     columns: [
+    //         "Equipe 1", 
+    //         "Equipe 2", 
+    //         {
+    //             name: "Score Equipe 1",
+    //             formatter: (cell, row) => {
+    //                 return gridjs.html(`<span class="editable-score1" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+    //             }
+    //         },
+    //         {
+    //             name: "Score Equipe 2",
+    //             formatter: (cell, row) => {
+    //                 return gridjs.html(`<span class="editable-score2" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+    //             }
+    //         },
+    //         "Vainqueur",
+    //         {
+    //             name: "Temps Final",
+    //             formatter: (cell, row) => {
+    //                 return gridjs.html(`<span class="editable-time" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+    //             }
+    //         },
+    //         {
+    //             name: "Validation",
+    //             formatter: (cell, row) => {
+    //                 return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Valider score</button>`);
+    //             }
+    //         },
+    //         {
+    //             name: "Réinitialiser",
+    //             formatter: (cell, row) => {
+    //                 return gridjs.html(`<button class="btn btn-success clear-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Réinitialiser</button>`);
+    //             }
+    //         }
+    //     ],
+    //     data: async () => {
+    //         var data = await fetch("", {
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json'
+    //             },
+    //         })
+    //         .then((response) => response.json());
+
+    //         const filteredData = data.filter(e => e.pool === 'Poule 1').map(e => [
+    //             e.team1, 
+    //             e.team2, 
+    //             `${e.score.team1Score}`,
+    //             `${e.score.team2Score}`,
+    //             e.winnerTeam,
+    //             e.time
+    //         ]);
+
+    //         return filteredData;
+    //     },
+    //     sort: true
+    // }).render(document.getElementById("match-table-pagination"));
 </script>

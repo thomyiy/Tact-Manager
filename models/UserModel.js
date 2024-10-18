@@ -14,8 +14,16 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum : ['user','admin'],
+        enum : ['Arbitrator','admin'],
         default: "user"
+    },
+    firstname: {
+        type: String,
+        required: true
+    },
+    lastname: {
+        type: String,
+        required: true
     },
     created_at: Date,
     passwordResetToken: String,
