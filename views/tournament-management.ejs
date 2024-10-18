@@ -64,22 +64,24 @@
 <script>
     async function createTournament() {
         try {
-            await fetch(`/tournament/create/Masculin`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            });
-            await fetch(`/tournament/create/Féminin`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            });
+            const responses = await Promise.all([
+                fetch(`/tournament/create/Masculin`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }),
+                fetch(`/tournament/create/Féminin`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+            ]);
             
-            window.location.reload();
+            alert("Les tournois pour tous les sports et pour tous les programmes ont été créés");
         } catch (error) {
             console.error('Erreur:', error);
         }
@@ -95,7 +97,7 @@
                 },
             });
 
-            window.location.reload();
+            alert("Les tournois pour tous les sports et pour tous les programmes ont été supprimés");
         } catch (error) {
             console.error('Erreur:', error);
         }

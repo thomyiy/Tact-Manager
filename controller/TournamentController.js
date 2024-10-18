@@ -188,8 +188,11 @@ const create = async (req, res) => {
 
         // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
         for (const sport of sports) {
-            // const teams = await Team.find({ sport: sport._id, program: program._id }).populate('school', 'name').exec();
             const teams = await Team.find({ sport: sport._id, program: program._id });
+            if (teams.length == 0) {
+                console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
+                return res.status(204).send();
+            }                    
             // creer un nb de poules en fonction du nb de teams
             const poules = createPoules(teams);
             for (let poule in poules) {
@@ -224,6 +227,7 @@ const create = async (req, res) => {
                 }
             }
         }
+        return res.status(200).json();
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erreur lors de la création du tournoi.' });
@@ -368,7 +372,6 @@ const deleteTournament = async (req, res) => {
                 { sport: sport._id },
                 { $set: { pool: null, points: 0 } }
             );
-            console.log(`Les poules et les points de chaque equipes a ete reinitialise`);
         }
         
         await Match.deleteMany({});
