@@ -116,32 +116,32 @@
             {
                 name: "Score Equipe 1",
                 formatter: (cell, row) => {
-                    return gridjs.html(`<span class="editable-score1" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                    return gridjs.html(`<span class="editable-score1" data-id="${row.cells[0].data};${row.cells[1].data}">${cell}</span>`);
                 }
             },
             {
                 name: "Score Equipe 2",
                 formatter: (cell, row) => {
-                    return gridjs.html(`<span class="editable-score2" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                    return gridjs.html(`<span class="editable-score2" data-id="${row.cells[0].data};${row.cells[1].data}">${cell}</span>`);
                 }
             },
             "Vainqueur",
             {
                 name: "Temps Final",
                 formatter: (cell, row) => {
-                    return gridjs.html(`<span class="editable-time" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
+                    return gridjs.html(`<span class="editable-time" data-id="${row.cells[0].data};${row.cells[1].data}">${cell}</span>`);
                 }
             },
             {
                 name: "Validation",
                 formatter: (cell, row) => {
-                    return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Valider score</button>`);
+                    return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data};${row.cells[1].data}">Valider score</button>`);
                 }
             },
             {
                 name: "Réinitialiser",
                 formatter: (cell, row) => {
-                    return gridjs.html(`<button class="btn btn-danger  clear-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Réinitialiser score</button>`);
+                    return gridjs.html(`<button class="btn btn-danger  clear-button" data-id="${row.cells[0].data};${row.cells[1].data}">Réinitialiser score</button>`);
                 }
             }
         ],
@@ -224,18 +224,18 @@
     }
 
     function handleScore(Element, team) {
-        const Data = Element.getAttribute('data-id').split('-');
+        const Data = Element.getAttribute('data-id').split(';');
         const team1 = Data[0], team2 = Data[1];
         let team1Score, team2Score;
         let currentScore = parseInt(Element.textContent.trim());
 
-        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1};${team2}"]`);
         let currentTime = timeElement ? parseInt(timeElement.textContent.trim()) : null;
 
-        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1};${team2}"]`);
         team1Score = timeElement ? parseInt(score1Element.textContent.trim()) : null;
         
-        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1};${team2}"]`);
         team2Score = timeElement ? parseInt(score2Element.textContent.trim()) : null;
 
         const newScore = prompt(`Entrez le nouveau score pour l'équipe ${team === 1 ? team1 : team2}`, currentScore);
@@ -254,7 +254,7 @@
     }
 
     function handleTime(Element) {
-        const Data = Element.getAttribute('data-id').split('-');
+        const Data = Element.getAttribute('data-id').split(';');
         const team1 = Data[0], team2 = Data[1];
 
         let currentTime = parseInt(Element.textContent.trim());
@@ -269,13 +269,13 @@
     }
 
     function handleValidation(buttonElement) {
-        const Data = buttonElement.getAttribute('data-id').split('-');
+        const Data = buttonElement.getAttribute('data-id').split(';');
         const team1 = Data[0];
         const team2 = Data[1];
 
-        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
-        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
-        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1};${team2}"]`);
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1};${team2}"]`);
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1};${team2}"]`);
 
         const team1Score = parseInt(score1Element.textContent.trim());
         const team2Score = parseInt(score2Element.textContent.trim());
@@ -317,13 +317,13 @@
     }
 
     function handleClear(buttonElement) {
-        const Data = buttonElement.getAttribute('data-id').split('-');
+        const Data = buttonElement.getAttribute('data-id').split(';');
         const team1 = Data[0];
         const team2 = Data[1];
 
-        const score1Element = document.querySelector(`.editable-score1[data-id="${team1}-${team2}"]`);
-        const score2Element = document.querySelector(`.editable-score2[data-id="${team1}-${team2}"]`);
-        const timeElement = document.querySelector(`.editable-time[data-id="${team1}-${team2}"]`);
+        const score1Element = document.querySelector(`.editable-score1[data-id="${team1};${team2}"]`);
+        const score2Element = document.querySelector(`.editable-score2[data-id="${team1};${team2}"]`);
+        const timeElement = document.querySelector(`.editable-time[data-id="${team1};${team2}"]`);
 
         const team1Score = parseInt(score1Element.textContent.trim());
         const team2Score = parseInt(score2Element.textContent.trim());

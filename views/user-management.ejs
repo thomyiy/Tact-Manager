@@ -163,15 +163,16 @@
         columns: ["Nom", "Email", "Role"],
         pagination: {limit: 30},
         data: async () => {
-            var data = await fetch("/user/getAll", {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then((response) => {
-                    return response.json()
-                });
+            var data = <%- JSON.stringify(users) %>;
+            // var data = await fetch("/user/getAll", {
+            //     headers: {
+            //         'Accept': 'application/json',
+            //         'Content-Type': 'application/json'
+            //     },
+            // })
+            // .then((response) => {
+            //     return response.json()
+            // });
 
             return data.map((e) => [e.lastname+" "+e.firstname, e.email,  e.role]);
         },

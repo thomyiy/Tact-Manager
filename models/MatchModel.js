@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { sassNull } = require('sass');
 const arbitrator = require('./ArbitratorModel');
 
 const MatchSchema = new mongoose.Schema({
@@ -46,6 +45,9 @@ const MatchSchema = new mongoose.Schema({
         ref: "program",
         required: true
     },
+    expectedTime: {
+        type: Number
+    },
     timePlayed: {
         type: Number,
         default: 0
@@ -55,8 +57,9 @@ const MatchSchema = new mongoose.Schema({
         default: false
     },
     field: {
-        type: String,
-        default: null
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "field",
+        required: true
     },
     created_at: Date,
     passwordResetToken: String,

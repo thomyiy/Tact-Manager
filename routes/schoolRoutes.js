@@ -1,6 +1,7 @@
 const express = require('express');
 const SchoolController = require("../controller/SchoolController");
 const School = require("../models/SchoolModel");
+const Teams = require("../models/TeamModel");
 const route = express.Router();
 
 module.exports = function (route) {
@@ -10,12 +11,13 @@ module.exports = function (route) {
             firstname: req.session.firstname,
             lastname: req.session.lastname,
         }
-        const schools = await School.find({})
-        res.render('school-management', {user: user, schools: schools})
+        const schools = await School.find({});
+        const teams = await Teams.find({});
+        res.render('school-management', {user: user, schools: schools, teams: teams})
     })
 
     route.get('/school/getAll', async (req, res, next) => {
-        const schools = await School.find({})
+        const schools = await School.find({});
         res.send(schools)
     })
 

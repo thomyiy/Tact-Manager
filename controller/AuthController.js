@@ -35,7 +35,7 @@ const validate = async (req, res) => {
         usersession.role = currentUser.role;
         usersession.firstname = currentUser.firstname;
         usersession.lastname = currentUser.lastname;
-        return res.redirect('/');
+        return res.redirect('/dashboard');
     });
 }
 

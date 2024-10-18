@@ -1,6 +1,7 @@
 const express = require('express');
 const TeamController = require("../controller/TeamController");
 const Team = require("../models/TeamModel");
+const School = require("../models/SchoolModel");
 const Sport = require("../models/SportModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
@@ -14,8 +15,9 @@ module.exports = function (route) {
             firstname: req.session.firstname,
             lastname: req.session.lastname,
         }
-        const teams = await Team.find({})
-        res.render('team-management', {user: user, teams: teams})
+        const teams = await Team.find({}).populate('school sport program');
+        const schools = await School.find({});
+        res.render('team-management', {user: user, teams: teams, schools: schools})
     })
 
     route.get('/team/getAll', async (req, res, next) => {

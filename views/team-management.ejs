@@ -123,23 +123,13 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 <script>
-
-    fetch("/school/getAll", {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-    })
-        .then((response) => {
-            return response.json();
-        }).then((data) => {
-        let selectTag = document.getElementById('school');
-        data.map((d) => {
-            let opt = document.createElement("option");
-            opt.value = d._id;
-            opt.innerHTML = d.name;
-            selectTag.append(opt);
-        });
+    var schools = <%- JSON.stringify(schools) %>;
+    let selectTag = document.getElementById('school');
+    schools.map((d) => {
+        let opt = document.createElement("option");
+        opt.value = d._id;
+        opt.innerHTML = d.name;
+        selectTag.append(opt);
     });
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -162,14 +152,7 @@
         columns: ["Ecole", "Sport", "Program"],
         pagination: {limit: 30},
         data: async () => {
-            var data = await fetch("/team/getAll", {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            }).then((response) => {
-                return response.json()
-            });
+            var data = <%- JSON.stringify(teams) %>;
             return data.map((e) => [e.school.name, e.sport.name, e.program.name]);
         },
         sort: true

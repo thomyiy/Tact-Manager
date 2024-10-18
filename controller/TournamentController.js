@@ -77,80 +77,109 @@ const pouleFactory = {
     }
 };
 
+function areAllMatchesFinished(matchs) {
+    return matchs.every(match => match.isFinished);
+}
+
+async function getTopTwoTeams(pool) {
+    return await Team.find({ pool: pool._id })
+        .sort({ points: -1 })
+        .limit(2);
+}
+
+function isSemiFinalOrFinal(pool) {
+    return pool.name.includes('Demi-Finale') || pool.name.includes('Finale');
+}
+
+function isSemiFinal(pool) {
+    return pool.name.includes('Demi-Finale');
+}
+
+async function findOrCreatePool(name, sport, program) {
+    return await Pool.findOne({ name, sport: sport._id, program: program._id }) || await Pool.create({
+        name,
+        sport: sport._id,
+        program: program._id
+    });
+}
+
+async function assignTeamToSemiFinal(pool, team, sport, program, teamIndex) {
+    let match = await Match.findOne({ pool: pool._id, $or: [{ team1: null }, { team2: null }] });
+
+    if (!match) {
+        match = await Match.create({
+            team1: teamIndex === 1 ? team._id : null,
+            team2: teamIndex === 0 ? team._id : null,
+            sport: sport._id,
+            pool: pool._id,
+            program: program._id
+        });
+    } else {
+        const fieldToUpdate = !match.team1 ? 'team1' : 'team2';
+        await Match.updateOne({ _id: match._id }, { $set: { [fieldToUpdate]: team._id } });
+    }
+
+    console.log(`${team.school.name} a été ajouté à la ${pool.name}.`);
+}
+
+async function updateTeamPools(ranking, pools) {
+    await Team.updateMany(
+        { _id: { $in: [ranking[0]._id, ranking[1]._id] } },
+        { $set: { pool: { $in: pools } } }
+    );
+}
+
+async function handleSemiFinalCreation(ranking, sport, program) {
+    console.log("Création des demi-finales");
+
+    const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
+    const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
+
+    await assignTeamToSemiFinal(semiFinalPool1, ranking[1], sport, program, 1);
+    await assignTeamToSemiFinal(semiFinalPool2, ranking[0], sport, program, 0);
+
+    await updateTeamPools(ranking, [semiFinalPool1._id, semiFinalPool2._id]);
+}
+
+async function updateFinalTeamPool(team, finalPool) {
+    await Team.updateOne({ _id: team._id }, { $set: { pool: finalPool._id } });
+}
+
+async function handleFinalCreation(bestTeam, sport, program, pool) {
+    console.log(`Vérification pour une finale après la demi-finale ${pool.name}`);
+
+    let finalPool = await findOrCreatePool('Finale', sport, program);
+
+    const finalMatch = await Match.findOne({ pool: finalPool._id, team2: null });
+
+    if (finalMatch) {
+        await Match.updateOne({ _id: finalMatch._id }, { $set: { team2: bestTeam._id } });
+        console.log(`L'équipe ${bestTeam.school.name} a été ajoutée à la finale.`);
+    } else {
+        await Match.create({
+            team1: bestTeam._id,
+            team2: null,
+            sport: sport._id,
+            pool: finalPool._id,
+            program: program._id
+        });
+        console.log(`Finale créée avec ${bestTeam.school.name}, en attente du vainqueur de l'autre demi-finale.`);
+    }
+
+    await updateFinalTeamPool(bestTeam, finalPool);
+}
+
 async function checkPoolWinner(pool, sport, program) {
     try {
         const matchs = await Match.find({ pool: pool._id, sport: sport._id, program: program._id });
 
-        let allMatchsFinished = true;
-        for (const match of matchs) {
-            if (!match.isFinished) {
-                allMatchsFinished = false;
-                break;
-            }
-        }
+        if (areAllMatchesFinished(matchs)) {
+            const ranking = await getTopTwoTeams(pool);
 
-        if (allMatchsFinished) {
-            const ranking = await Team.find({ pool: pool._id })
-                .sort({ points: -1 })
-                .limit(2);
-
-            if (!pool.name.includes('Demi-Finale') && !pool.name.includes('Finale')) {
-                const semiFinalCount = await Pool.countDocuments({ name: { $regex: /^Demi-Finale/ } });
-                const semiFinalName = `Demi-Finale ${semiFinalCount + 1}`;
-
-                const semiFinalPool = await Pool.create({ name: semiFinalName, sport: sport._id, program: program._id });
-
-                await Match.create({
-                    team1: ranking[0]._id,
-                    team2: ranking[1]._id,
-                    sport: sport._id,
-                    pool: semiFinalPool._id,
-                    program: program._id
-                });
-
-                await Team.updateMany(
-                    { _id: { $in: [ranking[0]._id, ranking[1]._id] } },
-                    { $set: { pool: semiFinalPool._id } }
-                );
-
-                console.log(`${ranking[0].school.name} et ${ranking[1].school.name} passent en ${semiFinalPool.name}.`);
-            }
-
-            else if (pool.name.includes('Demi-Finale')) {
-                const bestTeam = ranking[0];
-
-                let finalPool = await Pool.findOne({ name: 'Finale', sport: sport._id, program: program._id });
-
-                if (finalPool) {
-                    const finalMatch = await Match.findOne({ pool: finalPool._id, team2: null });
-                    if (finalMatch) {
-                        await Match.updateOne(
-                            { _id: finalMatch._id },
-                            { $set: { team2: bestTeam._id } }
-                        );
-
-                        console.log(`L'équipe ${bestTeam.school.name} a été en finale.`);
-                    } else {
-                        console.error("Impossible de trouver un match de finale sans deuxième équipe.");
-                    }
-                } else {
-                    finalPool = await Pool.create({ name: 'Finale', sport: sport._id, program: program._id });
-
-                    await Match.create({
-                        team1: bestTeam._id,
-                        team2: null,
-                        sport: sport._id,
-                        pool: finalPool._id,
-                        program: program._id
-                    });
-
-                    console.log(`Finale crée avec ${bestTeam.school.name} en attente de l'autre demi-finale.`);
-                }
-
-                await Team.updateOne(
-                    { _id: bestTeam._id },
-                    { $set: { pool: finalPool._id } }
-                );
+            if (!isSemiFinalOrFinal(pool)) {
+                await handleSemiFinalCreation(ranking, sport, program);
+            } else if (isSemiFinal(pool)) {
+                await handleFinalCreation(ranking[0], sport, program, pool);
             }
         }
     } catch (err) {
@@ -294,7 +323,6 @@ const update = async (req, res) => {
             },
             { new: true }
         );
-        console.log(tournament);
         // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
         checkPoolWinner(pool, sport, program);
         return res.status(200).json(tournament);

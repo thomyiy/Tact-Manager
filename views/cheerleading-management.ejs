@@ -101,9 +101,6 @@
 
 <%- contentFor('FooterJs') %>
 
-
-
-
 <!-- gridjs js -->
 <script src="/assets/libs/gridjs/gridjs.umd.js"></script>
 
@@ -118,15 +115,6 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 <script>
-    var grid = new gridjs.Grid({
-        columns: ["Nom"],
-        pagination: {limit: 30},
-        data: async () => {
-            var data = <%- JSON.stringify(schools) %>;
 
-            return data.map((e) => [e.name]);
-        },
-        sort: true
-    }).render(document.getElementById("table-pagination"));
 </script>
 

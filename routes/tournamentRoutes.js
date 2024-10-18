@@ -2,6 +2,8 @@ const express = require('express');
 const TournamentController = require("../controller/TournamentController");
 const Match = require("../models/MatchModel");
 const Sport = require("../models/SportModel");
+const Teams = require("../models/TeamModel");
+const School = require("../models/SchoolModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
 const route = express.Router();
@@ -17,8 +19,9 @@ module.exports = function (route) {
                 firstname: req.session.firstname,
                 lastname: req.session.lastname,
             }
-
-            res.render('tournament-view', {user: user, sport: sport, program: program});
+            const schools = await School.find({});
+            const teams = await Teams.find({});
+            res.render('tournament-view', {user: user, sport: sport, program: program, schools: schools, teams: teams});
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
@@ -34,9 +37,10 @@ module.exports = function (route) {
             //     firstname: req.session.firstname,
             //     lastname: req.session.lastname,
             // }
-
+            const schools = await School.find({});
+            const teams = await Teams.find({});
             // res.render('tournament-management', {user: user, sport: sport, program: program});
-            res.render('tournament-management');
+            res.render('tournament-management', {schools: schools, teams: teams});
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });

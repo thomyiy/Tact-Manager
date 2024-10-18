@@ -49,16 +49,11 @@ module.exports = function (route) {
     })
 
     route.get('/', async (req, res, next) => {
-        const user = {
-            role: req.session.role,
-            firstname: req.session.firstname,
-            lastname: req.session.lastname,
-        }
-        res.render('index', {user: user})
+        res.redirect('/dashboard');
     })
 
     route.get('/index', (req, res, next) => {
-        res.redirect('/');
+        res.redirect('/dashboard');
     })
 
     route.get('/layouts-vertical', (req, res, next) => {

@@ -7,11 +7,13 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const pageRouter = require('./routes/routes');
+const dashboardRouter = require('./routes/dashboardRoutes');
 const userRouter = require('./routes/userRoutes');
 const teamRouter = require('./routes/teamRoutes');
 const sportRouter = require('./routes/sportRoutes');
 const schoolRouter = require('./routes/schoolRoutes');
 const tournamentRouter = require('./routes/tournamentRoutes');
+const cheerleadingRouter = require('./routes/cheerleadingRoutes');
 
 const Sport = require('./models/SportModel');
 const User = require('./models/UserModel');
@@ -150,11 +152,13 @@ app.use((err, req, res, next) => {
 
 // Define All Route
 pageRouter(app);
+dashboardRouter(app);
 userRouter(app);
 teamRouter(app);
 sportRouter(app);
 schoolRouter(app);
 tournamentRouter(app);
+cheerleadingRouter(app);
 app.all('*', function (req, res) {
     res.locals = {title: 'Error 404'};
     res.render('auth-404', {layout: "layout/layout"});
