@@ -23,11 +23,19 @@
       </div>
     </div>
 
-    <div class="d-flex">
-      <div class="dropdown d-inline-block d-lg-none">
-      </div>
+    <button type="button" class="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn">
+      <i class="fa fa-fw fa-bars"></i>
+    </button>
 
+    <div class="d-flex">
+
+      <div class="dropdown d-none d-sm-inline-block">
+        <button type="button" class="btn header-item light-dark" id="mode-setting-btn">
+          <% if(global.user.role == "Admin") { %>Admin<%} %><% if(global.user.role == "Arbitrator") { %>Arbitre<%} %><% if(global.user.role == "User") { %>Utilisateur<%} %> : <%=global.user.firstname%> <%=global.user.lastname%>
+        </button>
+      </div>
       <div class="dropdown d-inline-block">
+
         <button type="button" class="btn header-item user text-start d-flex align-items-center" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <img class="rounded-circle header-profile-user" src="/assets/images/users/avatar-1.jpg" alt="Header Avatar">
         </button>

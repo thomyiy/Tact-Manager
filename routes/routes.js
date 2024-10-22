@@ -13,6 +13,7 @@ module.exports = function (route) {
     route.use((req, res, next) => {
         var uemail = req.session.useremail;
         const allowUrls = ["/login", "/auth-validate", "/register", "/signup", "/forgotpassword", "/sendforgotpasswordlink", "/resetpassword", "/error", "/changepassword"];
+
         if (allowUrls.indexOf(req.path) !== -1) {
             if (uemail != null && uemail != undefined) {
                 return res.redirect('/');

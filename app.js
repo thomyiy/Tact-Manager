@@ -14,6 +14,7 @@ const sportRouter = require('./routes/sportRoutes');
 const schoolRouter = require('./routes/schoolRoutes');
 const tournamentRouter = require('./routes/tournamentRoutes');
 const cheerleadingRouter = require('./routes/cheerleadingRoutes');
+const ambianceRouter = require('./routes/ambianceRoutes');
 
 const Sport = require('./models/SportModel');
 const User = require('./models/UserModel');
@@ -51,10 +52,14 @@ app.use(express.static(__dirname + '/public'));
 const DB = process.env.DATABASE_LOCAL;
 mongoose.connect(DB, {
     useNewUrlParser: true
- }).then(async (con) => {
+}).then(async (con) => {
     console.log("DB connection successfully..!")
     // creer admin
-    if (process.env.ADMIN_NAME && process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+    if (process.env.ADMIN_NAME
+        && process.env.ADMIN_EMAIL
+        && process.env.ADMIN_PASSWORD
+        && process.env.ADMIN_FIRSTNAME
+        && process.env.ADMIN_LASTNAME) {
         var user = await User.count({email: process.env.ADMIN_EMAIL})
         if (user === 0)
             try {
@@ -62,17 +67,17 @@ mongoose.connect(DB, {
                     name: process.env.ADMIN_NAME,
                     email: process.env.ADMIN_EMAIL,
                     password: process.env.ADMIN_PASSWORD,
+                    firstname: process.env.ADMIN_FIRSTNAME,
+                    lastname: process.env.ADMIN_LASTNAME,
                     role: "Admin"
                 };
- 
- 
+
                 User.create(formdata, function (err, res) {
                     if (err)
                         console.log(err);
                     console.log("Admin user created")
                 });
- 
- 
+
             } catch (error) {
                 console.error(error.message);
             }
@@ -83,13 +88,13 @@ mongoose.connect(DB, {
     const sportTable = ["Football", "Basketball", "Handball"];
 
     for (let i = 0; i < sportTable.length; i++) {
-        var sport = await Sport.count({ name: sportTable[i] });
-        if (sport == 0) {
+        var sport = await Sport.count({name: sportTable[i]});
+        if (sport === 0) {
             try {
                 var formdata = {
                     name: sportTable[i]
                 };
- 
+
                 Sport.create(formdata, function (err, res) {
                     console.log("Sport ", sportTable[i], " created.")
                 });
@@ -105,13 +110,13 @@ mongoose.connect(DB, {
     const programTable = ["Masculin", "Féminin"];
 
     for (let i = 0; i < programTable.length; i++) {
-        var program = await Program.count({ name: programTable[i] });
-        if (program == 0) {
+        var program = await Program.count({name: programTable[i]});
+        if (program === 0) {
             try {
                 var formdata = {
                     name: programTable[i]
                 };
-    
+
                 Program.create(formdata, function (err, res) {
                     console.log("Program ", programTable[i], " created.")
                 });
@@ -123,8 +128,7 @@ mongoose.connect(DB, {
             console.log("Program ", programTable[i], " already exists.")
         }
     }
-    
- });
+});
 
 // for i18 usr
 app.use(i18n({
@@ -159,6 +163,7 @@ sportRouter(app);
 schoolRouter(app);
 tournamentRouter(app);
 cheerleadingRouter(app);
+ambianceRouter(app);
 app.all('*', function (req, res) {
     res.locals = {title: 'Error 404'};
     res.render('auth-404', {layout: "layout/layout"});

@@ -122,7 +122,7 @@
         columns: ["Nom"],
         pagination: {limit: 30},
         data: async () => {
-            var data = <%- JSON.stringify(schools) %>;
+            var data = <%- JSON.stringify(global.schools) %>;
 
             return data.map((e) => [e.name]);
         },

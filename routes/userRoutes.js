@@ -3,17 +3,15 @@ const UserController = require("../controller/UserController");
 const User = require("../models/UserModel");
 const School = require("../models/SchoolModel");
 const route = express.Router();
+const utils = require("../controller/Utils")
 
 module.exports = function (route) {
     route.get('/user/management', async (req, res, next) => {
-        const user = {
-            role: req.session.role,
-            firstname: req.session.firstname,
-            lastname: req.session.lastname,
-        }
+
         const users = await User.find({})
-        const schools = await School.find({});
-        res.render('user-management', {user: user, users: users, schools: schools})
+        const  global = await utils.getGlobal(req)
+        console.log(global)
+        res.render('user-management', {global :global, users: users})
     })
 
     route.get('/user/getAll', async (req, res, next) => {

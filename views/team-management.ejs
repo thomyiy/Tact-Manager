@@ -123,7 +123,7 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 <script>
-    var schools = <%- JSON.stringify(schools) %>;
+    var schools = <%- JSON.stringify(global.schools) %>;
     let selectTag = document.getElementById('school');
     schools.map((d) => {
         let opt = document.createElement("option");
@@ -134,12 +134,12 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         let selectTag = document.getElementById('program');
-        
+
         const options = [
             { value: 'Masculin', label: 'Masculin' },
             { value: 'Féminin', label: 'Féminin' }
         ];
-        
+
         options.forEach((option) => {
             let opt = document.createElement("option");
             opt.value = option.value;

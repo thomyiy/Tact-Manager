@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const arbitrator = require('./ArbitratorModel');
 
 const MatchSchema = new mongoose.Schema({
     arbitrator: {

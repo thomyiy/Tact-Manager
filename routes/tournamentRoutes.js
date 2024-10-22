@@ -7,6 +7,7 @@ const School = require("../models/SchoolModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
 const route = express.Router();
+const utils = require("../controller/Utils")
 
 module.exports = function (route) {
     // route pour les tournois de foot, hand, basket
@@ -14,14 +15,11 @@ module.exports = function (route) {
         try {
             const sport = req.params.sport;
             const program = req.params.program;
-            const user = {
-                role: req.session.role,
-                firstname: req.session.firstname,
-                lastname: req.session.lastname,
-            }
-            const schools = await School.find({});
+
             const teams = await Teams.find({});
-            res.render('tournament-view', {user: user, sport: sport, program: program, schools: schools, teams: teams});
+
+            const  global = await utils.getGlobal(req)
+            res.render('tournament-view', {global: global, sport: sport, program: program, teams: teams});
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
@@ -40,7 +38,9 @@ module.exports = function (route) {
             const schools = await School.find({});
             const teams = await Teams.find({});
             // res.render('tournament-management', {user: user, sport: sport, program: program});
-            res.render('tournament-management', {schools: schools, teams: teams});
+            const  global = await utils.getGlobal(req)
+
+            res.render('tournament-management', {global: global, teams: teams});
         } catch (err) {
             console.error(err);
             return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
@@ -51,7 +51,7 @@ module.exports = function (route) {
         try{
             const program = await Program.findOne({ name: req.params.program });
             const sport = await Sport.findOne({ name: req.params.sport  });
-    
+
             const matches = await Match.find({ sport: sport._id, program: program._id })
             .populate({
                 path: 'team1 team2 winnerTeam',
@@ -69,7 +69,7 @@ module.exports = function (route) {
         try {
             const sportName = req.params.sport;
             const programParam = req.params.program;
-    
+
             const sport = await Sport.findOne({ name: sportName });
             const pool = await Pool.findOne({ name: req.params.name, sport: sport._id });
             const program = await Program.findOne({ name: programParam });
@@ -90,9 +90,9 @@ module.exports = function (route) {
     });
 
     route.post('/tournament/create/:program',TournamentController.create)
-    
+
     route.post('/tournament/updateMatch/:sport/:program', TournamentController.update)
-    
+
     route.post('/tournament/clearMatch/:sport/:program', TournamentController.clear)
 
     route.delete('/tournament/delete',TournamentController.deleteTournament)

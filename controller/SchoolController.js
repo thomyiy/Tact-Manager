@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const path = require("path");
 const {v4: uuidv4} = require('uuid');
 const School = require("../models/SchoolModel");
+const CheerleadingScore = require("../models/CheerleadingScoreModel");
 const FILE_STORAGE_PATH = process.env.FILE_STORAGE_PATH
 
 const create = async (req, res) => {

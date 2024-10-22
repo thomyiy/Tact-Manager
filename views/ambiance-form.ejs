@@ -1,0 +1,205 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Ambiance Score : <%= sessionSchool.name %></h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Ambiance Score : <%= sessionSchool.name %></li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Ambiance Score : <%= sessionSchool.name %></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <h5>Animation</h5>
+                                <div id="table-animation"></div>
+                                <h5>Communauté</h5>
+                                <div id="table-community"></div>
+                                <h5>Comportement</h5>
+                                <div id="table-comportment"></div>
+                                <h5>Création</h5>
+                                <div id="table-creation"></div>
+                                <h5>Thème</h5>
+                                <div id="table-theme"></div>
+                                <h5>Tribune</h5>
+                                <div id="table-tribune"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+
+</script>
+
+<script>
+    var columns = ["Critère", "Note 1-80"];
+    var data = <%- JSON.stringify(ambianceScore) %>;
+
+    function onInputChange(input, key) {
+        console.log("onInputChange")
+        if (input.value > 80) input.value = 80
+        if (input.value < 1) input.value = 1
+        data[key] = input.value
+        fetch("/ambiance/update", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                console.log(response.status)
+            });
+    }
+
+    function buildInput(key, value) {
+        return gridjs.html(`<input type="number" onchange="onInputChange(this,'${key}')" id="name" name="name" value="${value}" min="1" max="80" />`)
+    }
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Animations auditives",  buildInput("auditoryAnimations", data.auditoryAnimations)],
+                ["Animations visuelles pendant les chants", buildInput("visualAnimationsDuringTheSongs",data.visualAnimationsDuringTheSongs)],
+                ["Maestro", buildInput("maestro",data.maestro)],
+                ["Intéraction avec les supporters", buildInput("interactionWithFans",data.interactionWithFans)],
+                ["Tour des sportifs", buildInput("sportsmansTour",data.sportsmansTour)],
+                ["Arrivée avec toutes la délégation", buildInput("arrivalWithAllTheDelegation",data.arrivalWithAllTheDelegation)],
+                ["Organisation du cortège", buildInput("organizationOfTheProcession",data.organizationOfTheProcession)],
+                ["Pyrotechnie", buildInput("pyrotechnics",data.pyrotechnics)]]
+        },
+    }).render(document.getElementById("table-animation"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Incription et présence du doyen", buildInput("registrationAndPresenceOfTheDean",data.registrationAndPresenceOfTheDean)],
+                ["Inscription et présence de 5 alumni", buildInput("registrationAndPresenceOf5Alumni",data.registrationAndPresenceOf5Alumni)],
+                ["Ramener le maximum de supporter le jour J - 1ère place sur 8", buildInput("bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8",data.bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8)],
+                ["La délégation a inscrite 10 personnes dans la billetterie supporter", buildInput("theDelegationRegistered10PeopleInTheSupporterTicketOffice",data.theDelegationRegistered10PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 20 personnes dans la billetterie supporter", buildInput("theDelegationRegistered20PeopleInTheSupporterTicketOffice",data.theDelegationRegistered20PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 40 personnes dans la billetterie supporter", buildInput("theDelegationRegistered40PeopleInTheSupporterTicketOffice",data.theDelegationRegistered40PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 80 personnes dans la billetterie supporter", buildInput("theDelegationRegistered80PeopleInTheSupporterTicketOffice",data.theDelegationRegistered80PeopleInTheSupporterTicketOffice)],
+                ["Première délégation a inscrire 100 personnes dans la billeterie supporter", buildInput("firstDelegationToRegister100PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister100PeopleInTheSupporterTicketOffice)],
+                ["Première délégation a inscrire 200 personnes dans la billeterie supporter", buildInput("firstDelegationToRegister200PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister200PeopleInTheSupporterTicketOffice)]]
+        },
+    }).render(document.getElementById("table-community"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Attitude sportive et bon enfant", buildInput("sportyAndGoodNaturedAttitude",data.sportyAndGoodNaturedAttitude)],
+                ["Respect total et encouragement mutuel", buildInput("totalRespectAndMutualEncouragement",data.totalRespectAndMutualEncouragement)],
+                ["Respect total des temps impartis", buildInput("totalRespectOfTheAllottedTimes",data.totalRespectOfTheAllottedTimes)],
+                ["Aucun décher, tribune impeccable", buildInput("noDropImpeccableStand",data.noDropImpeccableStand)]]
+        },
+    }).render(document.getElementById("table-comportment"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Drapeaux Diversité", buildInput("flagDiversity",data.flagDiversity)],
+                ["Nombre de drapeaux", buildInput("flagNumberOfFlags",data.flagNumberOfFlags)],
+                ["Drapeaux Qualité visuelle", buildInput("flagVisualQuality",data.flagVisualQuality)],
+                ["Drapeaux Utilisation", buildInput("flagUse",data.flagUse)],
+                ["Stand Originalité", buildInput("standOriginality",data.standOriginality)],
+                ["Stand Qualité de construction", buildInput("standBuildQuality",data.standBuildQuality)],
+                ["Stand Qualté visuelle", buildInput("standVisualQuality",data.standVisualQuality)],
+                ["Tifos Déploiement/coordination", buildInput("tifosDeploymentCoordination",data.tifosDeploymentCoordination)],
+                ["Tifos Concept très original", buildInput("tifosVeryOriginalConcept",data.tifosVeryOriginalConcept)],
+                ["Tifos Impressionnant et de haute qualité", buildInput("tifosImpressiveAndHighQuality",data.tifosImpressiveAndHighQuality)]]
+        },
+    }).render(document.getElementById("table-creation"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Chant parfaitement en phase",buildInput("songsRelatedToTheTheme", data.songsRelatedToTheTheme)],
+                ["Costumes et maquillage", buildInput("costumesAndMakeup",data.costumesAndMakeup)],
+                ["Stand parfaitement décoré et en phase", buildInput("perfectlyDecoratedAndInTuneStand",data.perfectlyDecoratedAndInTuneStand)],
+                ["Répartition visuelle forte et cohérente", buildInput("strongAndConsistentVisualDistribution",data.strongAndConsistentVisualDistribution)]]
+        },
+    }).render(document.getElementById("table-theme"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Chants Diversité",buildInput("tribuneSongsDiversity", data.tribuneSongsDiversity)],
+            ["Chants Endurance", buildInput("tribuneSongsEndurance",data.tribuneSongsEndurance)],
+            ["Qualité des chants", buildInput("tribuneQualityOfSongs",data.tribuneQualityOfSongs)],
+                ["Fanfare Coordination avec supporters", buildInput("tribuneFanfareCoordinationWithSupporters",data.tribuneFanfareCoordinationWithSupporters)],
+                ["Fanfare Instruments", buildInput("tribuneFanfareInstruments",data.tribuneFanfareInstruments)],
+                ["Fanfare Rythmique", buildInput("tribuneFanfareRhythmic",data.tribuneFanfareRhythmic)],
+                ["Fanfare Ambiance électrique joyeuse", buildInput("tribuneFervorJoyfulElectricAtmosphere",data.tribuneFervorJoyfulElectricAtmosphere)],
+                ["Ferveur Danse/choré/animation", buildInput("tribuneFervorDanceChoreEntertainment",data.tribuneFervorDanceChoreEntertainment)]]
+        },
+    }).render(document.getElementById("table-tribune"));
+    
+
+</script>
+
+<script src="/assets/js/pages/fontawesome.init.js"></script>

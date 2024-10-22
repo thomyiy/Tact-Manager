@@ -1,0 +1,291 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Ambiance Score : <%= sessionSchool.name %></h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Ambiance Score : <%= sessionSchool.name %></li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Ambiance Score : <%= sessionSchool.name %></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <h5>Animation</h5>
+                                <div id="table-animation"></div>
+                                <h5>Communauté</h5>
+                                <div id="table-community"></div>
+                                <h5>Comportement</h5>
+                                <div id="table-comportment"></div>
+                                <h5>Création</h5>
+                                <div id="table-creation"></div>
+                                <h5>Thème</h5>
+                                <div id="table-theme"></div>
+                                <h5>Tribune</h5>
+                                <div id="table-tribune"></div>
+
+                                <h5>Arbitre</h5>
+                                <div id="table-arbitrator"></div>
+
+                                <button type="button" class="btn btn-primary waves-effect waves-light"
+                                        data-bs-toggle="modal" data-bs-target="#myModal">Ajouter un arbitre
+                                </button>
+
+                                <!-- sample modal content -->
+                                <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel"
+                                     aria-hidden="true" data-bs-scroll="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="myModalLabel">Ajouter un arbitre</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/ambiance/affectarbitrator" method="post"
+                                                      class="needs-validation" novalidate>
+                                                    <div class="mb-3 row">
+                                                        <label class="col-md-2 col-form-label">Arbitre</label>
+                                                        <div class="col-md-10">
+                                                            <select class="form-select" name="arbitratorId">
+                                                                <% for(var i = 0; i < arbitrators.length; i++) { %>
+                                                                    <option value="<%= arbitrators[i]._id %>"><%= arbitrators[i].firstname %> <%= arbitrators[i].lastname %>
+                                                                        >
+                                                                    </option>
+                                                                <% } %>
+                                                            </select>
+                                                            <input type="hidden" id="schoolId" name="schoolId"
+                                                                   value="<%= sessionSchool._id %>"/>
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn btn-primary" type="submit">Submit form</button>
+                                                </form>
+                                            </div><!-- /.modal-content -->
+                                        </div><!-- /.modal-dialog -->
+                                    </div><!-- /.modal -->
+                                </div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+
+</script>
+
+<script>
+    var columns = ["Critère", "Note 1-80"];
+    var data = <%- JSON.stringify(ambianceScore) %>;
+
+    /*arrivalWithAllTheDelegation
+    auditoryAnimations
+    bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8
+    costumesAndMakeup
+    firstDelegationToRegister100PeopleInTheSupporterTicketOffice
+    firstDelegationToRegister200PeopleInTheSupporterTicketOffice
+    flagDiversity
+    flagNumberOfFlags
+    flagUse
+    flagVisualQuality
+    interactionWithFans
+    maestro
+    noDropImpeccableStand
+    organizationOfTheProcession
+    perfectlyDecoratedAndInTuneStand
+    pyrotechnics
+    registrationAndPresenceOf5Alumni
+    registrationAndPresenceOfTheDean
+    songsRelatedToTheTheme
+    sportsmansTour
+    sportyAndGoodNaturedAttitude
+    standBuildQuality
+    standOriginality
+    standVisualQuality
+    strongAndConsistentVisualDistribution
+    theDelegationRegistered10PeopleInTheSupporterTicketOffice
+    theDelegationRegistered20PeopleInTheSupporterTicketOffice
+    theDelegationRegistered40PeopleInTheSupporterTicketOffice
+    theDelegationRegistered80PeopleInTheSupporterTicketOffice
+    tifosDeploymentCoordination
+    tifosImpressiveAndHighQuality
+    tifosVeryOriginalConcept
+    totalRespectAndMutualEncouragement
+    totalRespectOfTheAllottedTimes
+    tribuneFanfareCoordinationWithSupporters
+    tribuneFanfareInstruments
+    tribuneFanfareRhythmic
+    tribuneFervorDanceChoreEntertainment
+    tribuneFervorJoyfulElectricAtmosphere
+    tribuneQualityOfSongs
+    tribuneSongsDiversity
+    tribuneSongsEndurance
+    visualAnimationsDuringTheSongs*/
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Animations auditives", data.auditoryAnimations],
+                ["Animations visuelles pendant les chants", data.visualAnimationsDuringTheSongs],
+                ["Maestro", data.maestro],
+                ["Intéraction avec les supporters", data.interactionWithFans],
+                ["Tour des sportifs", data.sportsmansTour],
+                ["Arrivée avec toutes la délégation", data.arrivalWithAllTheDelegation],
+                ["Organisation du cortège", data.organizationOfTheProcession],
+                ["Pyrotechnie", data.pyrotechnics]]
+        },
+    }).render(document.getElementById("table-animation"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Incription et présence du doyen", data.registrationAndPresenceOfTheDean],
+                ["Inscription et présence de 5 alumni", data.registrationAndPresenceOf5Alumni],
+                ["Ramener le maximum de supporter le jour J - 1ère place sur 8", data.bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8],
+                ["La délégation a inscrite 10 personnes dans la billetterie supporter", data.theDelegationRegistered10PeopleInTheSupporterTicketOffice],
+                ["La délégation a inscrite 20 personnes dans la billetterie supporter", data.theDelegationRegistered20PeopleInTheSupporterTicketOffice],
+                ["La délégation a inscrite 40 personnes dans la billetterie supporter", data.theDelegationRegistered40PeopleInTheSupporterTicketOffice],
+                ["La délégation a inscrite 80 personnes dans la billetterie supporter", data.theDelegationRegistered80PeopleInTheSupporterTicketOffice],
+                ["Première délégation a inscrire 100 personnes dans la billeterie supporter", data.firstDelegationToRegister100PeopleInTheSupporterTicketOffice],
+                ["Première délégation a inscrire 200 personnes dans la billeterie supporter", data.firstDelegationToRegister200PeopleInTheSupporterTicketOffice]]
+        },
+    }).render(document.getElementById("table-community"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Attitude sportive et bon enfant", data.sportyAndGoodNaturedAttitude],
+                ["Respect total et encouragement mutuel", data.totalRespectAndMutualEncouragement],
+                ["Respect total des temps impartis", data.totalRespectOfTheAllottedTimes],
+                ["Aucun décher, tribune impeccable", data.noDropImpeccableStand]]
+        },
+    }).render(document.getElementById("table-comportment"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Drapeaux Diversité", data.flagDiversity],
+                ["Nombre de drapeaux", data.flagNumberOfFlags],
+                ["Drapeaux Qualité visuelle", data.flagVisualQuality],
+                ["Drapeaux Utilisation", data.flagUse],
+                ["Stand Originalité", data.standOriginality],
+                ["Stand Qualité de construction", data.standBuildQuality],
+                ["Stand Qualté visuelle", data.standVisualQuality],
+                ["Tifos Déploiement/coordination", data.tifosDeploymentCoordination],
+                ["Tifos Concept très original", data.tifosVeryOriginalConcept],
+                ["Tifos Impressionnant et de haute qualité", data.tifosImpressiveAndHighQuality]]
+        },
+    }).render(document.getElementById("table-creation"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Chant parfaitement en phase", data.songsRelatedToTheTheme],
+                ["Costumes et maquillage", data.costumesAndMakeup],
+                ["Stand parfaitement décoré et en phase", data.perfectlyDecoratedAndInTuneStand],
+                ["Répartition visuelle forte et cohérente", data.strongAndConsistentVisualDistribution]]
+        },
+    }).render(document.getElementById("table-theme"));
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Chants Diversité", data.tribuneSongsDiversity],
+            ["Chants Endurance", data.tribuneSongsEndurance],
+            ["Qualité des chants", data.tribuneQualityOfSongs],
+                ["Fanfare Coordination avec supporters", data.tribuneFanfareCoordinationWithSupporters],
+                ["Fanfare Instruments", data.tribuneFanfareInstruments],
+                ["Fanfare Rythmique", data.tribuneFanfareRhythmic],
+                ["Fanfare Ambiance électrique joyeuse", data.tribuneFervorJoyfulElectricAtmosphere],
+                ["Ferveur Danse/choré/animation", data.tribuneFervorDanceChoreEntertainment]]
+        },
+    }).render(document.getElementById("table-tribune"));
+
+    function removeArbitrator(id) {
+        console.log("removeArbitrator : " + id)
+        fetch("/ambiance/removearbitrator", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({schoolId: "<%= sessionSchool._id %>", arbitratorId: id})
+        })
+            .then((response) => {
+                console.log(response.status)
+                if (response.status === 200)
+                    window.location.replace("/ambiance/" + "<%= sessionSchool.name %>");
+            });
+    }
+
+    new gridjs.Grid({
+        columns: ["Nom", "Prenom", "Action"],
+        data: () => {
+            var data = <%- JSON.stringify(affectedArbitrators) %>;
+            return data.map((e) => [e.firstname, e.lastname, gridjs.html(`<button class="btn btn-light btn-sm dropdown-toggle" type="button" onclick="removeArbitrator('${e._id}')" aria-expanded="false"><i class="fas fa-backspace"></i></button>`)]);
+        },
+    }).render(document.getElementById("table-arbitrator"));
+</script>
+
+<script src="/assets/js/pages/fontawesome.init.js"></script>

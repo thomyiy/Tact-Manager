@@ -1,3 +1,4 @@
+
 <%- contentFor('HeaderCss') %>
 <%- include("partials/title-meta", {"title": "Accueil"}) %>
 
@@ -42,7 +43,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div>
-                                <h5>Utilisateurs</h5>
+                                <h5><%=user.isCheerleadingArbitrator%></h5>
                             </div>
                         </div>
                     </div>
@@ -115,25 +116,25 @@
 
                                             <button class="btn btn-primary" type="submit">Submit form</button>
                                         </form>
-                                </div><!-- /.modal-content -->
-                            </div><!-- /.modal-dialog -->
-                        </div><!-- /.modal -->
-                    </div> <!-- end preview-->
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </div> <!-- end preview-->
 
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                            </div><!-- end card header -->
-                            <div class="card-body">
-                                <div id="table-pagination"></div>
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-header">
+                                </div><!-- end card header -->
+                                <div class="card-body">
+                                    <div id="table-pagination"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
+                        <!-- end col -->
                     </div>
-                    <!-- end col -->
-                </div>
-                <!-- end row -->
+                    <!-- end row -->
                 </div>
             </div>
         </div>
@@ -159,25 +160,6 @@
 <!-- datepicker js -->
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
-<script>
-    var grid = new gridjs.Grid({
-        columns: ["Nom", "Email", "Role"],
-        pagination: {limit: 30},
-        data: async () => {
-            var data = <%- JSON.stringify(users) %>;
-            // var data = await fetch("/user/getAll", {
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'application/json'
-            //     },
-            // })
-            // .then((response) => {
-            //     return response.json()
-            // });
 
-            return data.map((e) => [e.lastname+" "+e.firstname, e.email,  e.role]);
-        },
-        sort: true
-    }).render(document.getElementById("table-pagination"));
-</script>
+
 

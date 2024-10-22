@@ -7,17 +7,14 @@ const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
 const { get } = require('browser-sync');
 const route = express.Router();
+const utils = require("../controller/Utils")
 
 module.exports = function (route) {
     route.get('/team/management', async (req, res, next) => {
-        const user = {
-            role: req.session.role,
-            firstname: req.session.firstname,
-            lastname: req.session.lastname,
-        }
+
         const teams = await Team.find({}).populate('school sport program');
-        const schools = await School.find({});
-        res.render('team-management', {user: user, teams: teams, schools: schools})
+        const  global = await utils.getGlobal(req)
+        res.render('team-management', {global: global, teams: teams})
     })
 
     route.get('/team/getAll', async (req, res, next) => {
@@ -33,7 +30,7 @@ module.exports = function (route) {
     route.get('/team/:sport', async (req, res, next) => {
         try {
             const sportName = req.params.sport;
-            const sport = await Sport.findOne({ name: sportName });            
+            const sport = await Sport.findOne({ name: sportName });
             const teams = await Team.find({ sport: sport._id }).populate('school sport');
             res.send(teams);
         } catch (error) {
@@ -51,7 +48,7 @@ module.exports = function (route) {
             if (pool) {
                 const teams = await Team.find({ sport: sport._id, pool: pool._id, program: program._id })
                 .populate('school sport pool');
-    
+
                 res.send(teams);
             }
         } catch (error) {
