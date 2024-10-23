@@ -100,7 +100,7 @@
 </script>
 
 <script>
-    var columns = ["Critère", "Note 1-80"];
+    var columns = ["Critère", "Note"];
     var data = <%- JSON.stringify(ambianceScore) %>;
 
     function onInputChange(input, key) {
@@ -128,77 +128,77 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Animations auditives",  buildInput("auditoryAnimations", data.auditoryAnimations)],
-                ["Animations visuelles pendant les chants", buildInput("visualAnimationsDuringTheSongs",data.visualAnimationsDuringTheSongs)],
-                ["Maestro", buildInput("maestro",data.maestro)],
-                ["Intéraction avec les supporters", buildInput("interactionWithFans",data.interactionWithFans)],
-                ["Tour des sportifs", buildInput("sportsmansTour",data.sportsmansTour)],
-                ["Arrivée avec toutes la délégation", buildInput("arrivalWithAllTheDelegation",data.arrivalWithAllTheDelegation)],
-                ["Organisation du cortège", buildInput("organizationOfTheProcession",data.organizationOfTheProcession)],
-                ["Pyrotechnie", buildInput("pyrotechnics",data.pyrotechnics)]]
+            return [["Animations auditives (5 pts)",  buildInput("auditoryAnimations", data.auditoryAnimations)],
+                ["Animations visuelles pendant les chants (5 pts)", buildInput("visualAnimationsDuringTheSongs",data.visualAnimationsDuringTheSongs)],
+                ["Maestro", buildInput("maestro (5 pts)",data.maestro)],
+                ["Intéraction avec les supporters (5 pts)", buildInput("interactionWithFans",data.interactionWithFans)],
+                ["Tour des sportifs (5 pts)", buildInput("sportsmansTour",data.sportsmansTour)],
+                ["Arrivée avec toutes la délégation (5 pts)", buildInput("arrivalWithAllTheDelegation",data.arrivalWithAllTheDelegation)],
+                ["Organisation du cortège (5 pts)", buildInput("organizationOfTheProcession",data.organizationOfTheProcession)],
+                ["Pyrotechnie (5 pts)", buildInput("pyrotechnics",data.pyrotechnics)]]
         },
     }).render(document.getElementById("table-animation"));
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Incription et présence du doyen", buildInput("registrationAndPresenceOfTheDean",data.registrationAndPresenceOfTheDean)],
-                ["Inscription et présence de 5 alumni", buildInput("registrationAndPresenceOf5Alumni",data.registrationAndPresenceOf5Alumni)],
-                ["Ramener le maximum de supporter le jour J - 1ère place sur 8", buildInput("bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8",data.bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8)],
-                ["La délégation a inscrite 10 personnes dans la billetterie supporter", buildInput("theDelegationRegistered10PeopleInTheSupporterTicketOffice",data.theDelegationRegistered10PeopleInTheSupporterTicketOffice)],
-                ["La délégation a inscrite 20 personnes dans la billetterie supporter", buildInput("theDelegationRegistered20PeopleInTheSupporterTicketOffice",data.theDelegationRegistered20PeopleInTheSupporterTicketOffice)],
-                ["La délégation a inscrite 40 personnes dans la billetterie supporter", buildInput("theDelegationRegistered40PeopleInTheSupporterTicketOffice",data.theDelegationRegistered40PeopleInTheSupporterTicketOffice)],
-                ["La délégation a inscrite 80 personnes dans la billetterie supporter", buildInput("theDelegationRegistered80PeopleInTheSupporterTicketOffice",data.theDelegationRegistered80PeopleInTheSupporterTicketOffice)],
-                ["Première délégation a inscrire 100 personnes dans la billeterie supporter", buildInput("firstDelegationToRegister100PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister100PeopleInTheSupporterTicketOffice)],
-                ["Première délégation a inscrire 200 personnes dans la billeterie supporter", buildInput("firstDelegationToRegister200PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister200PeopleInTheSupporterTicketOffice)]]
+            return [["Incription et présence du doyen (5 pts)", buildInput("registrationAndPresenceOfTheDean",data.registrationAndPresenceOfTheDean)],
+                ["Inscription et présence de 5 alumni (5 pts)", buildInput("registrationAndPresenceOf5Alumni",data.registrationAndPresenceOf5Alumni)],
+                ["Ramener le maximum de supporter le jour J - 1ère place sur 8 (8 pts)", buildInput("bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8",data.bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8)],
+                ["La délégation a inscrite 10 personnes dans la billetterie supporter (3 pts)", buildInput("theDelegationRegistered10PeopleInTheSupporterTicketOffice",data.theDelegationRegistered10PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 20 personnes dans la billetterie supporter  (6 pts)", buildInput("theDelegationRegistered20PeopleInTheSupporterTicketOffice",data.theDelegationRegistered20PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 40 personnes dans la billetterie supporter (10 pts)", buildInput("theDelegationRegistered40PeopleInTheSupporterTicketOffice",data.theDelegationRegistered40PeopleInTheSupporterTicketOffice)],
+                ["La délégation a inscrite 80 personnes dans la billetterie supporter (13 pts)", buildInput("theDelegationRegistered80PeopleInTheSupporterTicketOffice",data.theDelegationRegistered80PeopleInTheSupporterTicketOffice)],
+                ["Première délégation a inscrire 100 personnes dans la billeterie supporter (5 pts)", buildInput("firstDelegationToRegister100PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister100PeopleInTheSupporterTicketOffice)],
+                ["Première délégation a inscrire 200 personnes dans la billeterie supporter (5 pts)", buildInput("firstDelegationToRegister200PeopleInTheSupporterTicketOffice",data.firstDelegationToRegister200PeopleInTheSupporterTicketOffice)]]
         },
     }).render(document.getElementById("table-community"));
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Attitude sportive et bon enfant", buildInput("sportyAndGoodNaturedAttitude",data.sportyAndGoodNaturedAttitude)],
-                ["Respect total et encouragement mutuel", buildInput("totalRespectAndMutualEncouragement",data.totalRespectAndMutualEncouragement)],
-                ["Respect total des temps impartis", buildInput("totalRespectOfTheAllottedTimes",data.totalRespectOfTheAllottedTimes)],
-                ["Aucun décher, tribune impeccable", buildInput("noDropImpeccableStand",data.noDropImpeccableStand)]]
+            return [["Attitude sportive et bon enfant (5 pts)", buildInput("sportyAndGoodNaturedAttitude",data.sportyAndGoodNaturedAttitude)],
+                ["Respect total et encouragement mutuel (5 pts)", buildInput("totalRespectAndMutualEncouragement",data.totalRespectAndMutualEncouragement)],
+                ["Respect total des temps impartis (5 pts)", buildInput("totalRespectOfTheAllottedTimes",data.totalRespectOfTheAllottedTimes)],
+                ["Aucun décher, tribune impeccable (5 pts)", buildInput("noDropImpeccableStand",data.noDropImpeccableStand)]]
         },
     }).render(document.getElementById("table-comportment"));
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Drapeaux Diversité", buildInput("flagDiversity",data.flagDiversity)],
-                ["Nombre de drapeaux", buildInput("flagNumberOfFlags",data.flagNumberOfFlags)],
-                ["Drapeaux Qualité visuelle", buildInput("flagVisualQuality",data.flagVisualQuality)],
-                ["Drapeaux Utilisation", buildInput("flagUse",data.flagUse)],
-                ["Stand Originalité", buildInput("standOriginality",data.standOriginality)],
-                ["Stand Qualité de construction", buildInput("standBuildQuality",data.standBuildQuality)],
-                ["Stand Qualté visuelle", buildInput("standVisualQuality",data.standVisualQuality)],
-                ["Tifos Déploiement/coordination", buildInput("tifosDeploymentCoordination",data.tifosDeploymentCoordination)],
-                ["Tifos Concept très original", buildInput("tifosVeryOriginalConcept",data.tifosVeryOriginalConcept)],
-                ["Tifos Impressionnant et de haute qualité", buildInput("tifosImpressiveAndHighQuality",data.tifosImpressiveAndHighQuality)]]
+            return [["Drapeaux Diversité (9 pts)", buildInput("flagDiversity",data.flagDiversity)],
+                ["Nombre de drapeaux (9 pts)", buildInput("flagNumberOfFlags",data.flagNumberOfFlags)],
+                ["Drapeaux Qualité visuelle (9 pts)", buildInput("flagVisualQuality",data.flagVisualQuality)],
+                ["Drapeaux Utilisation (9 pts)", buildInput("flagUse",data.flagUse)],
+                ["Stand Originalité (9 pts)", buildInput("standOriginality",data.standOriginality)],
+                ["Stand Qualité de construction (9 pts)", buildInput("standBuildQuality",data.standBuildQuality)],
+                ["Stand Qualté visuelle (9 pts)", buildInput("standVisualQuality",data.standVisualQuality)],
+                ["Tifos Déploiement/coordination (9 pts)", buildInput("tifosDeploymentCoordination",data.tifosDeploymentCoordination)],
+                ["Tifos Concept très original  (9 pts)", buildInput("tifosVeryOriginalConcept",data.tifosVeryOriginalConcept)],
+                ["Tifos Impressionnant et de haute qualité  (9 pts)", buildInput("tifosImpressiveAndHighQuality",data.tifosImpressiveAndHighQuality)]]
         },
     }).render(document.getElementById("table-creation"));
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Chant parfaitement en phase",buildInput("songsRelatedToTheTheme", data.songsRelatedToTheTheme)],
-                ["Costumes et maquillage", buildInput("costumesAndMakeup",data.costumesAndMakeup)],
-                ["Stand parfaitement décoré et en phase", buildInput("perfectlyDecoratedAndInTuneStand",data.perfectlyDecoratedAndInTuneStand)],
-                ["Répartition visuelle forte et cohérente", buildInput("strongAndConsistentVisualDistribution",data.strongAndConsistentVisualDistribution)]]
+            return [["Chant parfaitement en phase (5 pts)",buildInput("songsRelatedToTheTheme", data.songsRelatedToTheTheme)],
+                ["Costumes et maquillage (5 pts)", buildInput("costumesAndMakeup",data.costumesAndMakeup)],
+                ["Stand parfaitement décoré et en phase (5 pts)", buildInput("perfectlyDecoratedAndInTuneStand",data.perfectlyDecoratedAndInTuneStand)],
+                ["Répartition visuelle forte et cohérente (5 pts)", buildInput("strongAndConsistentVisualDistribution",data.strongAndConsistentVisualDistribution)]]
         },
     }).render(document.getElementById("table-theme"));
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Chants Diversité",buildInput("tribuneSongsDiversity", data.tribuneSongsDiversity)],
-            ["Chants Endurance", buildInput("tribuneSongsEndurance",data.tribuneSongsEndurance)],
-            ["Qualité des chants", buildInput("tribuneQualityOfSongs",data.tribuneQualityOfSongs)],
-                ["Fanfare Coordination avec supporters", buildInput("tribuneFanfareCoordinationWithSupporters",data.tribuneFanfareCoordinationWithSupporters)],
-                ["Fanfare Instruments", buildInput("tribuneFanfareInstruments",data.tribuneFanfareInstruments)],
-                ["Fanfare Rythmique", buildInput("tribuneFanfareRhythmic",data.tribuneFanfareRhythmic)],
-                ["Fanfare Ambiance électrique joyeuse", buildInput("tribuneFervorJoyfulElectricAtmosphere",data.tribuneFervorJoyfulElectricAtmosphere)],
-                ["Ferveur Danse/choré/animation", buildInput("tribuneFervorDanceChoreEntertainment",data.tribuneFervorDanceChoreEntertainment)]]
+            return [["Chants Diversité (9 pts)",buildInput("tribuneSongsDiversity", data.tribuneSongsDiversity)],
+            ["Chants Endurance (9 pts)", buildInput("tribuneSongsEndurance",data.tribuneSongsEndurance)],
+            ["Qualité des chants (9 pts)", buildInput("tribuneQualityOfSongs",data.tribuneQualityOfSongs)],
+                ["Fanfare Coordination avec supporters (9 pts)", buildInput("tribuneFanfareCoordinationWithSupporters",data.tribuneFanfareCoordinationWithSupporters)],
+                ["Fanfare Instruments (9 pts)", buildInput("tribuneFanfareInstruments",data.tribuneFanfareInstruments)],
+                ["Fanfare Rythmique (9 pts)", buildInput("tribuneFanfareRhythmic",data.tribuneFanfareRhythmic)],
+                ["Fanfare Ambiance électrique joyeuse (9 pts)", buildInput("tribuneFervorJoyfulElectricAtmosphere",data.tribuneFervorJoyfulElectricAtmosphere)],
+                ["Ferveur Danse/choré/animation (9 pts)", buildInput("tribuneFervorDanceChoreEntertainment",data.tribuneFervorDanceChoreEntertainment)]]
         },
     }).render(document.getElementById("table-tribune"));
-    
+
 
 </script>
 
