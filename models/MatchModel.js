@@ -58,7 +58,7 @@ const MatchSchema = new mongoose.Schema({
     field: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "field",
-        required: true
+        // required: true
     },
     created_at: Date,
     passwordResetToken: String,

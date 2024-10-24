@@ -19,6 +19,7 @@ const ambianceRouter = require('./routes/ambianceRoutes');
 const Sport = require('./models/SportModel');
 const User = require('./models/UserModel');
 const Program = require('./models/ProgramModel');
+const Field = require('./models/FieldModel');
 
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
@@ -61,7 +62,7 @@ mongoose.connect(DB, {
         && process.env.ADMIN_FIRSTNAME
         && process.env.ADMIN_LASTNAME) {
         var user = await User.count({email: process.env.ADMIN_EMAIL})
-        if (user === 0)
+        if (user === 0) {
             try {
                 var formdata = {
                     name: process.env.ADMIN_NAME,
@@ -81,7 +82,7 @@ mongoose.connect(DB, {
             } catch (error) {
                 console.error(error.message);
             }
-        else
+        } else
             console.log("Admin user already exist")
     }
     // creer 3 sports
@@ -126,6 +127,28 @@ mongoose.connect(DB, {
             }
         } else {
             console.log("Program ", programTable[i], " already exists.")
+        }
+    }
+    // creer les terrains
+    const fieldTable = ["Field 1", "Field 2"];
+
+    for (let i = 0; i < fieldTable.length; i++) {
+        var fields = await Field.count({name: fieldTable[i]});
+        if (fields === 0) {
+            try {
+                var formdata = {
+                    name: fieldTable[i]
+                };
+
+                Field.create(formdata, function (err, res) {
+                    console.log("Field ", fieldTable[i], " created.")
+                });
+
+            } catch (error) {
+                console.error(error.message);
+            }
+        } else {
+            console.log("Field ", fieldTable[i], " already exists.")
         }
     }
 });
