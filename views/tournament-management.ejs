@@ -82,6 +82,7 @@
             ]);
             
             alert("Les tournois pour tous les sports et pour tous les programmes ont été créés");
+            location.reload();
         } catch (error) {
             console.error('Erreur:', error);
         }
@@ -98,67 +99,10 @@
             });
 
             alert("Les tournois pour tous les sports et pour tous les programmes ont été supprimés");
+            location.reload();
         } catch (error) {
             console.error('Erreur:', error);
         }
     }
 
-    // var scoreGrid = new gridjs.Grid({
-    //     columns: [
-    //         "Equipe 1", 
-    //         "Equipe 2", 
-    //         {
-    //             name: "Score Equipe 1",
-    //             formatter: (cell, row) => {
-    //                 return gridjs.html(`<span class="editable-score1" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
-    //             }
-    //         },
-    //         {
-    //             name: "Score Equipe 2",
-    //             formatter: (cell, row) => {
-    //                 return gridjs.html(`<span class="editable-score2" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
-    //             }
-    //         },
-    //         "Vainqueur",
-    //         {
-    //             name: "Temps Final",
-    //             formatter: (cell, row) => {
-    //                 return gridjs.html(`<span class="editable-time" data-id="${row.cells[0].data}-${row.cells[1].data}">${cell}</span>`);
-    //             }
-    //         },
-    //         {
-    //             name: "Validation",
-    //             formatter: (cell, row) => {
-    //                 return gridjs.html(`<button class="btn btn-success validate-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Valider score</button>`);
-    //             }
-    //         },
-    //         {
-    //             name: "Réinitialiser",
-    //             formatter: (cell, row) => {
-    //                 return gridjs.html(`<button class="btn btn-success clear-button" data-id="${row.cells[0].data}-${row.cells[1].data}">Réinitialiser</button>`);
-    //             }
-    //         }
-    //     ],
-    //     data: async () => {
-    //         var data = await fetch("", {
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json'
-    //             },
-    //         })
-    //         .then((response) => response.json());
-
-    //         const filteredData = data.filter(e => e.pool === 'Poule 1').map(e => [
-    //             e.team1, 
-    //             e.team2, 
-    //             `${e.score.team1Score}`,
-    //             `${e.score.team2Score}`,
-    //             e.winnerTeam,
-    //             e.time
-    //         ]);
-
-    //         return filteredData;
-    //     },
-    //     sort: true
-    // }).render(document.getElementById("match-table-pagination"));
 </script>

@@ -229,8 +229,6 @@ async function getTeamGoalAverage(teamId) {
 }
 
 async function getBestSecond(sport, program) {
-    console.log("trying to get the best second.");
-
     const finalPool = await Pool.findOne({ name: "Finale", sport: sport._id, program: program._id });
     const semiFinal1Pool = await Pool.findOne({ name: "Demi-Finale 1", sport: sport._id, program: program._id });
     const semiFinal2Pool = await Pool.findOne({ name: "Demi-Finale 2", sport: sport._id, program: program._id });
@@ -275,10 +273,10 @@ async function getBestSecond(sport, program) {
 }
 
 async function handleSemiFinalCreation(ranking, sport, program) {
-    console.log("Création des demi-finales");
-    console.log(ranking);
+
     if (Object.keys(ranking).length == 1) { // si je dois recuperer que 1 team par poule
         if (poolsLenghts == 3) { // si il y a 3 poules
+
             const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
             var teamsinSemiFinal1 = await Team.count({ pool: semiFinalPool1._id });
     
@@ -312,7 +310,6 @@ async function handleSemiFinalCreation(ranking, sport, program) {
                 await updateTeamPools(ranking, semiFinalPool2._id);
             }
         }
-
     } else if (Object.keys(ranking).length == 2) {
         const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
         const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
@@ -457,6 +454,54 @@ const create = async (req, res) => {
 };
 
 // met a jour le score d'un match et les points des participants
+const updateMatchStatus = async (req, res) => {
+    const { team1, team2, isFinished } = req.body;
+    
+    try {
+        // Récupération du programme, du sport et des équipes en fonction des noms fournis
+        const program = await Program.findOne({ name: req.params.program });
+        const sport = await Sport.findOne({ name: req.params.sport });
+        
+        // Récupération des informations sur les équipes
+        const school1Ref = await School.findOne({ name: team1 });
+        const team1Ref = await Team.findOne({ school: school1Ref._id, sport: sport._id, program: program._id });
+
+        const school2Ref = await School.findOne({ name: team2 });
+        const team2Ref = await Team.findOne({ school: school2Ref._id, sport: sport._id, program: program._id });
+
+        // Récupération de la poule via l'équipe 1 (tu peux ajuster si nécessaire)
+        const pool = await Pool.findById(team1Ref.pool);
+
+        if (!pool) {
+            return res.status(404).json({ error: 'Poule non trouvée.' });
+        }
+
+        // Mise à jour du champ isFinished à true pour le match dans la poule spécifique
+        const match = await Match.findOneAndUpdate(
+            { team1: team1Ref._id, team2: team2Ref._id, program: program._id, pool: pool._id },
+            { 
+                isFinished: isFinished 
+            },
+            { new: true }
+        );
+
+        if (!match) {
+            return res.status(404).json({ error: 'Match non trouvé.' });
+        }
+        if (isFinished)
+            console.log(`match entre ${team1} et ${team2} déclaré comme fini`)
+        else
+            console.log(`match entre ${team1} et ${team2} déclaré comme pas fini`)
+
+        return res.status(200).json(match);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Erreur serveur lors de la mise à jour du statut du match.' });
+    }
+};
+
+
+// met a jour le score d'un match et les points des participants
 const update = async (req, res) => {
     const { team1, team2, score, time } = req.body;
     const program = await Program.findOne({ name: req.params.program });
@@ -574,7 +619,8 @@ const clear = async (req, res) => {
                 },
                 $unset: { winnerTeam: "" },
                 sport: sport._id,
-                timePlayed: time
+                timePlayed: time,
+                isFinished: false
             },
             { new: true }
         );
@@ -609,4 +655,4 @@ const deleteTournament = async (req, res) => {
     }
 }
 
-module.exports = {create, update, deleteTournament, clear};
+module.exports = {create, update, updateMatchStatus, deleteTournament, clear};

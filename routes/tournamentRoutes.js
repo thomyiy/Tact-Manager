@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const TournamentController = require("../controller/TournamentController");
 const Match = require("../models/MatchModel");
 const Sport = require("../models/SportModel");
@@ -90,8 +90,10 @@ module.exports = function (route) {
     });
 
     route.post('/tournament/create/:program',TournamentController.create)
-
+    
     route.post('/tournament/updateMatch/:sport/:program', TournamentController.update)
+    
+    route.post('/tournament/updateMatchStatus/:sport/:program', TournamentController.updateMatchStatus)
 
     route.post('/tournament/clearMatch/:sport/:program', TournamentController.clear)
 

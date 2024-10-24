@@ -12,7 +12,6 @@ module.exports = function (route) {
             firstname: req.session.firstname,
             lastname: req.session.lastname,
         }
-        const schools = await School.find({});
         const teams = await Teams.find({});
         const  global = await utils.getGlobal(req)
         res.render('school-management', {global: global, teams: teams})
