@@ -43,7 +43,7 @@ module.exports = function (route) {
         try {
             const program = await Program.findOne({ name: req.params.program });
             const sport = await Sport.findOne({ name: req.params.sport });
-            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id });
+            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id, program: program._id });
             // pool vaut rien si aucun match n'a été crée
             if (pool) {
                 const teams = await Team.find({ sport: sport._id, pool: pool._id, program: program._id })
