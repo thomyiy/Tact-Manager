@@ -442,7 +442,7 @@ const create = async (req, res) => {
                         const team1name = await School.findOne({ _id: teamsInPoule[i].school._id  });
                         const team2name = await School.findOne({ _id: teamsInPoule[j].school._id  });
 
-                        console.log(`Match créé: ${team1name.name} vs ${team2name.name} dans ${newPoule.name}`);
+                        console.log(`Match créé: ${team1name.name} vs ${team2name.name} dans ${newPoule.name} pour le programme ${program.name}` );
                     }
                 }
             }
@@ -481,7 +481,8 @@ const updateMatchStatus = async (req, res) => {
         const match = await Match.findOneAndUpdate(
             { team1: team1Ref._id, team2: team2Ref._id, program: program._id, pool: pool._id },
             { 
-                isFinished: isFinished 
+                isFinished: isFinished,
+                updated_at: Date.now()
             },
             { new: true }
         );
@@ -559,7 +560,8 @@ const update = async (req, res) => {
                 winnerTeam: winnerTeamRef ? winnerTeamRef._id : null,
                 sport: sport._id,
                 timePlayed: time,
-                isFinished: time > 0 ? true : false
+                isFinished: time > 0 ? true : false,
+                updated_at: Date.now()
             },
             { new: true }
         );
@@ -618,8 +620,10 @@ const clear = async (req, res) => {
                     team1Score: null,
                     team2Score: null
                 },
-                $unset: { winnerTeam: "" },
-                sport: sport._id,
+                $unset: { 
+                    winnerTeam: "", 
+                    arbitrator: "" 
+                },                sport: sport._id,
                 timePlayed: time,
                 isFinished: false
             },
@@ -658,9 +662,9 @@ const deleteTournament = async (req, res) => {
 
 // TODO: creer le systeme d'atribution de matchs a un arbitre
 const assign = async (req, res) => {
-    const { team1, team2, arbitrator } = req.body;
+    const { team1, team2, arbitratorName } = req.body;
 
-    const arbitratorRef = await Arbitrator.findOne({ name: arbitrator });
+    const arbitratorRef = await Arbitrator.findOne({ name: arbitratorName });
     const program = await Program.findOne({ name: req.params.program });
     const sport = await Sport.findOne({ name: req.params.sport });
 
@@ -668,14 +672,14 @@ const assign = async (req, res) => {
     const team1Ref = await Team.findOne({ school: school1Ref, sport: sport._id, program: program._id });
     const school2Ref = await School.findOne({ name: team2 });
     const team2Ref = await Team.findOne({ school: school2Ref, sport: sport._id, program: program._id });
-    
-    const pool = await Pool.findById(school1Ref.pool);
+    const pool = await Pool.findById(team1Ref.pool);
 
     const match = await Match.findOneAndUpdate(
         { team1: team1Ref._id, team2: team2Ref._id, pool: pool},
         { arbitrator: arbitratorRef._id },
         { new: true }
     );
+    console.log(`${arbitratorName} a bien été ajouté comme arbitre au match de ${team1}-${team2}, ${req.params.sport}, ${req.params.program}`)
     return res.status(200).json(match)
 }
 
