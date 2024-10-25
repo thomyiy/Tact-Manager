@@ -32,6 +32,7 @@ var i18n = require("i18n-express");
 var bodyParser = require('body-parser');
 const expressPartials = require('express-partials');
 
+const databasePopulate = require("./database/populate");
 
 var urlencodeParser = bodyParser.urlencoded({extended: true});
 app.use(urlencodeParser);
@@ -56,102 +57,7 @@ mongoose.connect(DB, {
     useNewUrlParser: true
 }).then(async (con) => {
     console.log("DB connection successfully..!")
-    // creer admin
-    if (process.env.ADMIN_NAME
-        && process.env.ADMIN_EMAIL
-        && process.env.ADMIN_PASSWORD
-        && process.env.ADMIN_FIRSTNAME
-        && process.env.ADMIN_LASTNAME) {
-        var user = await User.count({email: process.env.ADMIN_EMAIL})
-        if (user === 0) {
-            try {
-                var formdata = {
-                    name: process.env.ADMIN_NAME,
-                    email: process.env.ADMIN_EMAIL,
-                    password: process.env.ADMIN_PASSWORD,
-                    firstname: process.env.ADMIN_FIRSTNAME,
-                    lastname: process.env.ADMIN_LASTNAME,
-                    role: "Admin"
-                };
-
-                User.create(formdata, function (err, res) {
-                    if (err)
-                        console.log(err);
-                    console.log("Admin user created")
-                });
-
-            } catch (error) {
-                console.error(error.message);
-            }
-        } else
-            console.log("Admin user already exist")
-    }
-    // creer 3 sports
-    const sportTable = ["Football", "Basketball", "Handball"];
-
-    for (let i = 0; i < sportTable.length; i++) {
-        var sport = await Sport.count({name: sportTable[i]});
-        if (sport === 0) {
-            try {
-                var formdata = {
-                    name: sportTable[i]
-                };
-
-                Sport.create(formdata, function (err, res) {
-                    console.log("Sport ", sportTable[i], " created.")
-                });
-
-            } catch (error) {
-                console.error(error.message);
-            }
-        } else {
-            console.log("Sport ", sportTable[i], " already exists.")
-        }
-    }
-    // creer les programmes
-    const programTable = ["Masculin", "Féminin"];
-
-    for (let i = 0; i < programTable.length; i++) {
-        var program = await Program.count({name: programTable[i]});
-        if (program === 0) {
-            try {
-                var formdata = {
-                    name: programTable[i]
-                };
-
-                Program.create(formdata, function (err, res) {
-                    console.log("Program ", programTable[i], " created.")
-                });
-
-            } catch (error) {
-                console.error(error.message);
-            }
-        } else {
-            console.log("Program ", programTable[i], " already exists.")
-        }
-    }
-    // creer les terrains
-    const fieldTable = ["Field 1", "Field 2"];
-
-    for (let i = 0; i < fieldTable.length; i++) {
-        var fields = await Field.count({name: fieldTable[i]});
-        if (fields === 0) {
-            try {
-                var formdata = {
-                    name: fieldTable[i]
-                };
-
-                Field.create(formdata, function (err, res) {
-                    console.log("Field ", fieldTable[i], " created.")
-                });
-
-            } catch (error) {
-                console.error(error.message);
-            }
-        } else {
-            console.log("Field ", fieldTable[i], " already exists.")
-        }
-    }
+    databasePopulate.populate();
 });
 
 // for i18 usr
