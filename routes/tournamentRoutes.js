@@ -71,16 +71,17 @@ module.exports = function (route) {
             const programParam = req.params.program;
 
             const sport = await Sport.findOne({ name: sportName });
-            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id });
             const program = await Program.findOne({ name: programParam });
+            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id, program: program._id });
             // pool vaut rien si aucun match n'a été crée
             if (pool) {
                 const matches = await Match.find({ sport: sport._id, program: program._id, pool: pool._id })
-                    .populate({
+                .populate({
                         path: 'team1 team2 winnerTeam',
                         populate: { path: 'school', select: 'name' }
                     })
-                    .populate('sport pool program');
+                    .populate('sport pool program')
+                    .populate('arbitrator', 'name');
                 res.json(matches);
             }
         } catch (err) {
@@ -88,6 +89,8 @@ module.exports = function (route) {
             return res.status(500).json({ error: 'Erreur serveur lors de la récupération des données de tournoi.' });
         }
     });
+
+    route.post('/tournament/assign/:sport/:program',TournamentController.assign)
 
     route.post('/tournament/create/:program',TournamentController.create)
     

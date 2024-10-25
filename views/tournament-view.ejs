@@ -103,6 +103,33 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 
+<!-- modal pour assigner arbitre a un match -->
+<div>
+    <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal"
+            data-bs-target="#arbitratorModal">Ajouter Arbitre
+    </button>
+
+    <div id="arbitratorModal" class="modal fade" tabindex="-1" aria-labelledby="arbitratorModalLabel" aria-hidden="true" data-bs-scroll="true">
+        <div class="modal-dialog">  
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="arbitratorModalLabel">Ajouter un Arbitre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="arbitratorForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label id="arbitratorLabel" for="arbitratorName" class="form-label"></label>
+                            <input type="text" class="form-control" id="arbitratorName" name="arbitratorName" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="saveArbitratorBtn">Valider</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
     function sortTeams(data) {
@@ -114,7 +141,21 @@
             "Equipe 1", 
             "Equipe 2",
             "Terrain",
-            "Arbitre",
+            {
+                name: "Arbitre",
+                formatter: (cell, row) => {
+                    const isFinished = row.cells[9].data;
+                    return gridjs.html(`
+                        <span class="${isFinished ? 'editable-arbitrator' : 'add-arbitrator-btn'}" 
+                            data-id="${row.cells[0].data};${row.cells[1].data}" 
+                            data-arbitrator="${cell || ''}"
+                            style="${isFinished ? 'color: gray; pointer-events: none;' : ''}" 
+                            ${isFinished ? '' : 'data-bs-toggle="modal" data-bs-target="#arbitratorModal"'}> 
+                            ${cell || 'Ajouter'} 
+                        </span>
+                    `);
+                }
+            },
             "Temps de jeu",
             {
                 name: "Temps Final",
@@ -175,7 +216,7 @@
                 }
             }
         ],
-            data: async () => {
+        data: async () => {
             var data = await fetch("/tournament/<%= sport %>/<%= program %>/getPoule/Poule 1", {
                 headers: {
                     'Accept': 'application/json',
@@ -188,7 +229,7 @@
                 e.team1?.school?.name || "",
                 e.team2?.school?.name || "",
                 "TODO",
-                "TODO",
+                e.arbitrator?.name  || "Ajouter",
                 "TODO",
                 e.timePlayed,
                 `${e.score.team1Score}`,
@@ -302,8 +343,8 @@
         }
     }
 
-    function handleValidation(buttonElement) {
-        const Data = buttonElement.getAttribute('data-id').split(';');
+    function handleValidation(Element) {
+        const Data = Element.getAttribute('data-id').split(';');
         const team1 = Data[0];
         const team2 = Data[1];
 
@@ -350,8 +391,59 @@
         }
     }
 
-    function handleClear(buttonElement) {
-        const Data = buttonElement.getAttribute('data-id').split(';');
+    function sendArbitratorToAssign(arbitratorName, matchData) {
+    const Teams = matchData.split(';');
+    const team1 = Teams[0];
+    const team2 = Teams[1];
+
+    if (arbitratorName.trim() !== "") {
+        fetch(`/arbitrator/exist/${arbitratorName}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la vérification de l\'arbitre');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.exists) {
+                    fetch("/tournament/assign/<%= sport %>/<%= program %>", {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            team1,
+                            team2,
+                            arbitratorName
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau lors de l\'assignation de l\'arbitre');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        // console.error("Erreur :", error);
+                        alert("Une erreur est survenue lors de l'assignation de l'arbitre.");
+                    });
+                } else {
+                    alert("L'arbitre n'existe pas. Veuillez entrer un nom d'arbitre valide.");
+                }
+            })
+            .catch(error => {
+                // console.error("Erreur :", error);
+                alert("Une erreur est survenue lors de la vérification de l'arbitre.");
+            });
+        }
+    }
+
+    function handleClear(Element) {
+        const Data = Element.getAttribute('data-id').split(';');
         const team1 = Data[0];
         const team2 = Data[1];
 
@@ -489,7 +581,7 @@
                 e.team1?.school?.name || "",
                 e.team2?.school?.name || "",
                 "TODO",
-                "TODO",
+                e.arbitrator?.name || "Ajouter",
                 "TODO",
                 e.timePlayed,
                 `${e.score.team1Score}`,
@@ -535,6 +627,9 @@
             button.dataset.bsPlacement = "top";
             button.title = pouleName;
             button.innerText = pouleName;
+            if (index === 0) {
+                button.classList.add("btn-secondary");
+            }
 
             button.addEventListener('click', (event) => {
                 const allButtons = buttonContainer.querySelectorAll("button");
@@ -553,6 +648,19 @@
         });
     }
 
+    function handleArbitrator(Elment) {
+        const matchData = Elment.getAttribute("data-id");
+        document.getElementById("saveArbitratorBtn").setAttribute("data-match-id", matchData);
+        const currentArbitrator = Elment.getAttribute("data-arbitrator") || "";
+
+        const arbitratorInput = document.getElementById("arbitratorName");
+        arbitratorInput.value = currentArbitrator || "Nom de l'arbitre";
+
+        const teams = matchData.split(';');
+        const label = document.getElementById('arbitratorLabel');
+        label.textContent = `Nom de l'arbitre pour le match ${teams[0]} contre ${teams[1]}`;
+    }
+
     document.addEventListener('click', function(event) {
         if (event.target.classList.contains('validate-button')) {
             handleValidation(event.target);
@@ -564,7 +672,23 @@
             handleScore(event.target, 2);
         } else if (event.target.classList.contains('editable-time')) {
             handleTime(event.target);
+        } else if (event.target.classList.contains("add-arbitrator-btn")) {
+            handleArbitrator(event.target);
         }
+    });
+
+    // ne pas valider le formulaire d'assignation si on appuie sur entrée, (sinon, cause un crash)
+    document.getElementById('arbitratorName').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    });
+
+    document.getElementById("saveArbitratorBtn").addEventListener("click", function () {
+        const arbitratorName = document.getElementById("arbitratorName").value;
+        const matchData = this.getAttribute("data-match-id");
+        sendArbitratorToAssign(arbitratorName, matchData);
+        $('#arbitratorModal').modal('hide');
     });
 
     document.addEventListener('change', (event) => {

@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const MatchSchema = new mongoose.Schema({
     arbitrator: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "arbitrator"
+        ref: "arbitrator",
+        default: undefined
     },
     // TODO: arbitre
     team1: {
@@ -61,6 +62,9 @@ const MatchSchema = new mongoose.Schema({
         // required: true
     },
     created_at: Date,
+    updated_at: {
+        type: Date
+    },
     passwordResetToken: String,
     passwordResetExpires: Date,
 })
