@@ -412,18 +412,9 @@ const create = async (req, res) => {
                 
                 for (let i = 0; i < teamsInPoule.length; i++) {
                     for (let j = i + 1; j < teamsInPoule.length; j++) {
-                        // TODO : remove random
-                        const randomScore1 = Math.floor(Math.random() * 5);
-                        const randomScore2 = Math.floor(Math.random() * 5);
                         const match = {
                             team1: teamsInPoule[i]._id,
                             team2: teamsInPoule[j]._id,
-                            // TODO : remove score
-                            score: {
-                                team1Score: randomScore1,
-                                team2Score: randomScore2,
-                            },
-                            timePlayed: 5,
                             sport: sport._id,
                             pool: newPoule._id,
                             program: program._id
@@ -660,7 +651,6 @@ const deleteTournament = async (req, res) => {
     }
 }
 
-// TODO: creer le systeme d'atribution de matchs a un arbitre
 const assign = async (req, res) => {
     const { team1, team2, arbitratorName } = req.body;
 
