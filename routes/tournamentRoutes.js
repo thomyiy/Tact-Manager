@@ -89,6 +89,8 @@ module.exports = function (route) {
         }
     });
 
+    route.post('/tournament/assign/:sport/:program',TournamentController.assign)
+
     route.post('/tournament/create/:program',TournamentController.create)
     
     route.post('/tournament/updateMatch/:sport/:program', TournamentController.update)

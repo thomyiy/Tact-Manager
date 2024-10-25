@@ -103,6 +103,33 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 
+<!-- modal pour assigner arbitre a un match -->
+<div>
+    <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal"
+            data-bs-target="#arbitratorModal">Ajouter Arbitre
+    </button>
+
+    <div id="arbitratorModal" class="modal fade" tabindex="-1" aria-labelledby="arbitratorModalLabel" aria-hidden="true" data-bs-scroll="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="arbitratorModalLabel">Ajouter un Arbitre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="arbitratorForm" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="arbitratorName" class="form-label">Nom de l'arbitre</label>
+                            <input type="text" class="form-control" id="arbitratorName" name="arbitratorName" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="saveArbitratorBtn">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
     function sortTeams(data) {
@@ -114,7 +141,14 @@
             "Equipe 1", 
             "Equipe 2",
             "Terrain",
-            "Arbitre",
+            {
+                name: "Arbitre",
+                formatter: (cell, row) => {
+                    return gridjs.html(`
+                        <button class="btn btn-link" type="button" data-bs-toggle="modal" data-bs-target="#arbitratorModal">Ajouter</button>
+                    `);
+                }
+            },
             "Temps de jeu",
             {
                 name: "Temps Final",
@@ -350,6 +384,36 @@
         }
     }
 
+    function sendArbitratorToAssign(arbitratorName, match) {
+        if (!isNaN(arbitratorName)) {
+            fetch("/tournament/assign/<%= sport %>/<%= program %>", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    team1,
+                    team2,
+                    arbitratorName
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau lors de la réinitialisation du match');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+                alert("Une erreur est survenue lors de l'assignation de l'arbitre.");
+            });
+        }
+    }
+
     function handleClear(buttonElement) {
         const Data = buttonElement.getAttribute('data-id').split(';');
         const team1 = Data[0];
@@ -565,6 +629,13 @@
         } else if (event.target.classList.contains('editable-time')) {
             handleTime(event.target);
         }
+    });
+
+    document.getElementById("saveArbitratorBtn").addEventListener("click", function () {
+        const arbitratorName = document.getElementById("arbitratorName").value;
+        sendArbitratorToAssign(arbitratorName, match);
+        console.log("Arbitre ajouté:", arbitratorName);
+        $('#arbitratorModal').modal('hide');
     });
 
     document.addEventListener('change', (event) => {

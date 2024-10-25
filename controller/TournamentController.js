@@ -5,6 +5,7 @@ const Sport = require("../models/SportModel");
 const School = require("../models/SchoolModel");
 const Program = require("../models/ProgramModel");
 const Pool = require("../models/PoolModel");
+const Arbitrator = require("../models/ArbitratorModel");
 const teamController = require("./TeamController");
 
 var poolsLenghts = 0;
@@ -611,7 +612,7 @@ const clear = async (req, res) => {
 
         // maj des scores
         const tournament = await Match.findOneAndUpdate(
-            { team1: team1Ref._id, team2: team2Ref._id, program: program._id, pool: teamReference.pool },
+            { team1: team1Ref._id, team2: team2Ref._id, pool: teamReference.pool },
             {
                 score: {
                     team1Score: null,
@@ -655,4 +656,27 @@ const deleteTournament = async (req, res) => {
     }
 }
 
-module.exports = {create, update, updateMatchStatus, deleteTournament, clear};
+// TODO: creer le systeme d'atribution de matchs a un arbitre
+const assign = async (req, res) => {
+    const { team1, team2, arbitrator } = req.body;
+
+    const arbitratorRef = await Arbitrator.findOne({ name: arbitrator });
+    const program = await Program.findOne({ name: req.params.program });
+    const sport = await Sport.findOne({ name: req.params.sport });
+
+    const school1Ref = await School.findOne({ name: team1 });
+    const team1Ref = await Team.findOne({ school: school1Ref, sport: sport._id, program: program._id });
+    const school2Ref = await School.findOne({ name: team2 });
+    const team2Ref = await Team.findOne({ school: school2Ref, sport: sport._id, program: program._id });
+    
+    const pool = await Pool.findById(school1Ref.pool);
+
+    const match = await Match.findOneAndUpdate(
+        { team1: team1Ref._id, team2: team2Ref._id, pool: pool},
+        { arbitrator: arbitratorRef._id },
+        { new: true }
+    );
+    return res.status(200).json(match)
+}
+
+module.exports = {create, update, updateMatchStatus, deleteTournament, clear, assign};

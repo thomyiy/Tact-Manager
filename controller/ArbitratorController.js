@@ -5,7 +5,6 @@ const Arbitrator = require("../models/ArbitratorModel");
 const CheerleadingScore = require("../models/CheerleadingScoreModel");
 const FILE_STORAGE_PATH = process.env.FILE_STORAGE_PATH
 
-// TODO: creer le systeme d'atribution de matchs a un arbitre
 const create = async (req, res) => {
     var name = req.body.name
 
