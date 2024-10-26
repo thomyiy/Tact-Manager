@@ -15,6 +15,7 @@ const populate = async (req, res) => {
 
     await createSchools()
     await createTeams()
+    await createUsers()
 }
 
 async function createAdmin() {
@@ -180,7 +181,7 @@ async function createTeams() {
                                 } catch (error) {
                                     console.error(error.message);
                                 }
-                            }else {
+                            } else {
                                 console.log("Team ", schoolTable[i] + " " + programTable[x] + " " + sportTable[y], " already exists.")
                             }
                         }
@@ -189,6 +190,47 @@ async function createTeams() {
             }
         }
     }
+}
+
+async function createUsers() {
+    // creer users
+
+    var formdatas = [{
+        name: "arbitre1",
+        email: "arbitre1@mail.fr",
+        password: "arbitre1",
+        firstname: "arbitre1",
+        lastname: "arbitre1",
+        role: "Arbitrator"
+    },
+        {
+            name: "arbitre2",
+            email: "arbitre2@mail.fr",
+            password: "arbitre2",
+            firstname: "arbitre2",
+            lastname: "arbitre2",
+            role: "Arbitrator"
+        }]
+
+    for (let i = 0; i < formdatas.length; i++) {
+        var formdata = formdatas[i]
+        var user = await User.count({email: formdata.email})
+        if (user === 0) {
+            try {
+
+                await User.create(formdata, function (err, res) {
+                    if (err)
+                        console.log(err);
+                    console.log(formdata.name + " user created")
+                });
+
+            } catch (error) {
+                console.error(error.message);
+            }
+        } else
+            console.log(formdata.name + " User already exist")
+    }
+
 }
 
 module.exports = {populate}
