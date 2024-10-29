@@ -1,4 +1,3 @@
-const Arbitrator = require("../models/ArbitratorModel");
 const User = require("../models/UserModel");
 const Sport = require("../models/SportModel");
 const Program = require("../models/ProgramModel");
@@ -127,7 +126,7 @@ async function createFields() {
 }
 
 async function createSchools() {
-    // creer les terrains
+    // creer les ecoles
     const schoolTable = ["School1", "School2", "School3", "School4", "School5", "School6", "School7", "School8", "School9", "School10", "School11", "School12", "School13", "School14", "School15", "School16"];
 
     for (let i = 0; i < schoolTable.length; i++) {
@@ -152,8 +151,8 @@ async function createSchools() {
 }
 
 async function createTeams() {
-    // creer les terrains
-    const schoolTable = ["School1", "School2", "School3", "School4", "School5", "School6", "School7", "School8", "School9", "School10", "School11", "School12", "School13", "School14", "School15", "School16"];
+    // creer les equipes
+    const schoolTable = ["School1", "School2", "School3", "School4", "School5", "School6", "School7", "School8"]//, "School9", "School10", "School11", "School12", "School13", "School14", "School15", "School16"];
     const programTable = ["Masculin", "Féminin"];
     const sportTable = ["Football", "Basketball", "Handball"];
 

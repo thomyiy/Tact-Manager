@@ -7,8 +7,7 @@ const FieldSchema = new mongoose.Schema({
         unique: true,
     },
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const field = mongoose.model('field', FieldSchema);

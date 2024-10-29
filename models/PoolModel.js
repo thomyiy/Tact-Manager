@@ -16,9 +16,12 @@ const PoolSchema = new mongoose.Schema({
         ref: "program",
         required: true
     },
+    isFinished: {
+        type: Boolean,
+        default: false
+    },
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const pool = mongoose.model('pool', PoolSchema);

@@ -9,8 +9,6 @@ const MarioKartScoreSchema = new mongoose.Schema({
     // TODO: arbitre
     // TODO: liste des elements a noter
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
 })
 
 const MarioKartScore = mongoose.model('marioKartScores', MarioKartScoreSchema);

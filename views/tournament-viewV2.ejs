@@ -1,0 +1,289 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<!-- <div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Teams</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Teams</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div> -->
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Listes des matches : <%= sport.name %>
+                                        /<%= program.name %></h4>
+                                </div><!-- end card header -->
+                                <div class="card-body">
+                                    <!-- Nav tabs -->
+                                    <ul class="nav nav-pills nav-justified" role="tablist">
+                                        <% for(var i = 0; i < pools.length; i++) { %>
+                                            <li class="nav-item waves-effect waves-light">
+                                                <a class="nav-link <% if(i === 0){ %>active<% } %>"
+                                                   id="<%= pools[i].name.replace(" ", "_") %>-tab" data-bs-toggle="tab"
+                                                   href="#<%= pools[i].name.replace(" ", "_") %>" role="tab">
+                                                    <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                                    <span class="d-none d-sm-block"><%= pools[i].name %></span>
+                                                </a>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+
+                                    <!-- Tab panes -->
+                                    <div class="tab-content p-3 text-muted">
+                                        <% for(var i = 0; i < pools.length; i++) { %>
+
+                                            <div class="tab-pane <% if(i === 0){ %>active<% } %>"
+                                                 id="<%= pools[i].name.replace(" ", "_") %>"
+                                                 role="tabpanel">
+                                                <form action="/match/validatePool" method="post">
+                                                    <!-- sample modal content -->
+                                                    <div id="modalValidation<%= [i] %>" class="modal fade" tabindex="-1"
+                                                         aria-labelledby="myModalLabel" aria-hidden="true"
+                                                         data-bs-scroll="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="myModalLabel">Etes vous
+                                                                        sûres de valider les matchs de la poule
+                                                                        : <%= pools[i].name %></h5>
+                                                                    <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <h5>La validation de la poule bloquera les
+                                                                        scores</h5>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button"
+                                                                            class="btn btn-secondary waves-effect"
+                                                                            data-bs-dismiss="modal">Close
+                                                                    </button>
+                                                                    <button class="btn btn-primary" type="submit"
+                                                                            data-bs-dismiss="modal">Valider les matchs
+                                                                        de la poule : <%= pools[i].name %></button>
+                                                                </div>
+                                                            </div><!-- /.modal-content -->
+                                                        </div><!-- /.modal-dialog -->
+                                                    </div><!-- /.modal -->
+                                                    <% if(!pools[i].isFinished){ %>
+                                                        <button type="button"
+                                                                class="btn btn-primary waves-effect waves-light"
+                                                                onclick="validateModal('modalValidation<%= [i] %>',<%= [i] %>)">
+                                                            Valider les
+                                                            matchs de la poule : <%= pools[i].name %></button>
+                                                    <% } else { %>
+                                                        <h5>Poule <%= pools[i].name %> validé</h5>
+                                                    <% } %>
+                                                    <input type="hidden" id="poolId" name="poolId"
+                                                           value="<%= pools[i]._id %>"/>
+                                                </form>
+                                                <div class="card-header">
+                                                    <h5>Listes des matches</h5>
+                                                </div><!-- end card header -->
+                                                <div id="<%= pools[i].name.replace(" ", "_") %>-table"></div>
+                                                <div class="card-header">
+                                                    <h5>Classement des équipes</h5>
+                                                </div><!-- end card header -->
+                                                <div id="<%= pools[i].name.replace(" ", "_") %>-table-leaderboard"></div>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div><!-- end card-body -->
+                            </div><!-- end card -->
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- sample modal content -->
+<div id="modalError" class="modal fade" tabindex="-1"
+     aria-labelledby="myModalLabel" aria-hidden="true"
+     data-bs-scroll="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Error</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Il y a champ a remplir avant la validation de la poule </h5>
+                <p>!!! Pensez a rafraichir la page !!!</p>
+                <div id="modalErrorList"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary waves-effect"
+                        data-bs-dismiss="modal">Close
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+
+
+<script>
+
+    var pools = <%- JSON.stringify(pools) %>;
+
+    function validateModal(modalId, poolIndex) {
+        var errorList = []
+        pools[poolIndex].matches.forEach(match => {
+            if (match.timePlayed === 0) {
+                var error = "TimePlayed not set to match : " + match.team1.school.name + " X " + match.team2.school.name
+                errorList.push(error)
+            }
+            if (match.score.team1Score === null) {
+                var error = "ScoreTeam1 not set to match : " + match.team1.school.name + " X " + match.team2.school.name
+                errorList.push(error)
+            }
+            if (match.score.team2Score === null) {
+                var error = "ScoreTeam2 not set to match : " + match.team1.school.name + " X " + match.team2.school.name
+                errorList.push(error)
+            }
+        })
+        console.log(errorList)
+        if (errorList.length === 0) {
+            var myModal = new bootstrap.Modal(document.getElementById(modalId))
+            myModal.toggle()
+        } else {
+            var myModal = new bootstrap.Modal(document.getElementById("modalError"))
+            myModal.toggle()
+            var modalErrorList = document.getElementById("modalErrorList")
+            modalErrorList.innerHTML = '';
+            var ul = document.createElement('ul');
+            modalErrorList.appendChild(ul);
+            errorList.forEach(renderProductList);
+
+            function renderProductList(element, index, arr) {
+                var li = document.createElement('li');
+                li.setAttribute('class', 'item');
+                ul.appendChild(li);
+                li.innerHTML = li.innerHTML + element;
+            }
+        }
+    }
+
+    var urlParams = window.location.href.split('#')
+    if (urlParams.length > 1) {
+        var elems = document.getElementById(pools[0].name.replace(" ", "_"))
+        elems.classList.remove("active");
+        elems = document.getElementById(pools[0].name.replace(" ", "_") + "-tab")
+        elems.classList.remove("active");
+
+        var poolName = urlParams[1].replace("%20", "_")
+        elems = document.getElementById(poolName)
+        elems.classList.add("active");
+        elems = document.getElementById(poolName + "-tab")
+        elems.classList.add("active");
+
+    }
+    console.log(pools)
+    pools.forEach(e => {
+        new gridjs.Grid({
+            columns: [
+                "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Temps de jeu",
+                {
+                    name: "Arbitre",
+                    formatter: (cell, row) => {
+                        var html = "<ul>"
+                        cell.forEach(e => {
+                            html += "<li>" + e.firstname + " " + e.lastname + "</li>"
+                        })
+                        html += "<ul>"
+                        return gridjs.html(html);
+                    }
+                },
+                {
+                    name: "Action",
+                    formatter: (cell, row) => {
+                        return gridjs.html(`<a href="/match/${cell}" ><button class="btn btn-info" >Voir</button></a>`);
+                    }
+                }
+            ],
+            data: async () => {
+                return e.matches.map((element) => [element.team1.school.name,
+                    element.score.team1Score,
+                    element.team2.school.name,
+                    element.score.team2Score,
+                    element.timePlayed,
+                    element.arbitrator,
+                    element._id]);
+            },
+            sort: true
+        }).render(document.getElementById(e.name.replace(" ", "_") + "-table"));
+
+
+        new gridjs.Grid({
+            columns: [
+                "Ecole", "Point","Goal Average","Goal"
+            ],
+            data: e.teamPoints.sort((a,b) => {
+                if (b.points < a.points) return -1;
+                if (b.points > a.points) return 1;
+                if (b.goalAverage < a.goalAverage) return 1;
+                if (b.goalAverage > a.goalAverage) return -1;
+                if (b.goal < a.goal) return 1;
+                if (b.goal > a.goal) return -1;
+                if (b.random < a.random) return 1;
+                if (b.random > a.random) return -1;
+            }).map((element) => [element.team.school.name,
+                element.points,element.goalAverage,element.goal]),
+        }).render(document.getElementById(e.name.replace(" ", "_") + "-table-leaderboard"));
+    })
+
+</script>

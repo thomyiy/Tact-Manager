@@ -42,6 +42,14 @@
                 <li class="menu-title" data-key="t-menu">Menu</li>
 
                 <% if(global.user.role == "Arbitrator") { %>
+                    <% if(global.matches.length>0 ) { %>
+                        <li>
+                            <a href="/match">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-vertical">Matchs</span>
+                            </a>
+                        </li>
+                    <%}%>
                     <% if(global.cheerleadingSchools.length>0 ) { %>
 
                         <li>
@@ -129,12 +137,7 @@
                             <span class="menu-item" data-key="t-vertical">Ecoles</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/arbitrator/management">
-                            <i class="bx bx-layout icon nav-icon"></i>
-                            <span class="menu-item" data-key="t-vertical">Arbitres</span>
-                        </a>
-                    </li>
+
                     <li>
                         <a href="javascript: void(0);" class="has-arrow">
                             <i class="bx bx-layout icon nav-icon"></i>

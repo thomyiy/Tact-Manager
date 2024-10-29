@@ -7,8 +7,7 @@ const SportSchema = new mongoose.Schema({
         unique: true,
     },
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const sport = mongoose.model('sport', SportSchema);

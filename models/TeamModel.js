@@ -21,13 +21,8 @@ const TeamSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "pool"
     },
-    points: {
-        type: Number,
-        default: 0
-    },
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const team = mongoose.model('team', TeamSchema);

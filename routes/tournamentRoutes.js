@@ -1,28 +1,87 @@
- const express = require('express');
+const express = require('express');
 const TournamentController = require("../controller/TournamentController");
 const Match = require("../models/MatchModel");
 const Sport = require("../models/SportModel");
-const Teams = require("../models/TeamModel");
+const Team = require("../models/TeamModel");
 const School = require("../models/SchoolModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
 const route = express.Router();
 const utils = require("../controller/Utils")
+const User = require("../models/UserModel");
+var ObjectId = require('mongoose').Types.ObjectId;
+
 
 module.exports = function (route) {
+    route.get('/tournament/:pool/getAllMatches', async (req, res, next) => {
+        try {
+            const pool = await Pool.findOne({name: req.params.pool});
+            const matches = await Match.find({sport: pool.sport, program: pool.program, pool: pool._id})
+                .populate({
+                    path: 'team1 team2 winnerTeam',
+                    populate: {path: 'school', select: 'name'}
+                })
+                .populate('sport pool program')
+                .populate('arbitrator', 'name');
+            res.json(matches);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({error: 'Erreur serveur lors de la recuperation des donnes de tournoi.'});
+        }
+    });
+
     // route pour les tournois de foot, hand, basket
     route.get('/tournament/:sport/:program', async (req, res, next) => {
         try {
-            const sport = req.params.sport;
-            const program = req.params.program;
+            const sport = await Sport.findOne({name: req.params.sport});
+            const program = await Program.findOne({name: req.params.program});
 
-            const teams = await Teams.find({});
+            const global = await utils.getGlobal(req)
+            //const pools = await Pool.find({sport: sport._id, program: program._id}).populate('team')
 
-            const  global = await utils.getGlobal(req)
-            res.render('tournament-view', {global: global, sport: sport, program: program, teams: teams});
+            var pools = await Pool.aggregate([
+                {
+                    $match: {sport: sport._id, program: program._id},
+                },
+                {
+                    $lookup: {
+                        from: "teams",
+                        localField: "_id",
+                        foreignField: "pool",
+                        as: "teams",
+                    },
+                }, {
+                    $lookup: {
+                        from: "matches",
+                        localField: "_id",
+                        foreignField: "pool",
+                        as: "matches",
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "teampoints",
+                        localField: "teams._id",
+                        foreignField: "team",
+                        as: "teamPoints",
+                    },
+                },
+            ]);
+
+            pools = await Team.populate(pools, {path: "matches.team1 matches.team2 teamPoints.team", select: 'school'})
+            pools = await School.populate(pools, {path: "matches.team1.school matches.team2.school", select: 'name'})
+            pools = await School.populate(pools, {path: "teams.school teamPoints.team.school", select: 'name'})
+            pools = await User.populate(pools, {path: "matches.arbitrator", select: 'firstname lastname'})
+
+            res.render('tournament-viewV2', {
+                global: global,
+                sport: sport,
+                program: program,
+                pools: pools
+            });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
+            return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
         }
     });
 
@@ -36,49 +95,32 @@ module.exports = function (route) {
             //     lastname: req.session.lastname,
             // }
             const schools = await School.find({});
-            const teams = await Teams.find({});
+            const teams = await Team.find({});
             // res.render('tournament-management', {user: user, sport: sport, program: program});
-            const  global = await utils.getGlobal(req)
+            const global = await utils.getGlobal(req)
 
             res.render('tournament-management', {global: global, teams: teams});
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ error: 'Erreur serveur lors du chargement des routes.' });
+            return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
         }
     });
 
-    route.get('/tournament/:sport/:program/getAllMatches', async (req, res, next) => {
-        try{
-            const program = await Program.findOne({ name: req.params.program });
-            const sport = await Sport.findOne({ name: req.params.sport  });
-
-            const matches = await Match.find({ sport: sport._id, program: program._id })
-            .populate({
-                path: 'team1 team2 winnerTeam',
-                populate: { path: 'school', select: 'name' }
-            })
-            .populate('sport pool program');
-            res.json(matches);
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Erreur serveur lors de la recuperation des donnes de tournoi.' });
-        }
-    });
 
     route.get('/tournament/:sport/:program/getPoule/:name', async (req, res, next) => {
         try {
             const sportName = req.params.sport;
             const programParam = req.params.program;
 
-            const sport = await Sport.findOne({ name: sportName });
-            const program = await Program.findOne({ name: programParam });
-            const pool = await Pool.findOne({ name: req.params.name, sport: sport._id, program: program._id });
+            const sport = await Sport.findOne({name: sportName});
+            const program = await Program.findOne({name: programParam});
+            const pool = await Pool.findOne({name: req.params.name, sport: sport._id, program: program._id});
             // pool vaut rien si aucun match n'a été crée
             if (pool) {
-                const matches = await Match.find({ sport: sport._id, program: program._id, pool: pool._id })
-                .populate({
+                const matches = await Match.find({sport: sport._id, program: program._id, pool: pool._id})
+                    .populate({
                         path: 'team1 team2 winnerTeam',
-                        populate: { path: 'school', select: 'name' }
+                        populate: {path: 'school', select: 'name'}
                     })
                     .populate('sport pool program')
                     .populate('arbitrator', 'name');
@@ -86,19 +128,19 @@ module.exports = function (route) {
             }
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ error: 'Erreur serveur lors de la récupération des données de tournoi.' });
+            return res.status(500).json({error: 'Erreur serveur lors de la récupération des données de tournoi.'});
         }
     });
 
-    route.post('/tournament/assign/:sport/:program',TournamentController.assign)
+    route.post('/tournament/assign/:sport/:program', TournamentController.assign)
 
-    route.post('/tournament/create/:program',TournamentController.create)
-    
+    route.post('/tournament/create/:program', TournamentController.create)
+
     route.post('/tournament/updateMatch/:sport/:program', TournamentController.update)
-    
+
     route.post('/tournament/updateMatchStatus/:sport/:program', TournamentController.updateMatchStatus)
 
     route.post('/tournament/clearMatch/:sport/:program', TournamentController.clear)
 
-    route.delete('/tournament/delete',TournamentController.deleteTournament)
+    route.delete('/tournament/delete', TournamentController.deleteTournament)
 }

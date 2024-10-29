@@ -185,8 +185,6 @@ const AmbianceScoreSchema = new mongoose.Schema({
     },
 
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
 })
 
 const AmbianceScore = mongoose.model('ambianceScores', AmbianceScoreSchema);

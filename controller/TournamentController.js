@@ -5,7 +5,7 @@ const Sport = require("../models/SportModel");
 const School = require("../models/SchoolModel");
 const Program = require("../models/ProgramModel");
 const Pool = require("../models/PoolModel");
-const Arbitrator = require("../models/ArbitratorModel");
+const TeamPoint = require("../models/TeamPointModel");
 const teamController = require("./TeamController");
 
 var poolsLenghts = 0;
@@ -280,18 +280,18 @@ async function handleSemiFinalCreation(ranking, sport, program) {
 
             const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
             var teamsinSemiFinal1 = await Team.count({ pool: semiFinalPool1._id });
-    
+
             if (teamsinSemiFinal1 < 2) { // si il y a moins de deux equipes dans la premiere demi-finale
-    
+
                 await assignTeamToSemiFinal(semiFinalPool1, ranking['Winner 1'], sport, program);
                 await updateTeamPools(ranking, semiFinalPool1._id);
-    
+
             } else { // sinon, je cree deuxieme demi final
-    
+
                 const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
                 await assignTeamToSemiFinal(semiFinalPool2, ranking['Winner 1'], sport, program);
                 await updateTeamPools(ranking, semiFinalPool2._id);
-    
+
                 const bestSecond = await getBestSecond(sport, program); // je recupere la deuxieme meilleure team
                 if (bestSecond) {
                     await assignTeamToSemiFinal(semiFinalPool2, bestSecond, sport, program);
@@ -380,7 +380,7 @@ function getTheWinner(team1, team2, score) {
 
 function getTheLooser(team1, team2, score) {
     if (score.team1Score == score.team2Score || score.team1Score == undefined || score.team2Score == undefined) {
-        return "Match nul"; 
+        return "Match nul";
     } else if (score.team1Score < score.team2Score) {
         return team1;
     }
@@ -403,14 +403,15 @@ const create = async (req, res) => {
             if (teams.length == 0) {
                 console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
                 return res.status(204).send();
-            }                    
+            }
             // creer un nb de poules en fonction du nb de teams
             const poules = createPoules(teams);
             for (let poule in poules) {
                 const teamsInPoule = poules[poule];
                 const newPoule = await Pool.create({ name: poule, sport: sport._id, program: program._id });
-                
+
                 for (let i = 0; i < teamsInPoule.length; i++) {
+                    await TeamPoint.create({ team: teamsInPoule[i]._id, pool: newPoule._id })
                     for (let j = i + 1; j < teamsInPoule.length; j++) {
                         const match = {
                             team1: teamsInPoule[i]._id,
@@ -419,7 +420,7 @@ const create = async (req, res) => {
                             pool: newPoule._id,
                             program: program._id
                         };
-            
+
                         await Match.create(match);
                         await Team.findOneAndUpdate(
                             { _id: teamsInPoule[i]._id, sport: sport._id, program: program._id },
@@ -448,12 +449,12 @@ const create = async (req, res) => {
 // met a jour le score d'un match et les points des participants
 const updateMatchStatus = async (req, res) => {
     const { team1, team2, isFinished } = req.body;
-    
+
     try {
         // Récupération du programme, du sport et des équipes en fonction des noms fournis
         const program = await Program.findOne({ name: req.params.program });
         const sport = await Sport.findOne({ name: req.params.sport });
-        
+
         // Récupération des informations sur les équipes
         const school1Ref = await School.findOne({ name: team1 });
         const team1Ref = await Team.findOne({ school: school1Ref._id, sport: sport._id, program: program._id });
@@ -471,7 +472,7 @@ const updateMatchStatus = async (req, res) => {
         // Mise à jour du champ isFinished à true pour le match dans la poule spécifique
         const match = await Match.findOneAndUpdate(
             { team1: team1Ref._id, team2: team2Ref._id, program: program._id, pool: pool._id },
-            { 
+            {
                 isFinished: isFinished,
                 updated_at: Date.now()
             },
@@ -524,7 +525,7 @@ const update = async (req, res) => {
             }, res);
         } else {
             await teamController.updatePoints({
-                body: { teamName: winnerTeam, program: program._id, 
+                body: { teamName: winnerTeam, program: program._id,
                     pool: pool._id, points: 3 }
             }, res);
 
@@ -556,7 +557,7 @@ const update = async (req, res) => {
             },
             { new: true }
         );
-        // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale 
+        // check a la fin de l'update si tous les matchs de la poule des deux equipes sont fini pour le passage en demi-finale/finale
         checkPoolWinner(pool, sport, program);
         return res.status(200).json(tournament);
     } catch (err) {
@@ -611,9 +612,9 @@ const clear = async (req, res) => {
                     team1Score: null,
                     team2Score: null
                 },
-                $unset: { 
-                    winnerTeam: "", 
-                    arbitrator: "" 
+                $unset: {
+                    winnerTeam: "",
+                    arbitrator: ""
                 },                sport: sport._id,
                 timePlayed: time,
                 isFinished: false
@@ -630,20 +631,23 @@ const clear = async (req, res) => {
 const deleteTournament = async (req, res) => {
     try {
         const sports = await Sport.find();
-        
+
         for (const sport of sports) {
             await Team.updateMany(
                 { sport: sport._id },
                 { $set: { pool: null, points: 0 } }
             );
         }
-        
+
         await Match.deleteMany({});
         console.log(`Tous les matchs ont été supprimés`);
 
         await Pool.deleteMany({});
         console.log(`Toutes les pools ont été supprimées.`);
-        
+
+        await TeamPoint.deleteMany({});
+        console.log(`Toutes les scores ont été supprimées.`);
+
         return res.status(200).json({ message: 'Tous les matches ont été supprimés.' });
     } catch (err) {
         console.error(err);

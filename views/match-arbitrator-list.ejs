@@ -1,0 +1,130 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Matches </h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Matches</a></li>
+                    <li class="breadcrumb-item active">Match :</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Matches</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                            </div><!-- end card header -->
+                            <br class="card-body">
+                            <h5>Matches</h5>
+                            <div id="table-arbitrator"></div>
+
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+    </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+
+</script>
+
+<script>
+    var matches = <%- JSON.stringify(global.matches) %>
+        console.log(matches)
+
+
+    new gridjs.Grid({
+        columns: [
+            "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Temps de jeu",
+            {
+                name: "Arbitre",
+                formatter: (cell, row) => {
+                    var html = "<ul>"
+                    cell.forEach(e => {
+                        html += "<li>" + e.firstname + " " + e.lastname + "</li>"
+                    })
+                    html += "<ul>"
+                    return gridjs.html(html);
+                }
+            },
+            {
+                name: "Action",
+                formatter: (cell, row) => {
+                    return gridjs.html(`<a href="/match/${cell}" ><button class="btn btn-info" >Voir</button></a>`);
+                }
+            }
+        ],
+        data: async () => {
+            return matches.map((element) => [element.team1.school.name,
+                element.score.team1Score,
+                element.team2.school.name,
+                element.score.team2Score,
+                element.timePlayed,
+                element.arbitrator,
+                element._id]);
+        },
+        sort: true
+    }).render(document.getElementById("table-arbitrator"));
+
+</script>
+
+<script src="/assets/js/pages/fontawesome.init.js"></script>

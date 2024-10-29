@@ -81,8 +81,6 @@ const CheerleadingScoreSchema = new mongoose.Schema({
     },
 
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
 })
 
 const CheerleadingScore = mongoose.model('cheerleadingScores', CheerleadingScoreSchema);

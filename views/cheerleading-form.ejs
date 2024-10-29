@@ -123,7 +123,7 @@
     }
 
     function buildInput(key, value) {
-        return gridjs.html(`<input type="number" onchange="onInputChange(this,'${key}')" id="name" name="name" value="${value}" min="1" max="80" />`)
+        return gridjs.html(`<input type="number" oninput="onInputChange(this,'${key}')" id="name" name="name" value="${value}" min="1" max="80" />`)
     }
 
     new gridjs.Grid({

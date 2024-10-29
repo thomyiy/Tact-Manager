@@ -7,8 +7,7 @@ const ProgramSchema = new mongoose.Schema({
         required: true,
     },
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const program = mongoose.model('program', ProgramSchema);

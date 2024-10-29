@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 
 const MatchSchema = new mongoose.Schema({
-    arbitrator: {
+    arbitrator: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "arbitrator",
-        default: undefined
-    },
-    // TODO: arbitre
+        ref: "users",
+    }],
     team1: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "team"
@@ -65,8 +63,7 @@ const MatchSchema = new mongoose.Schema({
     updated_at: {
         type: Date
     },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+
 })
 
 const Match = mongoose.model('matches', MatchSchema);

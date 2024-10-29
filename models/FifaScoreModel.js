@@ -9,8 +9,6 @@ const FifaScoreSchema = new mongoose.Schema({
     // TODO: arbitre
     // TODO: liste des elements a noter
     created_at: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
 })
 
 const FifaScore = mongoose.model('fifasScores', FifaScoreSchema);

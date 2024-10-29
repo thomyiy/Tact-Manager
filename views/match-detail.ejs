@@ -23,7 +23,7 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="javascript: void(0);">Match</a></li>
-                    <li class="breadcrumb-item active">Match : </li>
+                    <li class="breadcrumb-item active">Match :</li>
                 </ol>
             </div>
 
@@ -52,74 +52,118 @@
                         <div class="card">
                             <div class="card-header">
                             </div><!-- end card header -->
-                            <div class="card-body">
-                                <h5>Stunt</h5>
-                                <div id="table-stunt"></div>
-                                <h5>Chorégraphie</h5>
-                                <div id="table-choreography"></div>
-                                <h5>Tumbling</h5>
-                                <div id="table-tumbling"></div>
-                                <h5>Sauts</h5>
-                                <div id="table-jump"></div>
-                                <h5>Interraction</h5>
-                                <div id="table-interraction"></div>
-                                <h5>Fair Play</h5>
-                                <div id="table-fairplay"></div>
-
-
-                                <h5>Arbitre</h5>
-                                <div id="table-arbitrator"></div>
-
-                                <button type="button" class="btn btn-primary waves-effect waves-light"
-                                        data-bs-toggle="modal" data-bs-target="#myModal">Ajouter un arbitre
-                                </button>
-
-                                <!-- sample modal content -->
-                                <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel"
-                                     aria-hidden="true" data-bs-scroll="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="myModalLabel">Ajouter un arbitre</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <form action="/cheerleading/affectarbitrator" method="post"
-                                                      class="needs-validation" novalidate>
-                                                    <div class="mb-3 row">
-                                                        <label class="col-md-2 col-form-label">Arbitre</label>
-                                                        <div class="col-md-10">
-                                                            <select class="form-select" name="arbitratorId">
-                                                                <% for(var i = 0; i < arbitrators.length; i++) { %>
-                                                                    <option value="<%= arbitrators[i]._id %>"><%= arbitrators[i].firstname %> <%= arbitrators[i].lastname %>
-                                                                        >
-                                                                    </option>
-                                                                <% } %>
-                                                            </select>
-                                                            <input type="hidden" id="schoolId" name="schoolId"
-                                                                   value="<%= sessionSchool._id %>"/>
-                                                        </div>
-                                                    </div>
-                                                    <button class="btn btn-primary" type="submit">Valider</button>
-                                                </form>
-                                            </div><!-- /.modal-content -->
-                                        </div><!-- /.modal-dialog -->
-                                    </div><!-- /.modal -->
+                            <br class="card-body">
+                            <div class="toast-container position-fixed center-0 end-0 p-3">
+                                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <div class="toast-header">
+                                        <i class="rounded me-2 fas fa-info-circle"></i>
+                                        <strong class="me-auto">Updated</strong>
+                                        <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                                aria-label="Close"></button>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- end card body -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label"
+                                               for="team1Score">Score <%= match.team1.school.name %></label>
+                                        <input type="number" class="form-control" name="team1Score" id="team1Score"
+                                               placeholder="Score" required
+                                               oninput="onteam1ScoreChange(this.value)"
+                                               value="<%= match.score.team1Score %>"
+                                        <% if(match.isFinished){ %> disabled="disabled"
+                                                <% } %>
+                                        >
+                                        <div class="invalid-feedback">
+                                            Veuillez entrer un score pour l'equipe 1
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label"
+                                               for="team2Score">Score <%= match.team2.school.name %></label>
+                                        <input type="number" class="form-control" name="team2Score" id="team2Score"
+                                               placeholder="Score" required
+                                               oninput="onteam2ScoreChange(this.value)"
+                                               value="<%= match.score.team2Score %>"
+                                        <% if(match.isFinished){ %> disabled="disabled"
+                                                <% } %>
+                                        >
+                                        <div class="invalid-feedback">
+                                            Veuillez entrer un score pour l'equipe 2
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label"
+                                               for="timePlayed">Temp de jeu (en minute)</label>
+                                        <input type="number" class="form-control" name="timePlayed" id="timePlayed"
+                                               placeholder="Temps" required
+                                               oninput="ontimePlayedChange(this.value)"
+                                               value="<%= match.timePlayed %>"
+                                        <% if(match.isFinished){ %> disabled="disabled"
+                                                <% } %>
+                                        >
+                                        <div class="invalid-feedback">
+                                            Veuillez entrer un temps de jeu
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% if(global.user.role == "Admin") { %>
+                            <h5>Arbitre</h5>
+                            <div id="table-arbitrator"></div>
+
+                            <button type="button" class="btn btn-primary waves-effect waves-light"
+                                    data-bs-toggle="modal" data-bs-target="#myModal">Ajouter un arbitre
+                            </button>
+
+                            <!-- sample modal content -->
+                            <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel"
+                                 aria-hidden="true" data-bs-scroll="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="myModalLabel">Ajouter un arbitre</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/match/affectarbitrator" method="post"
+                                                  class="needs-validation" novalidate>
+                                                <div class="mb-3 row">
+                                                    <label class="col-md-2 col-form-label">Arbitre</label>
+                                                    <div class="col-md-10">
+                                                        <select class="form-select" name="arbitratorId">
+                                                            <% for(var i = 0; i < arbitrators.length; i++) { %>
+                                                                <option value="<%= arbitrators[i]._id %>"><%= arbitrators[i].firstname %> <%= arbitrators[i].lastname %>
+                                                                </option>
+                                                            <% } %>
+                                                        </select>
+                                                        <input type="hidden" id="matchId" name="matchId"
+                                                               value="<%= match._id %>"/>
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-primary" type="submit">Valider</button>
+                                            </form>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            </div>
+                            <%}%>
                         </div>
-                        <!-- end card -->
+                        <!-- end card body -->
                     </div>
-                    <!-- end col -->
+                    <!-- end card -->
                 </div>
-                <!-- end row -->
+                <!-- end col -->
             </div>
+            <!-- end row -->
         </div>
     </div>
-</div>
-
 </div>
 
 <%- contentFor('FooterJs') %>
@@ -142,80 +186,62 @@
 </script>
 
 <script>
-    var columns = ["Critère", "Note 1-80"];
-    var data = <%- JSON.stringify(cheerleadingScore) %>;
-    var grid = new gridjs.Grid({
-        columns: columns,
-        data: () => {
-            return [["Difficulté", data.stuntDifficulty],
-                ["Exécution", data.stuntExecution],
-                ["Synchronisation", data.stuntSynchronization],
-                ["Sécurité", data.stuntSecurity]]
-        },
-    }).render(document.getElementById("table-stunt"));
-    var grid = new gridjs.Grid({
-        columns: columns,
-        data: () => {
-            return [["Synchronisation", data.choreographySynchronization],
-                ["Rythme avec la musique", data.choreographyRythme],
-                ["Fluidité", data.choreographyFluidity]]
-        },
-    }).render(document.getElementById("table-choreography"));
+    var match = <%- JSON.stringify(match) %>
+        console.log(match)
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Nom", "Prenom", "Action"],
         data: () => {
-            return [["Difficulté", data.tumblingDifficulty],
-                ["Exécution", data.tumblingExecution],
-                ["Sécurité", data.tumblingSecurity]]
+            return match.arbitrator.map((e) => [e.firstname, e.lastname, gridjs.html(`
+<form action="/match/removearbitrator" method="post">
+<input type="hidden" id="matchId" name="matchId" value="${match._id}"/>
+<input type="hidden" id="arbitratorId" name="arbitratorId" value="${e._id}"/>
+<button class="btn btn-light btn-sm dropdown-toggle" type="submit" aria-expanded="false">
+<i class="fas fa-backspace"></i>
+</button>
+</form>`)]);
         },
-    }).render(document.getElementById("table-tumbling"));
-    new gridjs.Grid({
-        columns: columns,
-        data: () => {
-            return [["Difficulté", data.jumpDifficulty],
-                ["Exécution", data.jumpExecution],
-                ["Synchronisation", data.jumpSynchronization]]
-        },
-    }).render(document.getElementById("table-jump"));
-    new gridjs.Grid({
-        columns: columns,
-        data: () => {
-            return [["Créativité", data.interractionCreativity],
-                ["Réaction des supporters", data.interractionReaction]]
-        },
-    }).render(document.getElementById("table-interraction"));
-    new gridjs.Grid({
-        columns: columns,
-        data: () => {
-            return [["Attitude positive", data.fairplayAttitude],
-                ["respect des adversaires/jury/règles", data.fairplayrespect]]
-        },
-    }).render(document.getElementById("table-fairplay"));
+    }).render(document.getElementById("table-arbitrator"));
 
-    function removeArbitrator(id) {
-        console.log("removeArbitrator : " + id)
-        fetch("/cheerleading/removearbitrator", {
+
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
+
+    const team1Score = document.getElementById("team1Score")
+    const team2Score = document.getElementById("team2Score")
+    const timePlayed = document.getElementById("timePlayed")
+
+    function onteam1ScoreChange(value) {
+        match.score.team1Score = team1Score.value
+        console.log("onteam1ScoreChange : " + value)
+        update()
+    }
+
+    function onteam2ScoreChange(value) {
+        match.score.team2Score = team2Score.value
+        console.log("onteam2ScoreChange : " + value)
+        update()
+    }
+
+    function ontimePlayedChange(value) {
+        match.timePlayed = timePlayed.value
+        console.log("ontimePlayedChange : " + value)
+        update()
+    }
+
+    function update() {
+        fetch("/match/update", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({schoolId:"<%= sessionSchool._id %>",arbitratorId:id})
+            body: JSON.stringify(match)
         })
             .then((response) => {
                 console.log(response.status)
-                if (response.status===200)
-                    window.location.replace("/cheerleading/"+"<%= sessionSchool.name %>");
+                if (response.status === 200)
+                    toastBootstrap.show()
             });
     }
-
-    new gridjs.Grid({
-        columns: ["Nom", "Prenom", "Action"],
-        data: () => {
-            var data = <%- JSON.stringify(affectedArbitrators) %>;
-            return data.map((e) => [e.firstname, e.lastname, gridjs.html(`<button class="btn btn-light btn-sm dropdown-toggle" type="button" onclick="removeArbitrator('${e._id}')" aria-expanded="false"><i class="fas fa-backspace"></i></button>`)]);
-        },
-    }).render(document.getElementById("table-arbitrator"));
 </script>
 
 <script src="/assets/js/pages/fontawesome.init.js"></script>

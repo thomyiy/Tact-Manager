@@ -1,7 +1,9 @@
 const School = require("../models/SchoolModel");
-const Arbitrator = require("../models/ArbitratorModel");
 const CheerleadingScore = require("../models/CheerleadingScoreModel");
 const AmbianceScore = require("../models/AmbianceScoreModel");
+const Match = require("../models/MatchModel");
+const Team = require("../models/TeamModel");
+const User = require("../models/UserModel");
 
 const getGlobal = async (req) => {
     const user = req.session;
@@ -11,8 +13,11 @@ const getGlobal = async (req) => {
 
     if (user.role === "Admin") {
         schools = await School.find({});
-        arbitrators = await Arbitrator.find({});
     } else if (user.role === "Arbitrator") {
+        var matches = await Match.find({arbitrator: user.userid}).populate({path: "team1 team2"});
+        matches = await Team.populate(matches, {path: "team1 team2 ", select: 'school'})
+        matches = await School.populate(matches, {path: "team1.school team2.school", select: 'name'})
+        matches = await User.populate(matches, {path: "arbitrator", select: 'firstname lastname'})
 
         var cheerleadingSchoolsId = await CheerleadingScore.find({arbitrator: user.userid}).distinct('school');
         cheerleadingSchools = await School.find({
@@ -24,6 +29,6 @@ const getGlobal = async (req) => {
         });
     }
 
-    return {user: user, schools: schools, arbitrators, cheerleadingSchools: cheerleadingSchools, ambianceSchools: ambianceSchools}
+    return {user: user, schools: schools, cheerleadingSchools: cheerleadingSchools, ambianceSchools: ambianceSchools,matches:matches}
 }
 module.exports = {getGlobal}
