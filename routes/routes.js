@@ -8,6 +8,7 @@ const User = require("../models/UserModel");
 const mongoose = require("mongoose");
 const uuid = require("uuid");
 const jwt = require('jsonwebtoken')
+const utils = require("../controller/Utils");
 
 module.exports = function (route) {
     route.use((req, res, next) => {
@@ -112,4 +113,17 @@ module.exports = function (route) {
         res.render('auth/auth-500', {title: '500 Error', layout: 'layout/layout-without-nav'});
     })
 
+    route.get('/faq', async (req, res, next) => {
+        const global = await utils.getGlobal(req)
+
+        if (req.session.role === "Admin")
+            res.render('pages-faqs-admin', {global: global})
+        else if (req.session.role === "Arbitrator")
+            res.render('pages-faqs-arbitrator', {global: global})
+    })
+
+    route.get('/ranking', async (req, res, next) => {
+        const global = await utils.getGlobal(req)
+        res.render('ranking', {global: global})
+    })
 }
