@@ -13,7 +13,7 @@ const utils = require("../controller/Utils");
 module.exports = function (route) {
     route.use((req, res, next) => {
         var uemail = req.session.useremail;
-        const allowUrls = ["/login", "/auth-validate", "/register", "/signup", "/forgotpassword", "/sendforgotpasswordlink", "/resetpassword", "/error", "/changepassword"];
+        const allowUrls = ["/public-data","/login", "/auth-validate", "/register", "/signup", "/forgotpassword", "/sendforgotpasswordlink", "/resetpassword", "/error", "/changepassword"];
 
         if (allowUrls.indexOf(req.path) !== -1) {
             if (uemail != null && uemail != undefined) {
@@ -125,5 +125,12 @@ module.exports = function (route) {
     route.get('/ranking', async (req, res, next) => {
         const global = await utils.getGlobal(req)
         res.render('ranking', {global: global})
+    })
+
+    route.get('/public-data', (req, res, next) => {
+        res.render('public-data', {
+            title: 'public-data',
+            layout: 'layout/layout-without-nav'
+        })
     })
 }
