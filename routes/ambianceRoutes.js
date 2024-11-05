@@ -1,138 +1,166 @@
 const express = require('express');
 const School = require("../models/SchoolModel");
 const User = require("../models/UserModel");
-const AmbianceScore = require("../models/AmbianceScoreModel");
+const AmbianceCortegeScore = require("../models/AmbianceCortegeScoreModel");
+const AmbianceOpeningScore = require("../models/AmbianceOpeningScoreModel");
+const AmbianceMatchsScore = require("../models/AmbianceMatchsScoreModel");
+const AmbianceStandsScore = require("../models/AmbianceStandsScoreModel");
+const AmbianceFinalScore = require("../models/AmbianceFinalScoreModel");
+const AmbianceHospitalityScore = require("../models/AmbianceHospitalityScoreModel");
 const mongoose = require("mongoose");
 const route = express.Router();
 const utils = require("../controller/Utils")
 
 module.exports = function (route) {
+
+    function getModelType(type) {
+        switch (type) {
+            case 'cortege':
+                return AmbianceCortegeScore
+            case 'opening':
+                return AmbianceOpeningScore
+            case 'matchs':
+                return AmbianceMatchsScore
+            case 'stands':
+                return AmbianceStandsScore
+            case 'final':
+                return AmbianceFinalScore
+            case 'hospitality':
+                return AmbianceHospitalityScore
+        }
+    }
+
+    route.get('/ambiance/:school/:type', async (req, res, next) => {
+
+        const sessionSchool = await School.findOne({name: req.params.school});
+        const type = req.params.type
+        let ambianceModel = getModelType(type)
+
+        if (ambianceModel != null) {
+            const ambianceScores = await ambianceModel.find({school: sessionSchool._id}).populate("arbitrator");
+
+            var global = await utils.getGlobal(req)
+
+            if (global.user.role === "Admin") {
+
+                const affectedArbitratorsId = await ambianceModel.find({school: sessionSchool._id}).distinct('arbitrator')
+                const affectedArbitrators = await User.find({
+                    '_id': affectedArbitratorsId
+                });
+                const arbitrators = await User.find({
+                    role: "Arbitrator",
+                    _id: {$nin: affectedArbitratorsId.map(a => a._id)}
+                })
+
+                res.render('ambiance/ambiance-admin', {
+                    global: global,
+                    arbitrators: arbitrators,
+                    affectedArbitrators: affectedArbitrators,
+                    sessionSchool: sessionSchool,
+                    ambianceScores: ambianceScores,
+                    type:type
+                });
+            } else {
+                console.log(global.user)
+                const ambianceScore = await ambianceModel.findOne({
+                    arbitrator: global.user.userid,
+                    school: sessionSchool._id
+                }).populate("arbitrator");
+
+                res.render('ambiance/ambiance-arbitrator', {
+                    global: global,
+                    sessionSchool: sessionSchool,
+                    ambianceScore: ambianceScore,
+                    ambianceScores: ambianceScores,
+                    type:type
+                });
+            }
+        }
+    })
+
+    route.post('/ambiance/:type/update', async (req, res, next) => {
+        const type = req.params.type
+        let ambianceModel = getModelType(type)
+
+        if (ambianceModel != null) {
+            ambianceModel.findByIdAndUpdate(req.body._id, req.body,
+                function (err, docs) {
+                    if (err) {
+                        console.log(err)
+                        res.sendStatus(500);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                });
+        } else {
+            res.sendStatus(500);
+        }
+    })
+
+    route.post('/ambiance/:type/affectarbitrator', async (req, res, next) => {
+        const type = req.params.type
+        let ambianceModel = getModelType(type)
+        const school = await School.findOne({_id: req.body.schoolId})
+
+        if (ambianceModel != null) {
+            var formdata = {
+                school: req.body.schoolId,
+                arbitrator: req.body.arbitratorId,
+            };
+            await ambianceModel.create(formdata, function (err, res) {
+                if (err) {
+                    console.log(err, res);
+                    return res.status(500).send(err);
+                }
+            });
+        }
+        return res.redirect("/ambiance/" + school.name + "/" + type)
+    })
+
+    route.post('/ambiance/:type/removearbitrator', async (req, res, next) => {
+        const type = req.params.type
+        let ambianceModel = getModelType(type)
+        if (ambianceModel != null) {
+            ambianceModel.deleteOne({
+                school: req.body.schoolId,
+                arbitrator: req.body.arbitratorId
+            }, function (err, result) {
+                if (err) {
+                    console.log(err, result);
+                    res.status(500).send(err);
+                } else
+                    res.sendStatus(200)
+            });
+        } else {
+            res.sendStatus(500);
+        }
+    })
+
     route.get('/ambiance/:school', async (req, res, next) => {
         try {
             var global = await utils.getGlobal(req)
 
             const sessionSchool = await School.findOne({name: req.params.school});
-            const ambianceScores = await AmbianceScore.find({school: sessionSchool._id});
+            const ambianceCortegeScore = await AmbianceCortegeScore.find({school: sessionSchool._id});
+            const ambianceOpeningScore = await AmbianceOpeningScore.find({school: sessionSchool._id});
+            const ambianceMatchsScore = await AmbianceMatchsScore.find({school: sessionSchool._id});
+            const ambianceStandsScore = await AmbianceStandsScore.find({school: sessionSchool._id});
+            const ambianceFinalScore = await AmbianceFinalScore.find({school: sessionSchool._id});
+            const ambianceHospitalityScore = await AmbianceHospitalityScore.find({school: sessionSchool._id});
 
-            const ambianceScore = {
-                auditoryAnimations: ambianceScores.reduce((total, next) => total + next.auditoryAnimations, 0) / ambianceScores.length,
-                visualAnimationsDuringTheSongs: ambianceScores.reduce((total, next) => total + next.visualAnimationsDuringTheSongs, 0) / ambianceScores.length,
-                maestro: ambianceScores.reduce((total, next) => total + next.maestro, 0) / ambianceScores.length,
-                interactionWithFans: ambianceScores.reduce((total, next) => total + next.interactionWithFans, 0) / ambianceScores.length,
-                sportsmansTour: ambianceScores.reduce((total, next) => total + next.sportsmansTour, 0) / ambianceScores.length,
-                arrivalWithAllTheDelegation: ambianceScores.reduce((total, next) => total + next.arrivalWithAllTheDelegation, 0) / ambianceScores.length,
-                organizationOfTheProcession: ambianceScores.reduce((total, next) => total + next.organizationOfTheProcession, 0) / ambianceScores.length,
-                pyrotechnics: ambianceScores.reduce((total, next) => total + next.pyrotechnics, 0) / ambianceScores.length,
-                registrationAndPresenceOfTheDean: ambianceScores.reduce((total, next) => total + next.registrationAndPresenceOfTheDean, 0) / ambianceScores.length,
-                registrationAndPresenceOf5Alumni: ambianceScores.reduce((total, next) => total + next.registrationAndPresenceOf5Alumni, 0) / ambianceScores.length,
-                bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8: ambianceScores.reduce((total, next) => total + next.bringBackAsMuchSupportAsPossibleOnDDay1stPlaceOutOf8, 0) / ambianceScores.length,
-                theDelegationRegistered10PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.theDelegationRegistered10PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                theDelegationRegistered20PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.theDelegationRegistered20PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                theDelegationRegistered40PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.theDelegationRegistered40PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                theDelegationRegistered80PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.theDelegationRegistered80PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                firstDelegationToRegister100PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.firstDelegationToRegister100PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                firstDelegationToRegister200PeopleInTheSupporterTicketOffice: ambianceScores.reduce((total, next) => total + next.firstDelegationToRegister200PeopleInTheSupporterTicketOffice, 0) / ambianceScores.length,
-                sportyAndGoodNaturedAttitude: ambianceScores.reduce((total, next) => total + next.sportyAndGoodNaturedAttitude, 0) / ambianceScores.length,
-                totalRespectAndMutualEncouragement: ambianceScores.reduce((total, next) => total + next.totalRespectAndMutualEncouragement, 0) / ambianceScores.length,
-                totalRespectOfTheAllottedTimes: ambianceScores.reduce((total, next) => total + next.totalRespectOfTheAllottedTimes, 0) / ambianceScores.length,
-                noDropImpeccableStand: ambianceScores.reduce((total, next) => total + next.noDropImpeccableStand, 0) / ambianceScores.length,
-                flagDiversity: ambianceScores.reduce((total, next) => total + next.flagDiversity, 0) / ambianceScores.length,
-                flagNumberOfFlags: ambianceScores.reduce((total, next) => total + next.flagNumberOfFlags, 0) / ambianceScores.length,
-                flagVisualQuality: ambianceScores.reduce((total, next) => total + next.flagVisualQuality, 0) / ambianceScores.length,
-                flagUse: ambianceScores.reduce((total, next) => total + next.flagUse, 0) / ambianceScores.length,
-                standOriginality: ambianceScores.reduce((total, next) => total + next.standOriginality, 0) / ambianceScores.length,
-                standBuildQuality: ambianceScores.reduce((total, next) => total + next.standBuildQuality, 0) / ambianceScores.length,
-                standVisualQuality: ambianceScores.reduce((total, next) => total + next.standVisualQuality, 0) / ambianceScores.length,
-                tifosDeploymentCoordination: ambianceScores.reduce((total, next) => total + next.tifosDeploymentCoordination, 0) / ambianceScores.length,
-                tifosVeryOriginalConcept: ambianceScores.reduce((total, next) => total + next.tifosVeryOriginalConcept, 0) / ambianceScores.length,
-                tifosImpressiveAndHighQuality: ambianceScores.reduce((total, next) => total + next.tifosImpressiveAndHighQuality, 0) / ambianceScores.length,
-                songsRelatedToTheTheme: ambianceScores.reduce((total, next) => total + next.songsRelatedToTheTheme, 0) / ambianceScores.length,
-                costumesAndMakeup: ambianceScores.reduce((total, next) => total + next.costumesAndMakeup, 0) / ambianceScores.length,
-                perfectlyDecoratedAndInTuneStand: ambianceScores.reduce((total, next) => total + next.perfectlyDecoratedAndInTuneStand, 0) / ambianceScores.length,
-                strongAndConsistentVisualDistribution: ambianceScores.reduce((total, next) => total + next.strongAndConsistentVisualDistribution, 0) / ambianceScores.length,
-                tribuneSongsDiversity: ambianceScores.reduce((total, next) => total + next.tribuneSongsDiversity, 0) / ambianceScores.length,
-                tribuneSongsEndurance: ambianceScores.reduce((total, next) => total + next.tribuneSongsEndurance, 0) / ambianceScores.length,
-                tribuneQualityOfSongs: ambianceScores.reduce((total, next) => total + next.tribuneQualityOfSongs, 0) / ambianceScores.length,
-                tribuneFanfareCoordinationWithSupporters: ambianceScores.reduce((total, next) => total + next.tribuneFanfareCoordinationWithSupporters, 0) / ambianceScores.length,
-                tribuneFanfareInstruments: ambianceScores.reduce((total, next) => total + next.tribuneFanfareInstruments, 0) / ambianceScores.length,
-                tribuneFanfareRhythmic: ambianceScores.reduce((total, next) => total + next.tribuneFanfareRhythmic, 0) / ambianceScores.length,
-                tribuneFervorJoyfulElectricAtmosphere: ambianceScores.reduce((total, next) => total + next.tribuneFervorJoyfulElectricAtmosphere, 0) / ambianceScores.length,
-                tribuneFervorDanceChoreEntertainment: ambianceScores.reduce((total, next) => total + next.tribuneFervorDanceChoreEntertainment, 0) / ambianceScores.length,
-            }
-            const affectedArbitratorsId = await AmbianceScore.find({school: sessionSchool._id}).distinct('arbitrator')
-            const affectedArbitrators = await User.find({
-                '_id': affectedArbitratorsId
-            });
-            const arbitrators = await User.find({role: "Arbitrator"})
-
-            res.render('ambiance-average', {
+            res.render('ambiance/ambiance-average', {
                 global: global,
-                arbitrators: arbitrators,
-                affectedArbitrators: affectedArbitrators,
                 sessionSchool: sessionSchool,
-                ambianceScore: ambianceScore
+                ambianceCortegeScore: ambianceCortegeScore,
+                ambianceOpeningScore: ambianceOpeningScore,
+                ambianceMatchsScore: ambianceMatchsScore,
+                ambianceStandsScore: ambianceStandsScore,
+                ambianceFinalScore: ambianceFinalScore,
+                ambianceHospitalityScore: ambianceHospitalityScore
             });
         } catch (err) {
             console.error(err);
             return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
         }
-    });
-
-    route.get('/ambianceform/:school', async (req, res, next) => {
-        try {
-            var global = await utils.getGlobal(req)
-
-            const sessionSchool = await School.findOne({name: req.params.school});
-            var ambianceScore = await AmbianceScore.findOne({arbitrator: req.session.userid});
-
-            res.render('ambiance-form', {
-                global: global,
-                sessionSchool: sessionSchool,
-                ambianceScore: ambianceScore
-            });
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
-        }
-    });
-
-    route.post('/ambiance/update', async (req, res, next) => {
-        AmbianceScore.findByIdAndUpdate(req.body._id, req.body,
-            function (err, docs) {
-                if (err) {
-                    console.log(err)
-                    res.sendStatus(500);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
-    });
-
-    route.post('/ambiance/affectarbitrator', async (req, res, next) => {
-        var formdata = {
-            school: req.body.schoolId,
-            arbitrator: req.body.arbitratorId,
-        };
-        const school = await School.findOne({_id: req.body.schoolId})
-        await AmbianceScore.create(formdata, function (err, res) {
-            if (err) {
-                console.log(err, res);
-                return res.status(500).send(err);
-            }
-        });
-        return res.redirect("/ambiance/" + school.name)
-    });
-
-    route.post('/ambiance/removearbitrator', async (req, res, next) => {
-        AmbianceScore.deleteOne({
-            school: req.body.schoolId,
-            arbitrator: req.body.arbitratorId
-        }, function (err, result) {
-            if (err) {
-                console.log(err, result);
-                res.status(500).send(err);
-            } else
-                res.sendStatus(200)
-        });
     });
 }

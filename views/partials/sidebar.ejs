@@ -42,15 +42,15 @@
                 <li class="menu-title" data-key="t-menu">Menu</li>
 
                 <% if(global.user.role == "Arbitrator") { %>
-                    <% if(global.matches.length>0 ) { %>
+                    <% if(global.matches.length > 0 ) { %>
                         <li>
                             <a href="/match">
                                 <i class="bx bx-layout icon nav-icon"></i>
                                 <span class="menu-item" data-key="t-vertical">Matchs</span>
                             </a>
                         </li>
-                    <%}%>
-                    <% if(global.cheerleadingSchools.length>0 ) { %>
+                    <% } %>
+                    <% if(global.cheerleadingSchools.length > 0 ) { %>
 
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">
@@ -80,36 +80,96 @@
                             </ul>
                         </li>
                     <% } %>
-                        <% if(global.ambianceSchools.length>0) { %>
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow">
-                                    <i class="bx bx-layout icon nav-icon"></i>
-                                    <span class="menu-item" data-key="t-multi-level">Ambiance</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="true">
-                                    <li><a class="has-arrow">Ma notation</a>
-                                        <ul class="sub-menu" aria-expanded="true">
-                                            <% for(var i = 0; i < global.ambianceSchools.length; i++) { %>
-                                                <li>
-                                                    <a href="/ambianceform/<%= global.ambianceSchools[i].name %>"><%= global.ambianceSchools[i].name %></a>
-                                                </li>
-                                            <% } %>
-                                        </ul>
+                    <% if(global.ambianceCortegeSchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Cortege</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceCortegeSchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceCortegeSchools[i].name %>/cortege"><%= global.ambianceCortegeSchools[i].name %></a>
                                     </li>
-
-                                    <li><a class="has-arrow">Moyenne</a>
-                                        <ul class="sub-menu" aria-expanded="true">
-                                            <% for(var i = 0; i < global.ambianceSchools.length; i++) { %>
-                                                <li>
-                                                    <a href="/ambiance/<%= global.ambianceSchools[i].name %>"><%= global.ambianceSchools[i].name %></a>
-                                                </li>
-                                            <% } %>
-                                        </ul>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
+                    <% if(global.ambianceOpeningSchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Opening</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceOpeningSchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceOpeningSchools[i].name %>/opening"><%= global.ambianceOpeningSchools[i].name %></a>
                                     </li>
-                                </ul>
-                            </li>
-                        <% } %>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
+                    <% if(global.ambianceMatchsSchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Matchs</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceMatchsSchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceMatchsSchools[i].name %>/matchs"><%= global.ambianceMatchsSchools[i].name %></a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
+                    <% if(global.ambianceStandsSchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Stands</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceStandsSchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceStandsSchools[i].name %>/stands"><%= global.ambianceStandsSchools[i].name %></a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
+                    <% if(global.ambianceFinalSchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Final</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceFinalSchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceFinalSchools[i].name %>/final"><%= global.ambianceFinalSchools[i].name %></a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
+                    <% if(global.ambianceHospitalitySchools.length > 0) { %>
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i class="bx bx-layout icon nav-icon"></i>
+                                <span class="menu-item" data-key="t-multi-level">Ambiance Hospitality</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="true">
+                                <% for(var i = 0; i < global.ambianceHospitalitySchools.length; i++) { %>
+                                    <li>
+                                        <a href="/ambiance/<%= global.ambianceHospitalitySchools[i].name %>/hospitality"><%= global.ambianceHospitalitySchools[i].name %></a>
+                                    </li>
+                                <% } %>
+                            </ul>
+                        </li>
+                    <% } %>
                 <% } %>
                 <% if(global.user.role == "Admin") { %>
                     <li>
@@ -182,7 +242,9 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="true" id="schoolContainer">
                             <% for(var i = 0; i < global.schools.length; i++) { %>
-                                <li><a href="/cheerleading/<%= global.schools[i].name %>"><%= global.schools[i].name %></a></li>
+                                <li>
+                                    <a href="/cheerleading/<%= global.schools[i].name %>"><%= global.schools[i].name %></a>
+                                </li>
                             <% } %>
                         </ul>
                     </li>
@@ -194,8 +256,24 @@
                         </a>
                         <ul class="sub-menu" aria-expanded="true" id="schoolContainer">
                             <% for(var i = 0; i < global.schools.length; i++) { %>
-                                <li><a href="/ambiance/<%= global.schools[i].name %>"><%= global.schools[i].name %></a></li>
+
+                                <li><a class="has-arrow"><%= global.schools[i].name %></a>
+                                    <ul class="sub-menu" aria-expanded="true">
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>">Global</a></li>
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>/cortege">Cortege</a></li>
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>/opening">Cérémonie
+                                                Ouverture</a></li>
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>/matchs">Matchs</a></li>
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>/stands">Stands</a></li>
+                                        <li><a href="/ambiance/<%= global.schools[i].name %>/final">Final Supporters</a>
+                                        </li>
+                                        <li>
+                                            <a href="/ambiance/<%= global.schools[i].name %>/hospitality">Hospitality</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             <% } %>
+
                         </ul>
                     </li>
 

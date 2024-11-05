@@ -37,7 +37,7 @@ module.exports = function (route) {
             const affectedArbitrators = await User.find({
                 '_id': affectedArbitratorsId
             });
-            const arbitrators = await User.find({role: "Arbitrator"})
+            const arbitrators = await User.find({role: "Arbitrator", _id: {$nin: affectedArbitratorsId.map(a => a._id)}})
 
             res.render('cheerleading-average', {
                 global: global,
