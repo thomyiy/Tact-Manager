@@ -43,16 +43,20 @@ const getGlobal = async (req) => {
         var ambianceFinalSchools = await School.find({'_id': ambianceFinalSchoolsId});
         var ambianceHospitalitySchools = await School.find({'_id': ambianceHospitalitySchoolsId});
 
-        return {user: user,
+        return {
+            user: user,
             schools: schools,
             cheerleadingSchools: cheerleadingSchools,
-            ambianceCortegeSchools: ambianceCortegeSchools ,
-            ambianceOpeningSchools: ambianceOpeningSchools ,
-            ambianceMatchsSchools: ambianceMatchsSchools ,
-            ambianceStandsSchools: ambianceStandsSchools ,
-            ambianceFinalSchools: ambianceFinalSchools ,
-            ambianceHospitalitySchools: ambianceHospitalitySchools ,
-            matches:matches}
+            ambianceCortegeSchools: ambianceCortegeSchools,
+            ambianceOpeningSchools: ambianceOpeningSchools,
+            ambianceMatchsSchools: ambianceMatchsSchools,
+            ambianceStandsSchools: ambianceStandsSchools,
+            ambianceFinalSchools: ambianceFinalSchools,
+            ambianceHospitalitySchools: ambianceHospitalitySchools,
+            matches: matches
+        }
+    } else if (user.role === "User") {
+        return {user: user}
     }
 }
 module.exports = {getGlobal}
