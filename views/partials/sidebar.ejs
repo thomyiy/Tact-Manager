@@ -40,7 +40,14 @@
                     </div>
                 </li>-->
                 <li class="menu-title" data-key="t-menu">Menu</li>
-
+                <% if(global.user.role == "User") { %>
+                    <li>
+                        <a href="/ranking">
+                            <i class="bx bx-layout icon nav-icon"></i>
+                            <span class="menu-item" data-key="t-vertical">Classement</span>
+                        </a>
+                    </li>
+                <% } %>
                 <% if(global.user.role == "Arbitrator") { %>
                     <% if(global.matches.length > 0 ) { %>
                         <li>
