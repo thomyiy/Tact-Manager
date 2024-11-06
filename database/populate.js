@@ -209,6 +209,14 @@ async function createUsers() {
             firstname: "arbitre2",
             lastname: "arbitre2",
             role: "Arbitrator"
+        },
+        {
+            name: "user1",
+            email: "user1@mail.fr",
+            password: "user1",
+            firstname: "user1",
+            lastname: "user1",
+            role: "User"
         }]
 
     for (let i = 0; i < formdatas.length; i++) {
