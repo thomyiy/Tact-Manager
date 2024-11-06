@@ -67,96 +67,96 @@
                             </div>
                             <!-- end card -->
                         </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Basketball</h6>
-                                <div id="basketball-m-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Basketball</h6>
+                                    <div id="basketball-m-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Handball</h6>
-                                <div id="handball-m-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Handball</h6>
+                                    <div id="handball-m-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Futsal</h6>
-                                <div id="futsal-f-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Futsal</h6>
+                                    <div id="futsal-f-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Basketball</h6>
-                                <div id="basketball-f-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Basketball</h6>
+                                    <div id="basketball-f-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Handball</h6>
-                                <div id="handball-f-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Handball</h6>
+                                    <div id="handball-f-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Cheerleading</h6>
-                                <div id="cheerleading-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Cheerleading</h6>
+                                    <div id="cheerleading-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Ambiance</h6>
-                                <div id="ambiance-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Ambiance</h6>
+                                    <div id="ambiance-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Fifa</h6>
-                                <div id="fifa-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Fifa</h6>
+                                    <div id="fifa-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>Mario Kart</h6>
-                                <div id="mariokart-table"></div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Mario Kart</h6>
+                                    <div id="mariokart-table"></div>
+                                </div>
+                                <!-- end card body -->
                             </div>
-                            <!-- end card body -->
+                            <!-- end card -->
                         </div>
-                        <!-- end card -->
-                    </div>
                     </div>
                 </div>
                 <!-- end row -->
@@ -257,18 +257,18 @@
     }).render(document.getElementById("ambiance-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Classement"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(fifa) %>
+            return data.map((e) => [e.name, e.fifaPosition]);
         },
     }).render(document.getElementById("fifa-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Classement"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(mk) %>
+            return data.map((e) => [e.name, e.mkPosition]);
         },
     }).render(document.getElementById("mariokart-table"));
 </script>

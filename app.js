@@ -16,6 +16,7 @@ const tournamentRouter = require('./routes/tournamentRoutes');
 const cheerleadingRouter = require('./routes/cheerleadingRoutes');
 const ambianceRouter = require('./routes/ambianceRoutes');
 const matchRouter = require('./routes/matchRoutes');
+const esportRouter = require('./routes/esportRoutes');
 
 const Sport = require('./models/SportModel');
 const User = require('./models/UserModel');
@@ -95,6 +96,7 @@ tournamentRouter(app);
 cheerleadingRouter(app);
 ambianceRouter(app);
 matchRouter(app);
+esportRouter(app);
 app.all('*', function (req, res) {
     res.locals = {title: 'Error 404'};
     res.render('auth/auth-404', {layout: "layout/layout"});
