@@ -1,0 +1,317 @@
+<%- contentFor('HeaderCss') %>
+<%- include("../partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Ambiance Score : <%= sessionSchool.name %> <%= type %></h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Ambiance Score : <%= sessionSchool.name %> <%= type %></li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+<div class="toast-container position-fixed center-0 end-0 p-3" style="z-index:9999">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="rounded me-2 fas fa-info-circle"></i>
+            <strong class="me-auto">Updated</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div>
+                            <h5>Ambiance Score : <%= sessionSchool.name %> <%= type %></h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                        </div><!-- end card header -->
+                        <div class="card-body">
+                            <div id="table-score"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                        </div><!-- end card header -->
+                        <div class="card-body">
+                            <div id="table-average"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+    </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+
+<script>
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
+
+    var columns = ["Critère", "Note"];
+    var data = <%- JSON.stringify(ambianceScore) %>;
+
+    function onInputChange(input, key, max) {
+        if (input.value > max) input.value = max
+        if (input.value < 0) input.value = 0
+        data[key] = input.value
+        fetch("/ambiance/<%= type %>/update", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                console.log(response.status)
+                if (response.status === 200)
+                    toastBootstrap.show()
+            });
+    }
+
+    function buildInput(key, value, max) {
+        return gridjs.html(`<input type="number" oninput="onInputChange(this,'${key}',${max})" id="name" name="name" value="${value}" min="1" max="80" />`)
+    }
+
+    <% if(type === "cortege"){ %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Arrivée avec toute la délégation très bonne coordination", buildInput( "ArrivalWithTheEntireDelegationVeryGoodCoordination", data.ArrivalWithTheEntireDelegationVeryGoodCoordination, 5)],
+                ["Chants", buildInput( "Songs", data.Songs, 20)],
+                ["Coordination, parfait synchronisation", buildInput( "CoordinationPerfectSynchronization", data.CoordinationPerfectSynchronization, 4)],
+                ["Costume/ Maquillage", buildInput( "CostumeMakeup", data.CostumeMakeup, 20)],
+                ["Instruments grande variété", buildInput( "WideVarietyOfInstruments", data.WideVarietyOfInstruments, 3)],
+                ["Organisation du cortège (création et agencement clair des éléments)", buildInput( "OrganizationOfTheProcession", data.OrganizationOfTheProcession, 5)],
+                ["Rythmique clairs et entrainants", buildInput( "ClearAndCatchyRhythm", data.ClearAndCatchyRhythm, 5)],
+                ["Vue d’ensemble (spectaculaire et sécurisée)", buildInput( "OverviewSpectacularAndSecure", data.OverviewSpectacularAndSecure, 5)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Arrivée avec toute la délégation très bonne coordination", data.reduce((total, next) => total + next.ArrivalWithTheEntireDelegationVeryGoodCoordination, 0) / data.length],
+                ["Chants", data.reduce((total, next) => total + next.Songs, 0) / data.length],
+                ["Coordination, parfait synchronisation", data.reduce((total, next) => total + next.CoordinationPerfectSynchronization, 0) / data.length],
+                ["Costume/ Maquillage", data.reduce((total, next) => total + next.CostumeMakeup, 0) / data.length],
+                ["Instruments grande variété", data.reduce((total, next) => total + next.WideVarietyOfInstruments, 0) / data.length],
+                ["Organisation du cortège (création et agencement clair des éléments)", data.reduce((total, next) => total + next.OrganizationOfTheProcession, 0) / data.length],
+                ["Rythmique clairs et entrainants", data.reduce((total, next) => total + next.ClearAndCatchyRhythm, 0) / data.length],
+                ["Vue d’ensemble (spectaculaire et sécurisée)", data.reduce((total, next) => total + next.OverviewSpectacularAndSecure, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% } else if (type === "opening") { %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Déploiement coordination", buildInput( "CoordinationDeployment", data.CoordinationDeployment, 4)],
+                ["Diversité, grande diversité de designs et de couleurs", buildInput( "DiversityGreatVarietyOfDesignsAndColors", data.DiversityGreatVarietyOfDesignsAndColors, 9)],
+                ["Interaction avec les Sportifs", buildInput( "InteractionWithAthletes", data.InteractionWithAthletes, 5)],
+                ["Nombre de drapeaux", buildInput( "NumberOfFlags", data.NumberOfFlags, 9)],
+                ["Qualité visuelle", buildInput( "VisualQuality", data.VisualQuality, 5)],
+                ["Qualité visuelle et concept", buildInput( "VisualQualityAndConcept", data.VisualQualityAndConcept, 8)],
+                ["Respect du temps de passage des autres délégations", buildInput( "RespectThePassageTimeOfOtherDelegations", data.RespectThePassageTimeOfOtherDelegations, 2)],
+                ["Tour des sportifs (présentation dynamique)", buildInput( "SportsmansTour", data.SportsmansTour, 5)],
+                ["Utilisation dynamique", buildInput( "DynamicUse", data.DynamicUse, 5)],
+                ["Visuel (drapeaux, tifo)", buildInput( "VisualFlagsTifo", data.VisualFlagsTifo, 4)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Déploiement coordination", data.reduce((total, next) => total + next.CoordinationDeployment, 0) / data.length],
+                ["Diversité, grande diversité de designs et de couleurs", data.reduce((total, next) => total + next.DiversityGreatVarietyOfDesignsAndColors, 0) / data.length],
+                ["Interaction avec les Sportifs", data.reduce((total, next) => total + next.InteractionWithAthletes, 0) / data.length],
+                ["Nombre de drapeaux", data.reduce((total, next) => total + next.NumberOfFlags, 0) / data.length],
+                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
+                ["Qualité visuelle et concept", data.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / data.length],
+                ["Respect du temps de passage des autres délégations", data.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / data.length],
+                ["Tour des sportifs (présentation dynamique)", data.reduce((total, next) => total + next.SportsmansTour, 0) / data.length],
+                ["Utilisation dynamique", data.reduce((total, next) => total + next.DynamicUse, 0) / data.length],
+                ["Visuel (drapeaux, tifo)", data.reduce((total, next) => total + next.VisualFlagsTifo, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% }  else if (type === "matchs") { %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", buildInput( "AtmosphereBrothelElectricAndJoyfulAtmosphere", data.AtmosphereBrothelElectricAndJoyfulAtmosphere, 6)],
+                ["Animation (auditive) Improvisations, chants dôles, interactions avec le match", buildInput( "AnimationImprovisationsFunnySongsInteractionsWithTheMatch", data.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 5)],
+                ["Animations visuelles pendant les chants (Chorégraphies, ola, sauts coordonnés)", buildInput( "VisualAnimationsDuringTheSongs", data.VisualAnimationsDuringTheSongs, 5)],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", buildInput( "PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment", data.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 6)],
+                ["Diversité, grande variété de chants sans répétitions", buildInput( "DiversityWideVarietyOfSongsWithoutRepetitions", data.DiversityWideVarietyOfSongsWithoutRepetitions, 9)],
+                ["Endurance soutenue durant toute la durée de la compétition", buildInput( "SustainedEnduranceThroughoutTheDurationOfTheCompetition", data.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 9)],
+                ["Fair play & Respect (Insultes, Chants)", buildInput( "FairPlayRespect", data.FairPlayRespect, 5)],
+                ["Maestro (énergie et coordination)", buildInput( "Maestro", data.Maestro, 5)],
+                ["Qualité des chants clairs et mélodieux", buildInput( "QualityOfClearAndMelodiousSinging", data.QualityOfClearAndMelodiousSinging, 6)],
+                ["Tribune propre", buildInput( "OwnStand", data.OwnStand, 5)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", data.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / data.length],
+                ["Animation (auditive) Improvisations, chants dôles, interactions avec le match", data.reduce((total, next) => total + next.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 0) / data.length],
+                ["Animations visuelles pendant les chants (Chorégraphies, ola, sauts coordonnés)", data.reduce((total, next) => total + next.VisualAnimationsDuringTheSongs, 0) / data.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", data.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / data.length],
+                ["Diversité, grande variété de chants sans répétitions", data.reduce((total, next) => total + next.DiversityWideVarietyOfSongsWithoutRepetitions, 0) / data.length],
+                ["Endurance soutenue durant toute la durée de la compétition", data.reduce((total, next) => total + next.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 0) / data.length],
+                ["Fair play & Respect (Insultes, Chants)", data.reduce((total, next) => total + next.FairPlayRespect, 0) / data.length],
+                ["Maestro (énergie et coordination)", data.reduce((total, next) => total + next.Maestro, 0) / data.length],
+                ["Qualité des chants clairs et mélodieux", data.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / data.length],
+                ["Tribune propre", data.reduce((total, next) => total + next.OwnStand, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% }  else if (type === "stands") { %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Originalité concept", buildInput( "OriginalityConcept", data.OriginalityConcept, 9)],
+                ["Qualité de construction solide, bien pensée et sécurisée", buildInput( "SolidWellThoughtOutAndSecureBuildQuality", data.SolidWellThoughtOutAndSecureBuildQuality, 9)],
+                ["Qualité visuelle", buildInput( "VisualQuality", data.VisualQuality, 9)],
+                ["Stand", buildInput( "Stand", data.Stand, 10)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Originalité concept", data.reduce((total, next) => total + next.OriginalityConcept, 0) / data.length],
+                ["Qualité de construction solide, bien pensée et sécurisée", data.reduce((total, next) => total + next.SolidWellThoughtOutAndSecureBuildQuality, 0) / data.length],
+                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
+                ["Stand", data.reduce((total, next) => total + next.Stand, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% }  else if (type === "final") { %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", buildInput( "AtmosphereBrothelElectricAndJoyfulAtmosphere", data.AtmosphereBrothelElectricAndJoyfulAtmosphere, 4)],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", buildInput( "PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment", data.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 10)],
+                ["Déploiement coordination", buildInput( "CoordinationDeployment", data.CoordinationDeployment, 10)],
+                ["Fair play & Respect (Insultes, Chants)", buildInput( "FairPlayRespect", data.FairPlayRespect, 5)],
+                ["Qualité des chants clairs et mélodieux", buildInput( "QualityOfClearAndMelodiousSinging", data.QualityOfClearAndMelodiousSinging, 3)],
+                ["Qualité visuelle", buildInput( "VisualQuality", data.VisualQuality, 4)],
+                ["Qualité visuelle et concept", buildInput( "VisualQualityAndConcept", data.VisualQualityAndConcept, 15)],
+                ["Respect du temps de passage des autres délégations", buildInput( "RespectThePassageTimeOfOtherDelegations", data.RespectThePassageTimeOfOtherDelegations, 3)],
+                ["Utilisation dynamique", buildInput( "DynamicUse", data.DynamicUse, 4)],
+                ["Visuel (drapeaux, tifo)", buildInput( "VisualFlagsTifo", data.VisualFlagsTifo, 6)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", data.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / data.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", data.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / data.length],
+                ["Déploiement coordination", data.reduce((total, next) => total + next.CoordinationDeployment, 0) / data.length],
+                ["Fair play & Respect (Insultes, Chants)", data.reduce((total, next) => total + next.FairPlayRespect, 0) / data.length],
+                ["Qualité des chants clairs et mélodieux", data.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / data.length],
+                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
+                ["Qualité visuelle et concept", data.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / data.length],
+                ["Respect du temps de passage des autres délégations", data.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / data.length],
+                ["Utilisation dynamique", data.reduce((total, next) => total + next.DynamicUse, 0) / data.length],
+                ["Visuel (drapeaux, tifo)", data.reduce((total, next) => total + next.VisualFlagsTifo, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% }  else if (type === "hospitality") { %>
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Inscription et présence de 5 alumni", buildInput( "RegistrationAndPresenceOf5Alumni", data.RegistrationAndPresenceOf5Alumni, 5)],
+                ["Inscription et présence du doyen ", buildInput( "RegistrationAndPresenceOfTheDean", data.RegistrationAndPresenceOfTheDean, 10)]
+            ]
+        },
+    }).render(document.getElementById("table-score"));
+
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Inscription et présence de 5 alumni", data.reduce((total, next) => total + next.RegistrationAndPresenceOf5Alumni, 0) / data.length],
+                ["Inscription et présence du doyen", data.reduce((total, next) => total + next.RegistrationAndPresenceOfTheDean, 0) / data.length]
+            ]
+        },
+    }).render(document.getElementById("table-average"));
+    <% } %>
+
+</script>
+
+<script src="/assets/js/pages/fontawesome.init.js"></script>
+

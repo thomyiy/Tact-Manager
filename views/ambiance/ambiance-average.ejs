@@ -1,0 +1,303 @@
+<%- contentFor('HeaderCss') %>
+<%- include("../partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Ambiance Score : <%= sessionSchool.name %></h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                    <li class="breadcrumb-item active">Ambiance Score : <%= sessionSchool.name %></li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Ambiance Score : <%= sessionSchool.name %>
+                                    <div id="total-point"></div>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Cortege</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-cortege"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Opening</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-opening"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Matchs</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-matchs"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Stands</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-stands"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Final</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-final"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Hospitality</h5>
+                            </div><!-- end card header -->
+                            <div class="card-body">
+                                <div id="table-hospitality"></div>
+                            </div>
+                            <!-- end card body -->
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<%- contentFor('FooterJs') %>
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+
+</script>
+
+<script>
+    var ambianceCortegeScore = <%- JSON.stringify(ambianceCortegeScore) %>;
+    var ambianceOpeningScore = <%- JSON.stringify(ambianceOpeningScore) %>;
+    var ambianceMatchsScore = <%- JSON.stringify(ambianceMatchsScore) %>;
+    var ambianceStandsScore = <%- JSON.stringify(ambianceStandsScore) %>;
+    var ambianceFinalScore = <%- JSON.stringify(ambianceFinalScore) %>;
+    var ambianceHospitalityScore = <%- JSON.stringify(ambianceHospitalityScore) %>;
+
+    var columns = ["Critère", "Note"];
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Arrivée avec toute la délégation très bonne coordination", ambianceCortegeScore.reduce((total, next) => total + next.ArrivalWithTheEntireDelegationVeryGoodCoordination, 0) / ambianceCortegeScore.length],
+                ["Chants", ambianceCortegeScore.reduce((total, next) => total + next.Songs, 0) / ambianceCortegeScore.length],
+                ["Coordination, parfait synchronisation", ambianceCortegeScore.reduce((total, next) => total + next.CoordinationPerfectSynchronization, 0) / ambianceCortegeScore.length],
+                ["Costume/ Maquillage", ambianceCortegeScore.reduce((total, next) => total + next.CostumeMakeup, 0) / ambianceCortegeScore.length],
+                ["Instruments grande variété", ambianceCortegeScore.reduce((total, next) => total + next.WideVarietyOfInstruments, 0) / ambianceCortegeScore.length],
+                ["Organisation du cortège (création et agencement clair des éléments)", ambianceCortegeScore.reduce((total, next) => total + next.OrganizationOfTheProcession, 0) / ambianceCortegeScore.length],
+                ["Rythmique clairs et entrainants", ambianceCortegeScore.reduce((total, next) => total + next.ClearAndCatchyRhythm, 0) / ambianceCortegeScore.length],
+                ["Vue d’ensemble (spectaculaire et sécurisée)", ambianceCortegeScore.reduce((total, next) => total + next.OverviewSpectacularAndSecure, 0) / ambianceCortegeScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-cortege"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Déploiement coordination", ambianceOpeningScore.reduce((total, next) => total + next.CoordinationDeployment, 0) / ambianceOpeningScore.length],
+                ["Diversité, grande diversité de designs et de couleurs", ambianceOpeningScore.reduce((total, next) => total + next.DiversityGreatVarietyOfDesignsAndColors, 0) / ambianceOpeningScore.length],
+                ["Interaction avec les Sportifs", ambianceOpeningScore.reduce((total, next) => total + next.InteractionWithAthletes, 0) / ambianceOpeningScore.length],
+                ["Nombre de drapeaux", ambianceOpeningScore.reduce((total, next) => total + next.NumberOfFlags, 0) / ambianceOpeningScore.length],
+                ["Qualité visuelle", ambianceOpeningScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceOpeningScore.length],
+                ["Qualité visuelle et concept", ambianceOpeningScore.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / ambianceOpeningScore.length],
+                ["Respect du temps de passage des autres délégations", ambianceOpeningScore.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / ambianceOpeningScore.length],
+                ["Tour des sportifs (présentation dynamique)", ambianceOpeningScore.reduce((total, next) => total + next.SportsmansTour, 0) / ambianceOpeningScore.length],
+                ["Utilisation dynamique", ambianceOpeningScore.reduce((total, next) => total + next.DynamicUse, 0) / ambianceOpeningScore.length],
+                ["Visuel (drapeaux, tifo)", ambianceOpeningScore.reduce((total, next) => total + next.VisualFlagsTifo, 0) / ambianceOpeningScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-opening"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", ambianceMatchsScore.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / ambianceMatchsScore.length],
+                ["Animation (auditive) Improvisations, chants dôles, interactions avec le match", ambianceMatchsScore.reduce((total, next) => total + next.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 0) / ambianceMatchsScore.length],
+                ["Animations visuelles pendant les chants (Chorégraphies, ola, sauts coordonnés)", ambianceMatchsScore.reduce((total, next) => total + next.VisualAnimationsDuringTheSongs, 0) / ambianceMatchsScore.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", ambianceMatchsScore.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / ambianceMatchsScore.length],
+                ["Diversité, grande variété de chants sans répétitions", ambianceMatchsScore.reduce((total, next) => total + next.DiversityWideVarietyOfSongsWithoutRepetitions, 0) / ambianceMatchsScore.length],
+                ["Endurance soutenue durant toute la durée de la compétition", ambianceMatchsScore.reduce((total, next) => total + next.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 0) / ambianceMatchsScore.length],
+                ["Fair play & Respect (Insultes, Chants)", ambianceMatchsScore.reduce((total, next) => total + next.FairPlayRespect, 0) / ambianceMatchsScore.length],
+                ["Maestro (énergie et coordination)", ambianceMatchsScore.reduce((total, next) => total + next.Maestro, 0) / ambianceMatchsScore.length],
+                ["Qualité des chants clairs et mélodieux", ambianceMatchsScore.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / ambianceMatchsScore.length],
+                ["Tribune propre", ambianceMatchsScore.reduce((total, next) => total + next.OwnStand, 0) / ambianceMatchsScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-matchs"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Originalité concept", ambianceStandsScore.reduce((total, next) => total + next.OriginalityConcept, 0) / ambianceStandsScore.length],
+                ["Qualité de construction solide, bien pensée et sécurisée", ambianceStandsScore.reduce((total, next) => total + next.SolidWellThoughtOutAndSecureBuildQuality, 0) / ambianceStandsScore.length],
+                ["Qualité visuelle", ambianceStandsScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceStandsScore.length],
+                ["Stand", ambianceStandsScore.reduce((total, next) => total + next.Stand, 0) / ambianceStandsScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-stands"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", ambianceFinalScore.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / ambianceFinalScore.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", ambianceFinalScore.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / ambianceFinalScore.length],
+                ["Déploiement coordination", ambianceFinalScore.reduce((total, next) => total + next.CoordinationDeployment, 0) / ambianceFinalScore.length],
+                ["Fair play & Respect (Insultes, Chants)", ambianceFinalScore.reduce((total, next) => total + next.FairPlayRespect, 0) / ambianceFinalScore.length],
+                ["Qualité des chants clairs et mélodieux", ambianceFinalScore.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / ambianceFinalScore.length],
+                ["Qualité visuelle", ambianceFinalScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceFinalScore.length],
+                ["Qualité visuelle et concept", ambianceFinalScore.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / ambianceFinalScore.length],
+                ["Respect du temps de passage des autres délégations", ambianceFinalScore.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / ambianceFinalScore.length],
+                ["Utilisation dynamique", ambianceFinalScore.reduce((total, next) => total + next.DynamicUse, 0) / ambianceFinalScore.length],
+                ["Visuel (drapeaux, tifo)", ambianceFinalScore.reduce((total, next) => total + next.VisualFlagsTifo, 0) / ambianceFinalScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-final"));
+
+    new gridjs.Grid({
+        columns: columns,
+        data: () => {
+            return [["Inscription et présence de 5 alumni", ambianceHospitalityScore.reduce((total, next) => total + next.RegistrationAndPresenceOf5Alumni, 0) / ambianceHospitalityScore.length],
+                ["Inscription et présence du doyen", ambianceHospitalityScore.reduce((total, next) => total + next.RegistrationAndPresenceOfTheDean, 0) / ambianceHospitalityScore.length]
+            ]
+        },
+    }).render(document.getElementById("table-hospitality"));
+
+    const totalPoint =
+        ambianceCortegeScore.reduce((total, next) => total + next.ArrivalWithTheEntireDelegationVeryGoodCoordination, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.Songs, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.CoordinationPerfectSynchronization, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.CostumeMakeup, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.WideVarietyOfInstruments, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.OrganizationOfTheProcession, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.ClearAndCatchyRhythm, 0) / ambianceCortegeScore.length +
+        ambianceCortegeScore.reduce((total, next) => total + next.OverviewSpectacularAndSecure, 0) / ambianceCortegeScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.CoordinationDeployment, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.DiversityGreatVarietyOfDesignsAndColors, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.InteractionWithAthletes, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.NumberOfFlags, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.SportsmansTour, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.DynamicUse, 0) / ambianceOpeningScore.length +
+        ambianceOpeningScore.reduce((total, next) => total + next.VisualFlagsTifo, 0) / ambianceOpeningScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.VisualAnimationsDuringTheSongs, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.DiversityWideVarietyOfSongsWithoutRepetitions, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.FairPlayRespect, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.Maestro, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / ambianceMatchsScore.length +
+        ambianceMatchsScore.reduce((total, next) => total + next.OwnStand, 0) / ambianceMatchsScore.length +
+        ambianceStandsScore.reduce((total, next) => total + next.OriginalityConcept, 0) / ambianceStandsScore.length +
+        ambianceStandsScore.reduce((total, next) => total + next.SolidWellThoughtOutAndSecureBuildQuality, 0) / ambianceStandsScore.length +
+        ambianceStandsScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceStandsScore.length +
+        ambianceStandsScore.reduce((total, next) => total + next.Stand, 0) / ambianceStandsScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.CoordinationDeployment, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.FairPlayRespect, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.VisualQuality, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.DynamicUse, 0) / ambianceFinalScore.length +
+        ambianceFinalScore.reduce((total, next) => total + next.VisualFlagsTifo, 0) / ambianceFinalScore.length +
+        ambianceHospitalityScore.reduce((total, next) => total + next.RegistrationAndPresenceOf5Alumni, 0) / ambianceHospitalityScore.length +
+        ambianceHospitalityScore.reduce((total, next) => total + next.RegistrationAndPresenceOfTheDean, 0) / ambianceHospitalityScore.length
+    document.getElementById("total-point").innerHTML = totalPoint
+</script>
+
+<script src="/assets/js/pages/fontawesome.init.js"></script>

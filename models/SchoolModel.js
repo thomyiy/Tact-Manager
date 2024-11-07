@@ -6,6 +6,14 @@ const SchoolSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    fifaPosition: {
+        type: Number,
+        default: 0
+    },
+    mkPosition: {
+        type: Number,
+        default: 0
+    },
     created_at: Date,
 
 })

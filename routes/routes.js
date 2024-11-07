@@ -5,14 +5,16 @@ const fs = require('fs');
 
 const AuthController = require("../controller/AuthController");
 const User = require("../models/UserModel");
+const School = require("../models/SchoolModel");
 const mongoose = require("mongoose");
 const uuid = require("uuid");
 const jwt = require('jsonwebtoken')
+const utils = require("../controller/Utils");
 
 module.exports = function (route) {
     route.use((req, res, next) => {
         var uemail = req.session.useremail;
-        const allowUrls = ["/login", "/auth-validate", "/register", "/signup", "/forgotpassword", "/sendforgotpasswordlink", "/resetpassword", "/error", "/changepassword"];
+        const allowUrls = ["/public-data", "/login", "/auth-validate", "/register", "/signup", "/forgotpassword", "/sendforgotpasswordlink", "/resetpassword", "/error", "/changepassword"];
 
         if (allowUrls.indexOf(req.path) !== -1) {
             if (uemail != null && uemail != undefined) {
@@ -112,4 +114,30 @@ module.exports = function (route) {
         res.render('auth/auth-500', {title: '500 Error', layout: 'layout/layout-without-nav'});
     })
 
+    route.get('/faq', async (req, res, next) => {
+        const global = await utils.getGlobal(req)
+
+        if (req.session.role === "Admin")
+            res.render('pages-faqs-admin', {global: global})
+        else if (req.session.role === "Arbitrator")
+            res.render('pages-faqs-arbitrator', {global: global})
+    })
+
+    route.get('/ranking', async (req, res, next) => {
+        const global = await utils.getGlobal(req)
+        var fifa = await School.find({},null, {sort: {fifaPosition: 1}})
+        var mk = await School.find({},null, {sort: {mkPosition: 1}})
+        res.render('ranking', {
+            global: global,
+            fifa: fifa,
+            mk: mk
+        })
+    })
+
+    route.get('/public-data', (req, res, next) => {
+        res.render('public-data', {
+            title: 'public-data',
+            layout: 'layout/layout-without-nav'
+        })
+    })
 }

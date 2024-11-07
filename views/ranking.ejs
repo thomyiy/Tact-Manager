@@ -1,0 +1,275 @@
+<%- contentFor('HeaderCss') %>
+<%- include("partials/title-meta", {"title": "Accueil"}) %>
+
+<!-- nouisliderribute css -->
+<link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
+
+<!-- color picker css -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/classic.min.css"/> <!-- 'classic' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/monolith.min.css"/> <!-- 'monolith' theme -->
+<link rel="stylesheet" href="/assets/libs/@simonwep/pickr/themes/nano.min.css"/> <!-- 'nano' theme -->
+<link rel="stylesheet" href="/assets/libs/gridjs/theme/mermaid.min.css">
+
+<!-- datepicker css -->
+<link rel="stylesheet" href="/assets/libs/flatpickr/flatpickr.min.css">
+<%- contentFor('breadcrumb') %>
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Classement</h4>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Classement</a></li>
+                    <li class="breadcrumb-item active">Classement</li>
+                </ol>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+<%- contentFor('body') %>
+
+<div class="row">
+    <div class="col-xl-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <h5>Classement</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Global</h6>
+                                    <div id="global-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Futsal</h6>
+                                    <div id="futsal-m-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Basketball</h6>
+                                    <div id="basketball-m-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Handball</h6>
+                                    <div id="handball-m-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Futsal</h6>
+                                    <div id="futsal-f-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Basketball</h6>
+                                    <div id="basketball-f-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Handball</h6>
+                                    <div id="handball-f-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Cheerleading</h6>
+                                    <div id="cheerleading-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Ambiance</h6>
+                                    <div id="ambiance-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Fifa</h6>
+                                    <div id="fifa-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6>Mario Kart</h6>
+                                    <div id="mariokart-table"></div>
+                                </div>
+                                <!-- end card body -->
+                            </div>
+                            <!-- end card -->
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<%- contentFor('FooterJs') %>
+
+
+<!-- gridjs js -->
+<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+
+<script src="/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<!-- color picker js -->
+<script src="/assets/libs/@simonwep/pickr/pickr.min.js"></script>
+<script src="/assets/libs/@simonwep/pickr/pickr.es5.min.js"></script>
+
+<!-- datepicker js -->
+<script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="/assets/js/pages/form-validation.init.js"></script>
+<script>
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("global-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("futsal-m-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("basketball-m-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("handball-m-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("futsal-f-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("basketball-f-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("handball-f-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("cheerleading-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole"],
+        data: async () => {
+
+            return [["School1"]]
+        },
+    }).render(document.getElementById("ambiance-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole", "Classement"],
+        data: async () => {
+            var data = <%- JSON.stringify(fifa) %>
+            return data.map((e) => [e.name, e.fifaPosition]);
+        },
+    }).render(document.getElementById("fifa-table"));
+
+    new gridjs.Grid({
+        columns: ["Ecole", "Classement"],
+        data: async () => {
+            var data = <%- JSON.stringify(mk) %>
+            return data.map((e) => [e.name, e.mkPosition]);
+        },
+    }).render(document.getElementById("mariokart-table"));
+</script>
+

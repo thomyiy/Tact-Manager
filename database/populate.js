@@ -127,7 +127,7 @@ async function createFields() {
 
 async function createSchools() {
     // creer les ecoles
-    const schoolTable = ["School1", "School2", "School3", "School4", "School5", "School6", "School7", "School8", "School9", "School10", "School11", "School12", "School13", "School14", "School15", "School16"];
+    const schoolTable = ["ALLSH", "ARCHI", "ARTS&METIERS", "CENTRALE", "DROIT", "ESSCA", "FEG", "GAP", "IAE", "IMPGT", "IUT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
 
     for (let i = 0; i < schoolTable.length; i++) {
         var schools = await School.count({name: schoolTable[i]});
@@ -152,7 +152,7 @@ async function createSchools() {
 
 async function createTeams() {
     // creer les equipes
-    const schoolTable = ["School1", "School2", "School3", "School4", "School5", "School6", "School7", "School8"]//, "School9", "School10", "School11", "School12", "School13", "School14", "School15", "School16"];
+    const schoolTable = ["ALLSH", "ARCHI", "ARTS&METIERS", "CENTRALE", "DROIT", "ESSCA", "FEG", "GAP", "IAE", "IMPGT", "IUT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
     const programTable = ["Masculin", "Féminin"];
     const sportTable = ["Football", "Basketball", "Handball"];
 
@@ -209,6 +209,14 @@ async function createUsers() {
             firstname: "arbitre2",
             lastname: "arbitre2",
             role: "Arbitrator"
+        },
+        {
+            name: "user1",
+            email: "user1@mail.fr",
+            password: "user1",
+            firstname: "user1",
+            lastname: "user1",
+            role: "User"
         }]
 
     for (let i = 0; i < formdatas.length; i++) {
