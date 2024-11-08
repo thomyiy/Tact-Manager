@@ -46,18 +46,17 @@ const MatchSchema = new mongoose.Schema({
     expectedTime: {
         type: Number
     },
-    timePlayed: {
-        type: Number,
-        default: 0
-    },
     isFinished: {
         type: Boolean,
         default: false
     },
     field: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "field",
+        ref: "fields",
         // required: true
+    },
+    startTime: {
+        type: Date
     },
     created_at: Date,
     updated_at: {

@@ -174,9 +174,11 @@ async function createTeams() {
                             var teams = await Team.count(formdata);
                             if (teams === 0) {
                                 try {
-                                    await Team.create(formdata, function (err, res) {
-                                        console.log("Team ", schoolTable[i] + " " + programTable[x] + " " + sportTable[y], " created.")
-                                    });
+                                    if (programTable[x] === "Masculin" || (programTable[x] === "Féminin" && 
+                                        !["ALLSH", "ARCHI", "ARTS&METIERS", "CENTRALE"].includes(schoolTable[i]))) {
+                                        await Team.create(formdata);
+                                        console.log("Team ", schoolTable[i] + " " + programTable[x] + " " + sportTable[y], "created.");
+                                    }
                                 } catch (error) {
                                     console.error(error.message);
                                 }

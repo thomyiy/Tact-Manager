@@ -20,6 +20,10 @@ const PoolSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    regularTime: {
+        type: Number,
+        required: true
+    },
     created_at: Date,
 
 })

@@ -236,7 +236,7 @@
     pools.forEach(e => {
         new gridjs.Grid({
             columns: [
-                "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Temps de jeu",
+                "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Terrain", "Temps réglemenataire", "Début du match", 
                 {
                     name: "Arbitre",
                     formatter: (cell, row) => {
@@ -256,17 +256,20 @@
                 }
             ],
             data: async () => {
-                return e.matches.map((element) => [element.team1.school.name,
+                return e.matches.sort((a, b) => new Date(a.startTime) - new Date(b.startTime)).map((element) => [
+                    element.team1.school.name,
                     element.score.team1Score,
                     element.team2.school.name,
                     element.score.team2Score,
-                    element.timePlayed,
+                    element.field.name,
+                    e.regularTime,
+                    new Date(element.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
                     element.arbitrator,
-                    element._id]);
+                    element._id
+                ]);
             },
             sort: true
         }).render(document.getElementById(e.name.replace(" ", "_") + "-table"));
-
 
         new gridjs.Grid({
             columns: [

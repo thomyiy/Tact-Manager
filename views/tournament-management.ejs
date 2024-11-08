@@ -38,20 +38,28 @@
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div id="button-container" class="d-flex justify-content-center"></div>
-                        <div class="card-body">
-                            <div id="match-table-pagination"></div>
-                        </div>
-                    </div>
+        <div class="row">
+            <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                <h6>Matchs Terrain 1</h6>
+                <div id="table-field-1"></div>
                 </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
+            </div>
+            <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                <h6>Match Terrain 2</h6>
+                <div id="table-field-2"></div>
+                </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
             </div>
         </div>
-
-        
     </div>
 </div>
 
@@ -60,19 +68,47 @@
 <!-- gridjs js -->
 <script src="/assets/libs/gridjs/gridjs.umd.js"></script>
 
-
 <script>
+    new gridjs.Grid({
+        columns: ["Team 1", "Team 2", "Départ", "Sport", "Poule", "Programme"],
+        data: async () => {
+            var data = <%- JSON.stringify(matchsField1) %>;
+            data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+            return data.map((e) => [
+                e.team1.school.name,
+                e.team2.school.name,
+                new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                e.sport.name,
+                e.pool.name,
+                e.program.name
+            ]);
+        },
+        sort: true
+    }).render(document.getElementById("table-field-1"));
+
+    new gridjs.Grid({
+        columns: ["Team 1", "Team 2", "Départ", "Sport", "Poule", "Programme"],
+        data: async () => {
+            var data = <%- JSON.stringify(matchsField2) %>;
+            data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+            return data.map((e) => [
+                e.team1.school.name,
+                e.team2.school.name,
+                new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                e.sport.name,
+                e.pool.name,
+                e.program.name
+            ]);
+        },
+        sort: true
+    }).render(document.getElementById("table-field-2"));
+
     async function createTournament() {
         try {
             const responses = await Promise.all([
-                fetch(`/tournament/create/Masculin`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                }),
-                fetch(`/tournament/create/Féminin`, {
+                fetch(`/tournament/create`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
