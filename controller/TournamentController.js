@@ -125,9 +125,19 @@ function getRegularTimeOfPool(teams) {
     return 30 / (teams.length - 1);
 }
 
-function createPoules(teams) {
-    const randomTeams = teams.sort(() => 0.5 - Math.random());
-    return pouleFactory[randomTeams.length](randomTeams);;
+function seededRandom(seed) {
+    const x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+function createPoules(teams, seed) {
+    const shuffledTeams = teams.slice();
+    for (let i = shuffledTeams.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom(seed) * (i + 1));
+        [shuffledTeams[i], shuffledTeams[j]] = [shuffledTeams[j], shuffledTeams[i]];
+    }
+
+    return pouleFactory[shuffledTeams.length](shuffledTeams);
 }
 
 async function getMatchsOnField(field, sport, program) {
@@ -225,9 +235,12 @@ async function createTournamentOfProgram(program, sports) {
 
     const field1 = await Field.findOne({ name: "Field 1" });
     const field2 = await Field.findOne({ name: "Field 2" });
-
+    
+    
     // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
     for (const sport of sports) {
+        let seed = Math.floor(Math.random() * 1000);
+
         const teams = await Team.find({ sport: sport._id, program: program._id });
         if (teams.length == 0) {
             console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
@@ -235,7 +248,7 @@ async function createTournamentOfProgram(program, sports) {
         }
 
         // creer un nb de poules en fonction du nb de teams
-        const poules = createPoules(teams);
+        const poules = createPoules(teams, seed);
         for (let poule in poules) {
             const teamsInPoule = poules[poule];
             const newPoule = await Pool.create({ name: poule, sport: sport._id, program: program._id, regularTime: getRegularTimeOfPool(teamsInPoule) });
