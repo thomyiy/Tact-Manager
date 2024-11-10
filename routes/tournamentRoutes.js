@@ -6,6 +6,7 @@ const Team = require("../models/TeamModel");
 const School = require("../models/SchoolModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
+const Arbitrator = require("../models/ArbitratorModel");
 const route = express.Router();
 const utils = require("../controller/Utils")
 const User = require("../models/UserModel");

@@ -104,7 +104,7 @@
 <script src="/assets/js/pages/form-validation.init.js"></script>
 
 <!-- modal pour assigner arbitre a un match -->
-<div>
+<!-- <div>
     <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal"
             data-bs-target="#arbitratorModal">Ajouter Arbitre
     </button>
@@ -128,6 +128,41 @@
             </div>
         </div>
     </div>
+</div> -->
+
+<!-- sample modal content -->
+<div>
+    <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal"
+        data-bs-target="#arbitratorModal">Ajouter Arbitre
+    </button>
+    <div id="arbitratorModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel"
+        aria-hidden="true" data-bs-scroll="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Ajouter un arbitre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/tournament/assign/<%= sport %>/<%= program %>" method="post"
+                            class="needs-validation" novalidate>
+                        <div class="mb-3 row">
+                            <label class="col-md-2 col-form-label">Arbitre</label>
+                            <div class="col-md-10">
+                                <select class="form-select" name="arbitratorId">
+                                    <% for(var i = 0; i < arbitrators.length; i++) { %>
+                                        <option value="<%= arbitrators[i]._id %>"><%= arbitrators[i].name %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Valider</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -146,13 +181,13 @@
                 formatter: (cell, row) => {
                     const isFinished = row.cells[9].data;
                     return gridjs.html(`
-                        <span class="${isFinished ? 'editable-arbitrator' : 'add-arbitrator-btn'}" 
+                        <button class="${isFinished ? 'btn btn-secondary' : 'btn btn-primary'} ${isFinished ? 'editable-arbitrator' : 'add-arbitrator-btn'}" 
                             data-id="${row.cells[0].data};${row.cells[1].data}" 
                             data-arbitrator="${cell || ''}"
-                            style="${isFinished ? 'color: gray; pointer-events: none;' : ''}" 
-                            ${isFinished ? '' : 'data-bs-toggle="modal" data-bs-target="#arbitratorModal"'}> 
+                            style="${isFinished ? 'pointer-events: none;' : ''}" 
+                            ${isFinished ? 'disabled' : 'data-bs-toggle="modal" data-bs-target="#arbitratorModal"'}> 
                             ${cell || 'Ajouter'} 
-                        </span>
+                        </button>
                     `);
                 }
             },
@@ -673,7 +708,7 @@
         } else if (event.target.classList.contains('editable-time')) {
             handleTime(event.target);
         } else if (event.target.classList.contains("add-arbitrator-btn")) {
-            handleArbitrator(event.target);
+            // handleArbitrator(event.target);
         }
     });
 
