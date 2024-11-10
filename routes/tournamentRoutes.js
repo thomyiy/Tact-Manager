@@ -3,6 +3,7 @@ const TournamentController = require("../controller/TournamentController");
 const Match = require("../models/MatchModel");
 const Sport = require("../models/SportModel");
 const Team = require("../models/TeamModel");
+const Field = require("../models/FieldModel");
 const School = require("../models/SchoolModel");
 const Pool = require("../models/PoolModel");
 const Program = require("../models/ProgramModel");
@@ -72,6 +73,7 @@ module.exports = function (route) {
             pools = await School.populate(pools, {path: "matches.team1.school matches.team2.school", select: 'name'})
             pools = await School.populate(pools, {path: "teams.school teamPoints.team.school", select: 'name'})
             pools = await User.populate(pools, {path: "matches.arbitrator", select: 'firstname lastname'})
+            pools = await Field.populate(pools, {path: "matches.field", select: 'name'})
 
             res.render('tournament-viewV2', {
                 global: global,
@@ -87,19 +89,27 @@ module.exports = function (route) {
 
     route.get('/tournament/management', async (req, res, next) => {
         try {
-            // const sport = req.params.sport;
-            // const program = req.params.program;
-            // const user = {
-            //     role: req.session.role,
-            //     firstname: req.session.firstname,
-            //     lastname: req.session.lastname,
-            // }
-            const schools = await School.find({});
+            const football = await Sport.findOne({name: "Football"});
+            const field1 = await Field.findOne({name: "Field 1"});
+            const field2 = await Field.findOne({name: "Field 2"});
             const teams = await Team.find({});
-            // res.render('tournament-management', {user: user, sport: sport, program: program});
+            const matchsField1 = await Match.find({field: field1._id, sport: football._id})
+            .populate({
+                path: 'team1 team2',
+                populate: {path: 'school', select: 'name'}
+            })
+            .populate('sport pool program');
+            
+            const matchsField2 = await Match.find({field: field2._id, sport: football._id})
+            .populate({
+                path: 'team1 team2',
+                populate: {path: 'school', select: 'name'}
+            })
+            .populate('sport pool program');
+
             const global = await utils.getGlobal(req)
 
-            res.render('tournament-management', {global: global, teams: teams});
+            res.render('tournament-management', {global: global, teams: teams, matchsField1: matchsField1, matchsField2: matchsField2});
         } catch (err) {
             console.error(err);
             return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
@@ -134,7 +144,7 @@ module.exports = function (route) {
 
     route.post('/tournament/assign/:sport/:program', TournamentController.assign)
 
-    route.post('/tournament/create/:program', TournamentController.create)
+    route.post('/tournament/create', TournamentController.create)
 
     route.post('/tournament/updateMatch/:sport/:program', TournamentController.update)
 

@@ -52,8 +52,11 @@ const MatchSchema = new mongoose.Schema({
     },
     field: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "field",
+        ref: "fields",
         // required: true
+    },
+    startTime: {
+        type: Date
     },
     created_at: Date,
     updated_at: {

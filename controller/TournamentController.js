@@ -4,6 +4,7 @@ const Team = require("../models/TeamModel");
 const Sport = require("../models/SportModel");
 const School = require("../models/SchoolModel");
 const Program = require("../models/ProgramModel");
+const Field = require("../models/FieldModel");
 const Pool = require("../models/PoolModel");
 const TeamPoint = require("../models/TeamPointModel");
 const teamController = require("./TeamController");
@@ -102,273 +103,6 @@ const winnersFactory = {
     },
 };
 
-function areAllMatchesFinished(matchs) {
-    return matchs.every(match => match.isFinished);
-}
-
-async function getTopTeams(pool, limit) {
-    const poolTeams = await Team.find({ pool: pool._id });
-    const bestTeams = [];
-
-    for (const team of poolTeams) {
-        const teamGA = await getTeamGoalAverage(team._id);
-        bestTeams.push({ team, points: team.points, goalAverage: teamGA });
-    }
-
-    bestTeams.sort((a, b) => {
-        if (b.points === a.points) {
-            return b.goalAverage - a.goalAverage;
-        }
-        return b.points - a.points;
-    });
-
-    const allSamePoints = bestTeams.every(entry => entry.points === bestTeams[0].points);
-    const allSameGA = allSamePoints && bestTeams.every(entry => entry.goalAverage === bestTeams[0].goalAverage);
-
-    if (allSameGA) {
-        const randomIndex = Math.floor(Math.random() * bestTeams.length);
-        return [bestTeams[randomIndex].team];
-    }
-
-    return bestTeams.slice(0, limit).map(entry => entry.team);
-}
-
-function isSemiFinalOrFinal(pool) {
-    return pool.name.includes('Demi-Finale') || pool.name.includes('Finale');
-}
-
-function isSemiFinal(pool) {
-    return pool.name.includes('Demi-Finale');
-}
-
-async function findOrCreatePool(name, sport, program) {
-    return await Pool.findOne({ name, sport: sport._id, program: program._id }) || await Pool.create({
-        name,
-        sport: sport._id,
-        program: program._id
-    });
-}
-
-async function assignTeamToSemiFinal(pool, team, sport, program) {
-    try {
-        let match = await Match.findOne({
-            pool: pool._id,
-            $or: [{ team1: null }, { team2: null }]
-        });
-
-        if (!match) {
-            await Match.create({
-                team1: team._id,
-                team2: null,
-                sport: sport._id,
-                pool: pool._id,
-                program: program._id
-            });
-        } else {
-            const fieldToUpdate = !match.team1 ? 'team1' : 'team2';
-            await Match.updateOne(
-                { _id: match._id },
-                { $set: { [fieldToUpdate]: team._id } }
-            );
-        }
-
-        console.log(`${team.school.name} a été ajouté à la ${pool.name}.`);
-    } catch (error) {
-        console.error(`Erreur lors de l'ajout de l'équipe : ${error.message}`);
-    }
-}
-
-async function updateTeamPools(ranking, pools, teamToUpdate = null) {
-    if (teamToUpdate) {
-        await Team.updateOne(
-            { _id: teamToUpdate },
-            { $set: { pool: pools } }
-        );
-        return;
-    }
-
-    let teamsToUpdate = [ranking['Winner 1']._id];
-
-    if (ranking['Winner 2']) {
-        teamsToUpdate.push(ranking['Winner 2']._id);
-    }
-
-    if (Array.isArray(pools)) {
-        await Team.updateOne(
-            { _id: ranking['Winner 1']._id },
-            { $set: { pool: pools[0] } }
-        );
-        await Team.updateOne(
-            { _id: ranking['Winner 2']._id },
-            { $set: { pool: pools[1] } }
-        );
-    } else {
-        await Team.updateMany(
-            { _id: { $in: teamsToUpdate } },
-            { $set: { pool: pools } }
-        );
-    }
-}
-
-async function getTeamGoalAverage(teamId) {
-    const matches = await Match.find({ $or: [{ team1: teamId }, { team2: teamId }] });
-    let goalsScored = 0;
-    let goalsConceded = 0;
-
-    for (const match of matches) {
-        if (match.team1.toString() === teamId.toString()) {
-            goalsScored += match.score.team1Score
-            goalsConceded += match.score.team2Score
-        } else if (match.team2.toString() === teamId.toString()) {
-            goalsScored += match.score.team2Score;
-            goalsConceded += match.score.team1Score;
-        }
-    }
-
-    const goalAverage = goalsScored - goalsConceded;
-    return goalAverage;
-}
-
-async function getBestSecond(sport, program) {
-    const finalPool = await Pool.findOne({ name: "Finale", sport: sport._id, program: program._id });
-    const semiFinal1Pool = await Pool.findOne({ name: "Demi-Finale 1", sport: sport._id, program: program._id });
-    const semiFinal2Pool = await Pool.findOne({ name: "Demi-Finale 2", sport: sport._id, program: program._id });
-
-    const poolsToExclude = [];
-    if (finalPool) poolsToExclude.push(finalPool._id);
-    if (semiFinal1Pool) poolsToExclude.push(semiFinal1Pool._id);
-    if (semiFinal2Pool) poolsToExclude.push(semiFinal2Pool._id);
-
-    const allTeams = await Team.find({ // recupere toutes les teams qui ne jouent ni demi-finale ni finale
-        sport: sport._id,
-        program: program._id,
-        pool: { $nin: poolsToExclude }
-    });
-
-    var bestTeamPoints = -1;
-    var bestTeamGA = 0;
-    var bestTeam = null;
-
-    for (const team of allTeams) {
-        if (team.points > bestTeamPoints) { // compare les points
-            bestTeamPoints = team.points;
-            bestTeamGA = await getTeamGoalAverage(team._id);
-            bestTeam = team;
-        } else if (team.points == bestTeamPoints) { // compare le goal average
-            const teamGA = await getTeamGoalAverage(team._id);
-            if (teamGA > bestTeamGA) {
-                bestTeamPoints = team.points;
-                bestTeamGA = teamGA;
-                bestTeam = team;
-            } else if (teamGA == bestTeamGA) { // si pas suffisant, on prend un team au hasard
-                const randomValue = Math.floor(Math.random() * 2);
-                if (randomValue == 1) {
-                    bestTeamPoints = team.points;
-                    bestTeamGA = teamGA;
-                    bestTeam = team;
-                }
-            }
-        }
-    }
-    return bestTeam;
-}
-
-async function handleSemiFinalCreation(ranking, sport, program) {
-
-    if (Object.keys(ranking).length == 1) { // si je dois recuperer que 1 team par poule
-        if (poolsLenghts == 3) { // si il y a 3 poules
-
-            const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
-            var teamsinSemiFinal1 = await Team.count({ pool: semiFinalPool1._id });
-
-            if (teamsinSemiFinal1 < 2) { // si il y a moins de deux equipes dans la premiere demi-finale
-
-                await assignTeamToSemiFinal(semiFinalPool1, ranking['Winner 1'], sport, program);
-                await updateTeamPools(ranking, semiFinalPool1._id);
-
-            } else { // sinon, je cree deuxieme demi final
-
-                const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
-                await assignTeamToSemiFinal(semiFinalPool2, ranking['Winner 1'], sport, program);
-                await updateTeamPools(ranking, semiFinalPool2._id);
-
-                const bestSecond = await getBestSecond(sport, program); // je recupere la deuxieme meilleure team
-                if (bestSecond) {
-                    await assignTeamToSemiFinal(semiFinalPool2, bestSecond, sport, program);
-                    await updateTeamPools(null, semiFinalPool2._id, bestSecond._id);
-                }
-            }
-        } else if (poolsLenghts == 4) { // si il y a 4 poules
-            const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
-
-            var teamsinSemiFinal1 = await Team.count({ pool: semiFinalPool1._id });
-            if (teamsinSemiFinal1 < 2) { // si il y a juste deux poules
-                await assignTeamToSemiFinal(semiFinalPool1, ranking['Winner 1'], sport, program);
-                await updateTeamPools(ranking, semiFinalPool1._id);
-            } else {
-                const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
-                await assignTeamToSemiFinal(semiFinalPool2, ranking['Winner 1'], sport, program);
-                await updateTeamPools(ranking, semiFinalPool2._id);
-            }
-        }
-    } else if (Object.keys(ranking).length == 2) {
-        const semiFinalPool1 = await findOrCreatePool('Demi-Finale 1', sport, program);
-        const semiFinalPool2 = await findOrCreatePool('Demi-Finale 2', sport, program);
-
-        await assignTeamToSemiFinal(semiFinalPool1, ranking['Winner 2'], sport, program);
-        await assignTeamToSemiFinal(semiFinalPool2, ranking['Winner 1'], sport, program);
-
-        await updateTeamPools(ranking, [semiFinalPool1._id, semiFinalPool2._id]);
-    }
-}
-
-async function updateFinalTeamPool(team, finalPool) {
-    await Team.updateOne({ _id: team._id }, { $set: { pool: finalPool._id } });
-}
-
-async function handleFinalCreation(bestTeam, sport, program, pool) {
-    console.log(`Vérification pour une finale après la demi-finale ${pool.name}`);
-
-    let finalPool = await findOrCreatePool('Finale', sport, program);
-
-    const finalMatch = await Match.findOne({ pool: finalPool._id, team2: null });
-
-    if (finalMatch) {
-        await Match.updateOne({ _id: finalMatch._id }, { $set: { team2: bestTeam._id } });
-        console.log(`L'équipe ${bestTeam.school.name} a été ajoutée à la finale.`);
-    } else {
-        await Match.create({
-            team1: bestTeam._id,
-            team2: null,
-            sport: sport._id,
-            pool: finalPool._id,
-            program: program._id
-        });
-        console.log(`Finale créée avec ${bestTeam.school.name}, en attente du vainqueur de l'autre demi-finale.`);
-    }
-
-    await updateFinalTeamPool(bestTeam, finalPool);
-}
-
-async function checkPoolWinner(pool, sport, program) {
-    try {
-        const matchs = await Match.find({ pool: pool._id, sport: sport._id, program: program._id });
-
-        if (areAllMatchesFinished(matchs)) {
-            console.log("length : ", poolsLenghts);
-            const ranking = await winnersFactory[poolsLenghts](pool);
-
-            if (!isSemiFinalOrFinal(pool)) {
-                await handleSemiFinalCreation(ranking, sport, program);
-            } else if (isSemiFinal(pool)) {
-                await handleFinalCreation(ranking['Winner 1'], sport, program, pool);
-            }
-        }
-    } catch (err) {
-        console.error('Erreur lors de la vérification des vainqueurs de la poule:', err);
-    }
-}
-
 function getTheWinner(team1, team2, score) {
     if (score.team1Score == score.team2Score || score.team1Score == undefined || score.team2Score == undefined) {
         return "Match nul";
@@ -387,58 +121,200 @@ function getTheLooser(team1, team2, score) {
     return team2;
 }
 
-function createPoules(teams) {
-    const randomTeams = teams.sort(() => 0.5 - Math.random());
-    return pouleFactory[randomTeams.length](randomTeams);
+
+function getRegularTimeOfPool(teams) {
+    return 30 / (teams.length - 1);
+}
+
+function seededRandom(seed) {
+    const x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+function createPoules(teams, seed) {
+    const shuffledTeams = teams.slice();
+    for (let i = shuffledTeams.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom(seed) * (i + 1));
+        [shuffledTeams[i], shuffledTeams[j]] = [shuffledTeams[j], shuffledTeams[i]];
+    }
+
+    return pouleFactory[shuffledTeams.length](shuffledTeams);
+}
+
+async function getMatchsOnField(field, sport, program) {
+    const matches = await Match.find({ field: field._id, sport: sport._id, program: program._id })
+        .populate({
+            path: 'team1 team2',
+            populate: { path: 'school', select: 'name' }
+        })
+        .populate({
+            path: 'field',
+            select: 'name'
+        })
+        .populate({
+            path: 'pool',
+            select: 'name regularTime'
+        })
+        .populate({
+            path: 'program',
+            select: 'name'
+        });
+
+    return matches;
+}
+
+function assignTimeToMatch(match, timeInMinutes) {
+    let today = new Date();
+    let hours = Math.floor(timeInMinutes / 60);
+    let minutes = timeInMinutes % 60;
+
+    let matchStartTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+
+    Match.findOneAndUpdate({ _id: match._id }, { startTime: matchStartTime }).exec();
+}    
+
+function assignSlotsToMatchs(matchsOnField, poolStart) {
+    let startTime = 11 * 60;
+    let finalTable = [];
+    let numberOfPools = new Set(matchsOnField.map(match => match.pool.name)).size; // nombre de poules différentes sur le terrain
+    let poolCheck = poolStart;
+
+    let lastProgram = null;
+
+    while (matchsOnField.length > 0) {
+        let matchToAssign = null;
+
+        for (const match of [...matchsOnField]) {
+            let poolOfMatch = match.pool.name;
+            if (poolOfMatch === "Poule " + poolCheck && match.program.name !== lastProgram) {
+                matchToAssign = match;
+                break;
+            }
+        }
+
+        if (!matchToAssign) {
+            for (const match of [...matchsOnField]) {
+                let poolOfMatch = match.pool.name;
+                if (poolOfMatch === "Poule " + poolCheck) {
+                    matchToAssign = match;
+                    break;
+                }
+            }
+        }
+
+        if (matchToAssign) {
+            assignTimeToMatch(matchToAssign, startTime);
+            startTime += (matchToAssign.pool.regularTime + 5);
+            finalTable.push(matchToAssign);
+            matchsOnField.splice(matchsOnField.indexOf(matchToAssign), 1);
+            lastProgram = matchToAssign.program.name;
+        }
+
+        poolCheck = (poolCheck % numberOfPools) + 1;
+    }
+}
+
+async function handleSlots(sports) {
+    let fields = await Field.find();
+    let programs = await Program.find();
+
+    for (const sport of sports) {
+        let matchsMasculinOnField1 = await getMatchsOnField(fields[0], sport, programs[0]);
+        let matchsMasculinOnField2 = await getMatchsOnField(fields[1], sport, programs[0]);
+        let matchsFemininOnField1 = await getMatchsOnField(fields[0], sport, programs[1]);
+        let matchsFemininOnField2 = await getMatchsOnField(fields[1], sport, programs[1]);
+
+        let mergedField1 = matchsMasculinOnField1.concat(matchsFemininOnField1); // concatène les matchs masculins et féminins
+        let mergedField2 = matchsMasculinOnField2.concat(matchsFemininOnField2); // concatène les matchs masculins et féminins
+
+        assignSlotsToMatchs(mergedField1, 1); // 1 représente la première poule a commencer sur le terrain 1
+        assignSlotsToMatchs(mergedField2, 2); // pareil pour 2
+    }
+}
+
+async function createTournamentOfProgram(program, sports) {
+
+    const field1 = await Field.findOne({ name: "Field 1" });
+    const field2 = await Field.findOne({ name: "Field 2" });
+    
+    
+    // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
+    for (const sport of sports) {
+        let seed = Math.floor(Math.random() * 1000);
+
+        const teams = await Team.find({ sport: sport._id, program: program._id });
+        if (teams.length == 0) {
+            console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
+            return res.status(204).send();
+        }
+
+        // creer un nb de poules en fonction du nb de teams
+        const poules = createPoules(teams, seed);
+        for (let poule in poules) {
+            const teamsInPoule = poules[poule];
+            const newPoule = await Pool.create({ name: poule, sport: sport._id, program: program._id, regularTime: getRegularTimeOfPool(teamsInPoule) });
+
+            for (let i = 0; i < teamsInPoule.length; i++) {
+                var currentField;
+                await TeamPoint.create({ team: teamsInPoule[i]._id, pool: newPoule._id });
+                for (let j = i + 1; j < teamsInPoule.length; j++) {
+
+                    let matchsInPoule = await Match.count({ pool: newPoule._id });
+                    if (matchsInPoule == 0 || matchsInPoule == 2 || matchsInPoule == 5)
+                        currentField = field1;
+                    else
+                        currentField = field2;
+
+                    // TODO : remove random score
+                    const randomScore1 = Math.floor(Math.random() * 5);
+                    const randomScore2 = Math.floor(Math.random() * 5);
+
+                    const match = {
+                        team1: teamsInPoule[i]._id,
+                        team2: teamsInPoule[j]._id,
+                        // TODO : remove score
+                        score: {
+                            team1Score: randomScore1,
+                            team2Score: randomScore2,
+                        },
+                        sport: sport._id,
+                        pool: newPoule._id,
+                        program: program._id,
+                        field: currentField._id
+                    };
+
+                    await Match.create(match);
+
+                    await Team.findOneAndUpdate(
+                        { _id: teamsInPoule[i]._id, sport: sport._id, program: program._id },
+                        { $set: { pool: newPoule._id } }
+                    );
+
+                    await Team.findOneAndUpdate(
+                        { _id: teamsInPoule[j]._id, sport: sport._id, program: program._id },
+                        { $set: { pool: newPoule._id } }
+                    );
+
+                    const team1name = await School.findOne({ _id: teamsInPoule[i].school._id });
+                    const team2name = await School.findOne({ _id: teamsInPoule[j].school._id });
+
+                    console.log(`Match créé: ${team1name.name} vs ${team2name.name} sur ${currentField.name} dans ${newPoule.name} pour le programme ${program.name}`);
+                }
+            }
+        }
+    }
 }
 
 const create = async (req, res) => {
     try {
-        const program = await Program.findOne({ name: req.params.program });
+        const programs = await Program.find();
         const sports = await Sport.find();
-
-        // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
-        for (const sport of sports) {
-            const teams = await Team.find({ sport: sport._id, program: program._id });
-            if (teams.length == 0) {
-                console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
-                return res.status(204).send();
-            }
-            // creer un nb de poules en fonction du nb de teams
-            const poules = createPoules(teams);
-            for (let poule in poules) {
-                const teamsInPoule = poules[poule];
-                const newPoule = await Pool.create({ name: poule, sport: sport._id, program: program._id });
-
-                for (let i = 0; i < teamsInPoule.length; i++) {
-                    await TeamPoint.create({ team: teamsInPoule[i]._id, pool: newPoule._id })
-                    for (let j = i + 1; j < teamsInPoule.length; j++) {
-                        const match = {
-                            team1: teamsInPoule[i]._id,
-                            team2: teamsInPoule[j]._id,
-                            sport: sport._id,
-                            pool: newPoule._id,
-                            program: program._id
-                        };
-
-                        await Match.create(match);
-                        await Team.findOneAndUpdate(
-                            { _id: teamsInPoule[i]._id, sport: sport._id, program: program._id },
-                            { $set: { pool: newPoule._id } }
-                        );
-
-                        await Team.findOneAndUpdate(
-                            { _id: teamsInPoule[j]._id, sport: sport._id, program: program._id },
-                            { $set: { pool: newPoule._id } }
-                        );
-                        const team1name = await School.findOne({ _id: teamsInPoule[i].school._id  });
-                        const team2name = await School.findOne({ _id: teamsInPoule[j].school._id  });
-
-                        console.log(`Match créé: ${team1name.name} vs ${team2name.name} dans ${newPoule.name} pour le programme ${program.name}` );
-                    }
-                }
-            }
+        
+        for (const program of programs) {
+            await createTournamentOfProgram(program, sports);
         }
+
+        await handleSlots(sports);
         return res.status(200).json();
     } catch (err) {
         console.error(err);

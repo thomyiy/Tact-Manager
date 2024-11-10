@@ -18,11 +18,6 @@ const ambianceRouter = require('./routes/ambianceRoutes');
 const matchRouter = require('./routes/matchRoutes');
 const esportRouter = require('./routes/esportRoutes');
 
-const Sport = require('./models/SportModel');
-const User = require('./models/UserModel');
-const Program = require('./models/ProgramModel');
-const Field = require('./models/FieldModel');
-
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');

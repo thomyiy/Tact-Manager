@@ -178,6 +178,7 @@ async function createTeams() {
                                 });
                             } catch (error) {
                                 console.error(error.message);
+
                             }
                         } else {
                             console.log("Team ", schoolTable[i] + " " + programName + " " + sportTable[y], " already exists.")
