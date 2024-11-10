@@ -102,6 +102,7 @@
 
     var columns = ["Critère", "Note"];
     var data = <%- JSON.stringify(ambianceScore) %>;
+    var datas = <%- JSON.stringify(ambianceScores) %>;
 
     function onInputChange(input, key, max) {
         if (input.value > max) input.value = max
@@ -146,14 +147,14 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Arrivée avec toute la délégation très bonne coordination", data.reduce((total, next) => total + next.ArrivalWithTheEntireDelegationVeryGoodCoordination, 0) / data.length],
-                ["Chants", data.reduce((total, next) => total + next.Songs, 0) / data.length],
-                ["Coordination, parfait synchronisation", data.reduce((total, next) => total + next.CoordinationPerfectSynchronization, 0) / data.length],
-                ["Costume/ Maquillage", data.reduce((total, next) => total + next.CostumeMakeup, 0) / data.length],
-                ["Instruments grande variété", data.reduce((total, next) => total + next.WideVarietyOfInstruments, 0) / data.length],
-                ["Organisation du cortège (création et agencement clair des éléments)", data.reduce((total, next) => total + next.OrganizationOfTheProcession, 0) / data.length],
-                ["Rythmique clairs et entrainants", data.reduce((total, next) => total + next.ClearAndCatchyRhythm, 0) / data.length],
-                ["Vue d’ensemble (spectaculaire et sécurisée)", data.reduce((total, next) => total + next.OverviewSpectacularAndSecure, 0) / data.length]
+            return [["Arrivée avec toute la délégation très bonne coordination", datas.reduce((total, next) => total + next.ArrivalWithTheEntireDelegationVeryGoodCoordination, 0) / datas.length],
+                ["Chants", datas.reduce((total, next) => total + next.Songs, 0) / datas.length],
+                ["Coordination, parfait synchronisation", datas.reduce((total, next) => total + next.CoordinationPerfectSynchronization, 0) / datas.length],
+                ["Costume/ Maquillage", datas.reduce((total, next) => total + next.CostumeMakeup, 0) / datas.length],
+                ["Instruments grande variété", datas.reduce((total, next) => total + next.WideVarietyOfInstruments, 0) / datas.length],
+                ["Organisation du cortège (création et agencement clair des éléments)", datas.reduce((total, next) => total + next.OrganizationOfTheProcession, 0) / datas.length],
+                ["Rythmique clairs et entrainants", datas.reduce((total, next) => total + next.ClearAndCatchyRhythm, 0) / datas.length],
+                ["Vue d’ensemble (spectaculaire et sécurisée)", datas.reduce((total, next) => total + next.OverviewSpectacularAndSecure, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));
@@ -180,16 +181,16 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Déploiement coordination", data.reduce((total, next) => total + next.CoordinationDeployment, 0) / data.length],
-                ["Diversité, grande diversité de designs et de couleurs", data.reduce((total, next) => total + next.DiversityGreatVarietyOfDesignsAndColors, 0) / data.length],
-                ["Interaction avec les Sportifs", data.reduce((total, next) => total + next.InteractionWithAthletes, 0) / data.length],
-                ["Nombre de drapeaux", data.reduce((total, next) => total + next.NumberOfFlags, 0) / data.length],
-                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
-                ["Qualité visuelle et concept", data.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / data.length],
-                ["Respect du temps de passage des autres délégations", data.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / data.length],
-                ["Tour des sportifs (présentation dynamique)", data.reduce((total, next) => total + next.SportsmansTour, 0) / data.length],
-                ["Utilisation dynamique", data.reduce((total, next) => total + next.DynamicUse, 0) / data.length],
-                ["Visuel (drapeaux, tifo)", data.reduce((total, next) => total + next.VisualFlagsTifo, 0) / data.length]
+            return [["Déploiement coordination", datas.reduce((total, next) => total + next.CoordinationDeployment, 0) / datas.length],
+                ["Diversité, grande diversité de designs et de couleurs", data.reduce((total, next) => total + next.DiversityGreatVarietyOfDesignsAndColors, 0) / datas.length],
+                ["Interaction avec les Sportifs", datas.reduce((total, next) => total + next.InteractionWithAthletes, 0) / datas.length],
+                ["Nombre de drapeaux", datas.reduce((total, next) => total + next.NumberOfFlags, 0) / datas.length],
+                ["Qualité visuelle", datas.reduce((total, next) => total + next.VisualQuality, 0) / datas.length],
+                ["Qualité visuelle et concept", datas.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / datas.length],
+                ["Respect du temps de passage des autres délégations", datas.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / datas.length],
+                ["Tour des sportifs (présentation dynamique)", datas.reduce((total, next) => total + next.SportsmansTour, 0) / datas.length],
+                ["Utilisation dynamique", datas.reduce((total, next) => total + next.DynamicUse, 0) / datas.length],
+                ["Visuel (drapeaux, tifo)", datas.reduce((total, next) => total + next.VisualFlagsTifo, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));
@@ -216,16 +217,16 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Ambiance, bordel, ambiance électrique et joyeuse", data.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / data.length],
-                ["Animation (auditive) Improvisations, chants dôles, interactions avec le match", data.reduce((total, next) => total + next.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 0) / data.length],
-                ["Animations visuelles pendant les chants (Chorégraphies, ola, sauts coordonnés)", data.reduce((total, next) => total + next.VisualAnimationsDuringTheSongs, 0) / data.length],
-                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", data.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / data.length],
-                ["Diversité, grande variété de chants sans répétitions", data.reduce((total, next) => total + next.DiversityWideVarietyOfSongsWithoutRepetitions, 0) / data.length],
-                ["Endurance soutenue durant toute la durée de la compétition", data.reduce((total, next) => total + next.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 0) / data.length],
-                ["Fair play & Respect (Insultes, Chants)", data.reduce((total, next) => total + next.FairPlayRespect, 0) / data.length],
-                ["Maestro (énergie et coordination)", data.reduce((total, next) => total + next.Maestro, 0) / data.length],
-                ["Qualité des chants clairs et mélodieux", data.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / data.length],
-                ["Tribune propre", data.reduce((total, next) => total + next.OwnStand, 0) / data.length]
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", datas.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / datas.length],
+                ["Animation (auditive) Improvisations, chants dôles, interactions avec le match", datas.reduce((total, next) => total + next.AnimationImprovisationsFunnySongsInteractionsWithTheMatch, 0) / datas.length],
+                ["Animations visuelles pendant les chants (Chorégraphies, ola, sauts coordonnés)", datas.reduce((total, next) => total + next.VisualAnimationsDuringTheSongs, 0) / datas.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", datas.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / datas.length],
+                ["Diversité, grande variété de chants sans répétitions", datas.reduce((total, next) => total + next.DiversityWideVarietyOfSongsWithoutRepetitions, 0) / datas.length],
+                ["Endurance soutenue durant toute la durée de la compétition", datas.reduce((total, next) => total + next.SustainedEnduranceThroughoutTheDurationOfTheCompetition, 0) / datas.length],
+                ["Fair play & Respect (Insultes, Chants)", datas.reduce((total, next) => total + next.FairPlayRespect, 0) / datas.length],
+                ["Maestro (énergie et coordination)", datas.reduce((total, next) => total + next.Maestro, 0) / datas.length],
+                ["Qualité des chants clairs et mélodieux", datas.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / datas.length],
+                ["Tribune propre", datas.reduce((total, next) => total + next.OwnStand, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));
@@ -246,10 +247,10 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Originalité concept", data.reduce((total, next) => total + next.OriginalityConcept, 0) / data.length],
-                ["Qualité de construction solide, bien pensée et sécurisée", data.reduce((total, next) => total + next.SolidWellThoughtOutAndSecureBuildQuality, 0) / data.length],
-                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
-                ["Stand", data.reduce((total, next) => total + next.Stand, 0) / data.length]
+            return [["Originalité concept", datas.reduce((total, next) => total + next.OriginalityConcept, 0) / datas.length],
+                ["Qualité de construction solide, bien pensée et sécurisée", datas.reduce((total, next) => total + next.SolidWellThoughtOutAndSecureBuildQuality, 0) / datas.length],
+                ["Qualité visuelle", datas.reduce((total, next) => total + next.VisualQuality, 0) / datas.length],
+                ["Stand", datas.reduce((total, next) => total + next.Stand, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));
@@ -276,16 +277,16 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Ambiance, bordel, ambiance électrique et joyeuse", data.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / data.length],
-                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", data.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / data.length],
-                ["Déploiement coordination", data.reduce((total, next) => total + next.CoordinationDeployment, 0) / data.length],
-                ["Fair play & Respect (Insultes, Chants)", data.reduce((total, next) => total + next.FairPlayRespect, 0) / data.length],
-                ["Qualité des chants clairs et mélodieux", data.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / data.length],
-                ["Qualité visuelle", data.reduce((total, next) => total + next.VisualQuality, 0) / data.length],
-                ["Qualité visuelle et concept", data.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / data.length],
-                ["Respect du temps de passage des autres délégations", data.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / data.length],
-                ["Utilisation dynamique", data.reduce((total, next) => total + next.DynamicUse, 0) / data.length],
-                ["Visuel (drapeaux, tifo)", data.reduce((total, next) => total + next.VisualFlagsTifo, 0) / data.length]
+            return [["Ambiance, bordel, ambiance électrique et joyeuse", datas.reduce((total, next) => total + next.AtmosphereBrothelElectricAndJoyfulAtmosphere, 0) / datas.length],
+                ["Danse/chorée/animation parfaitement coordonnées et entrainantes", datas.reduce((total, next) => total + next.PerfectlyCoordinatedAndLivelyDanceChoreaEntertainment, 0) / datas.length],
+                ["Déploiement coordination", datas.reduce((total, next) => total + next.CoordinationDeployment, 0) / datas.length],
+                ["Fair play & Respect (Insultes, Chants)", datas.reduce((total, next) => total + next.FairPlayRespect, 0) / datas.length],
+                ["Qualité des chants clairs et mélodieux", datas.reduce((total, next) => total + next.QualityOfClearAndMelodiousSinging, 0) / datas.length],
+                ["Qualité visuelle", datas.reduce((total, next) => total + next.VisualQuality, 0) / datas.length],
+                ["Qualité visuelle et concept", datas.reduce((total, next) => total + next.VisualQualityAndConcept, 0) / datas.length],
+                ["Respect du temps de passage des autres délégations", datas.reduce((total, next) => total + next.RespectThePassageTimeOfOtherDelegations, 0) / datas.length],
+                ["Utilisation dynamique", datas.reduce((total, next) => total + next.DynamicUse, 0) / datas.length],
+                ["Visuel (drapeaux, tifo)", datas.reduce((total, next) => total + next.VisualFlagsTifo, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));
@@ -304,8 +305,8 @@
     new gridjs.Grid({
         columns: columns,
         data: () => {
-            return [["Inscription et présence de 5 alumni", data.reduce((total, next) => total + next.RegistrationAndPresenceOf5Alumni, 0) / data.length],
-                ["Inscription et présence du doyen", data.reduce((total, next) => total + next.RegistrationAndPresenceOfTheDean, 0) / data.length]
+            return [["Inscription et présence de 5 alumni", datas.reduce((total, next) => total + next.RegistrationAndPresenceOf5Alumni, 0) / datas.length],
+                ["Inscription et présence du doyen", datas.reduce((total, next) => total + next.RegistrationAndPresenceOfTheDean, 0) / datas.length]
             ]
         },
     }).render(document.getElementById("table-average"));

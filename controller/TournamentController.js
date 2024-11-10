@@ -389,7 +389,7 @@ function getTheLooser(team1, team2, score) {
 
 function createPoules(teams) {
     const randomTeams = teams.sort(() => 0.5 - Math.random());
-    return pouleFactory[randomTeams.length](randomTeams);;
+    return pouleFactory[randomTeams.length](randomTeams);
 }
 
 const create = async (req, res) => {
@@ -413,18 +413,9 @@ const create = async (req, res) => {
                 for (let i = 0; i < teamsInPoule.length; i++) {
                     await TeamPoint.create({ team: teamsInPoule[i]._id, pool: newPoule._id })
                     for (let j = i + 1; j < teamsInPoule.length; j++) {
-                        // TODO : remove random
-                        const randomScore1 = Math.floor(Math.random() * 5);
-                        const randomScore2 = Math.floor(Math.random() * 5);
                         const match = {
                             team1: teamsInPoule[i]._id,
                             team2: teamsInPoule[j]._id,
-                            // TODO : remove score
-                            score: {
-                                team1Score: randomScore1,
-                                team2Score: randomScore2,
-                            },
-                            timePlayed: 5,
                             sport: sport._id,
                             pool: newPoule._id,
                             program: program._id

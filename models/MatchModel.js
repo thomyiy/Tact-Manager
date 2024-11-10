@@ -46,10 +46,6 @@ const MatchSchema = new mongoose.Schema({
     expectedTime: {
         type: Number
     },
-    timePlayed: {
-        type: Number,
-        default: 0
-    },
     isFinished: {
         type: Boolean,
         default: false

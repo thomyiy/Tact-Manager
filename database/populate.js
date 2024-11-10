@@ -152,43 +152,77 @@ async function createSchools() {
 
 async function createTeams() {
     // creer les equipes
-    const schoolTable = ["ALLSH", "ARCHI", "ARTS&METIERS", "CENTRALE", "DROIT", "ESSCA", "FEG", "GAP", "IAE", "IMPGT", "IUT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
-    const programTable = ["Masculin", "Féminin"];
+    let schoolTable = ["ALLSH", "ARCHI", "ARTS&METIERS", "CENTRALE", "DROIT", "ESSCA", "FEG", "GAP", "IAE", "IMPGT", "IUT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
     const sportTable = ["Football", "Basketball", "Handball"];
 
+    let programName = "Masculin"
     for (let i = 0; i < schoolTable.length; i++) {
         var school = await School.findOne({name: schoolTable[i]});
         if (school) {
-            for (let x = 0; x < programTable.length; x++) {
-                var program = await Program.findOne({name: programTable[x]});
-                if (program) {
-                    for (let y = 0; y < sportTable.length; y++) {
-                        var sport = await Sport.findOne({name: sportTable[y]});
+            let program = await Program.findOne({name: programName});
+            if (program) {
+                for (let y = 0; y < sportTable.length; y++) {
+                    let sport = await Sport.findOne({name: sportTable[y]});
 
-                        if (sport) {
-                            var formdata = {
-                                school: school._id,
-                                program: program._id,
-                                sport: sport._id
-                            };
-                            var teams = await Team.count(formdata);
-                            if (teams === 0) {
-                                try {
-                                    await Team.create(formdata, function (err, res) {
-                                        console.log("Team ", schoolTable[i] + " " + programTable[x] + " " + sportTable[y], " created.")
-                                    });
-                                } catch (error) {
-                                    console.error(error.message);
-                                }
-                            } else {
-                                console.log("Team ", schoolTable[i] + " " + programTable[x] + " " + sportTable[y], " already exists.")
+                    if (sport) {
+                        let formdata = {
+                            school: school._id,
+                            program: program._id,
+                            sport: sport._id
+                        };
+                        let teams = await Team.count(formdata);
+                        if (teams === 0) {
+                            try {
+                                await Team.create(formdata, function (err, res) {
+                                    console.log("Team ", schoolTable[i] + " " + programName + " " + sportTable[y], " created.")
+                                });
+                            } catch (error) {
+                                console.error(error.message);
                             }
+                        } else {
+                            console.log("Team ", schoolTable[i] + " " + programName + " " + sportTable[y], " already exists.")
                         }
                     }
                 }
             }
+
         }
     }
+    schoolTable = ["ALLSH", "ARCHI", "CENTRALE", "DROIT", "ESSCA", "IAE", "IMPGT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
+    programName = "Féminin"
+    for (let i = 0; i < schoolTable.length; i++) {
+        let school = await School.findOne({name: schoolTable[i]});
+        if (school) {
+            let program = await Program.findOne({name: programName});
+            if (program) {
+                for (let y = 0; y < sportTable.length; y++) {
+                    let sport = await Sport.findOne({name: sportTable[y]});
+
+                    if (sport) {
+                        let formdata = {
+                            school: school._id,
+                            program: program._id,
+                            sport: sport._id
+                        };
+                        let teams = await Team.count(formdata);
+                        if (teams === 0) {
+                            try {
+                                await Team.create(formdata, function (err, res) {
+                                    console.log("Team ", schoolTable[i] + " " + programName + " " + sportTable[y], " created.")
+                                });
+                            } catch (error) {
+                                console.error(error.message);
+                            }
+                        } else {
+                            console.log("Team ", schoolTable[i] + " " + programName + " " + sportTable[y], " already exists.")
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
 }
 
 async function createUsers() {

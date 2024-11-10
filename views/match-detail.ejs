@@ -64,8 +64,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-6">
                                         <label class="form-label"
                                                for="team1Score">Score <%= match.team1.school.name %></label>
                                         <input type="number" class="form-control" name="team1Score" id="team1Score"
@@ -80,8 +80,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
+                                <div class="col-md-6">
+                                    <div class="mb-6">
                                         <label class="form-label"
                                                for="team2Score">Score <%= match.team2.school.name %></label>
                                         <input type="number" class="form-control" name="team2Score" id="team2Score"
@@ -93,22 +93,6 @@
                                         >
                                         <div class="invalid-feedback">
                                             Veuillez entrer un score pour l'equipe 2
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label class="form-label"
-                                               for="timePlayed">Temp de jeu (en minute)</label>
-                                        <input type="number" class="form-control" name="timePlayed" id="timePlayed"
-                                               placeholder="Temps" required
-                                               oninput="ontimePlayedChange(this.value)"
-                                               value="<%= match.timePlayed %>"
-                                        <% if(match.isFinished){ %> disabled="disabled"
-                                                <% } %>
-                                        >
-                                        <div class="invalid-feedback">
-                                            Veuillez entrer un temps de jeu
                                         </div>
                                     </div>
                                 </div>
