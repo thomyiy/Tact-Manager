@@ -47,6 +47,35 @@
                             <span class="menu-item" data-key="t-vertical">Classement</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow">
+                            <i class="bx bx-layout icon nav-icon"></i>
+                            <span class="menu-item" data-key="t-multi-level">Tournois</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="true">
+                            <li><a class="has-arrow">Football</a>
+                                <ul class="sub-menu" aria-expanded="true">
+                                    <li><a href="/tournament/Football/Masculin">Masculin</a></li>
+                                    <li><a href="/tournament/Football/Féminin">Féminin</a></li>
+                                </ul>
+                            </li>
+
+                            <li><a class="has-arrow">Basketball</a>
+                                <ul class="sub-menu" aria-expanded="true">
+                                    <li><a href="/tournament/Basketball/Masculin">Masculin</a></li>
+                                    <li><a href="/tournament/Basketball/Féminin">Féminin</a></li>
+                                </ul>
+                            </li>
+
+                            <li><a class="has-arrow">Handball</a>
+                                <ul class="sub-menu" aria-expanded="true">
+                                    <li><a href="/tournament/Handball/Masculin">Masculin</a></li>
+                                    <li><a href="/tournament/Handball/Féminin">Féminin</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Multi Level -->
                 <% } %>
                 <% if(global.user.role == "Arbitrator") { %>
                     <% if(global.matches.length > 0 ) { %>

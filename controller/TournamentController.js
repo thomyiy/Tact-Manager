@@ -171,7 +171,7 @@ function assignTimeToMatch(match, timeInMinutes) {
     let matchStartTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
 
     Match.findOneAndUpdate({ _id: match._id }, { startTime: matchStartTime }).exec();
-}    
+}
 
 function assignSlotsToMatchs(matchsOnField, poolStart) {
     let startTime = 11 * 60;
@@ -236,8 +236,8 @@ async function createTournamentOfProgram(program, sports) {
 
     const field1 = await Field.findOne({ name: "Field 1" });
     const field2 = await Field.findOne({ name: "Field 2" });
-    
-    
+
+
     // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
     for (const sport of sports) {
         let seed = Math.floor(Math.random() * 1000);
@@ -265,18 +265,10 @@ async function createTournamentOfProgram(program, sports) {
                     else
                         currentField = field2;
 
-                    // TODO : remove random score
-                    const randomScore1 = Math.floor(Math.random() * 5);
-                    const randomScore2 = Math.floor(Math.random() * 5);
-
                     const match = {
                         team1: teamsInPoule[i]._id,
                         team2: teamsInPoule[j]._id,
-                        // TODO : remove score
-                        score: {
-                            team1Score: randomScore1,
-                            team2Score: randomScore2,
-                        },
+
                         sport: sport._id,
                         pool: newPoule._id,
                         program: program._id,
@@ -309,7 +301,7 @@ const create = async (req, res) => {
     try {
         const programs = await Program.find();
         const sports = await Sport.find();
-        
+
         for (const program of programs) {
             await createTournamentOfProgram(program, sports);
         }

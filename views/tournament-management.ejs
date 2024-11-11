@@ -70,7 +70,7 @@
 
 <script>
     new gridjs.Grid({
-        columns: ["Team 1", "Team 2", "Départ", "Sport", "Poule", "Programme"],
+        columns: ["Team 1", "Team 2", "Départ", "Poule", "Programme"],
         data: async () => {
             var data = <%- JSON.stringify(matchsField1) %>;
             data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
@@ -79,7 +79,6 @@
                 e.team1.school.name,
                 e.team2.school.name,
                 new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-                e.sport.name,
                 e.pool.name,
                 e.program.name
             ]);
@@ -88,7 +87,7 @@
     }).render(document.getElementById("table-field-1"));
 
     new gridjs.Grid({
-        columns: ["Team 1", "Team 2", "Départ", "Sport", "Poule", "Programme"],
+        columns: ["Team 1", "Team 2", "Départ", "Poule", "Programme"],
         data: async () => {
             var data = <%- JSON.stringify(matchsField2) %>;
             data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
@@ -97,7 +96,6 @@
                 e.team1.school.name,
                 e.team2.school.name,
                 new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-                e.sport.name,
                 e.pool.name,
                 e.program.name
             ]);
@@ -116,7 +114,7 @@
                     }
                 })
             ]);
-            
+
             alert("Les tournois pour tous les sports et pour tous les programmes ont été créés");
             location.reload();
         } catch (error) {

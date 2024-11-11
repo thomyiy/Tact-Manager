@@ -68,49 +68,54 @@
                                             <div class="tab-pane <% if(i === 0){ %>active<% } %>"
                                                  id="<%= pools[i].name.replace(" ", "_") %>"
                                                  role="tabpanel">
-                                                <form action="/match/validatePool" method="post">
-                                                    <!-- sample modal content -->
-                                                    <div id="modalValidation<%= [i] %>" class="modal fade" tabindex="-1"
-                                                         aria-labelledby="myModalLabel" aria-hidden="true"
-                                                         data-bs-scroll="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="myModalLabel">Etes vous
-                                                                        sûres de valider les matchs de la poule
-                                                                        : <%= pools[i].name %></h5>
-                                                                    <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <h5>La validation de la poule bloquera les
-                                                                        scores</h5>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button"
-                                                                            class="btn btn-secondary waves-effect"
-                                                                            data-bs-dismiss="modal">Close
-                                                                    </button>
-                                                                    <button class="btn btn-primary" type="submit"
-                                                                            data-bs-dismiss="modal">Valider les matchs
-                                                                        de la poule : <%= pools[i].name %></button>
-                                                                </div>
-                                                            </div><!-- /.modal-content -->
-                                                        </div><!-- /.modal-dialog -->
-                                                    </div><!-- /.modal -->
-                                                    <% if(!pools[i].isFinished){ %>
-                                                        <button type="button"
-                                                                class="btn btn-primary waves-effect waves-light"
-                                                                onclick="validateModal('modalValidation<%= [i] %>',<%= [i] %>)">
-                                                            Valider les
-                                                            matchs de la poule : <%= pools[i].name %></button>
-                                                    <% } else { %>
-                                                        <h5>Poule <%= pools[i].name %> validé</h5>
-                                                    <% } %>
-                                                    <input type="hidden" id="poolId" name="poolId"
-                                                           value="<%= pools[i]._id %>"/>
-                                                </form>
+                                                <% if(global.user.role == "Arbitrator") { %>
+                                                    <form action="/match/validatePool" method="post">
+                                                        <!-- sample modal content -->
+                                                        <div id="modalValidation<%= [i] %>" class="modal fade"
+                                                             tabindex="-1"
+                                                             aria-labelledby="myModalLabel" aria-hidden="true"
+                                                             data-bs-scroll="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="myModalLabel">Etes
+                                                                            vous
+                                                                            sûres de valider les matchs de la poule
+                                                                            : <%= pools[i].name %></h5>
+                                                                        <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <h5>La validation de la poule bloquera les
+                                                                            scores</h5>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button"
+                                                                                class="btn btn-secondary waves-effect"
+                                                                                data-bs-dismiss="modal">Close
+                                                                        </button>
+                                                                        <button class="btn btn-primary" type="submit"
+                                                                                data-bs-dismiss="modal">Valider les
+                                                                            matchs
+                                                                            de la poule : <%= pools[i].name %></button>
+                                                                    </div>
+                                                                </div><!-- /.modal-content -->
+                                                            </div><!-- /.modal-dialog -->
+                                                        </div><!-- /.modal -->
+                                                        <% if(!pools[i].isFinished){ %>
+                                                            <button type="button"
+                                                                    class="btn btn-primary waves-effect waves-light"
+                                                                    onclick="validateModal('modalValidation<%= [i] %>',<%= [i] %>)">
+                                                                Valider les
+                                                                matchs de la poule : <%= pools[i].name %></button>
+                                                        <% } else { %>
+                                                            <h5>Poule <%= pools[i].name %> validé</h5>
+                                                        <% } %>
+                                                        <input type="hidden" id="poolId" name="poolId"
+                                                               value="<%= pools[i]._id %>"/>
+                                                    </form>
+                                                <% } %>
                                                 <div class="card-header">
                                                     <h5>Listes des matches</h5>
                                                 </div><!-- end card header -->
@@ -132,7 +137,7 @@
     </div>
 </div>
 
-
+<% if(global.user.role == "Arbitrator") { %>
 <!-- sample modal content -->
 <div id="modalError" class="modal fade" tabindex="-1"
      aria-labelledby="myModalLabel" aria-hidden="true"
@@ -159,6 +164,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<% } %>
 <%- contentFor('FooterJs') %>
 
 <!-- gridjs js -->
@@ -236,7 +242,7 @@
     pools.forEach(e => {
         new gridjs.Grid({
             columns: [
-                "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Terrain", "Temps réglemenataire", "Début du match", 
+                "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Terrain", "Temps réglemenataire", "Début du match",
                 {
                     name: "Arbitre",
                     formatter: (cell, row) => {
@@ -247,13 +253,13 @@
                         html += "<ul>"
                         return gridjs.html(html);
                     }
-                },
+                }<% if(global.user.role == "Arbitrator") { %>,
                 {
                     name: "Action",
                     formatter: (cell, row) => {
                         return gridjs.html(`<a href="/match/${cell}" ><button class="btn btn-info" >Voir</button></a>`);
                     }
-                }
+                }<% } %>
             ],
             data: async () => {
                 return e.matches.sort((a, b) => new Date(a.startTime) - new Date(b.startTime)).map((element) => [
@@ -263,7 +269,7 @@
                     element.score.team2Score,
                     element.field.name,
                     e.regularTime,
-                    new Date(element.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                    new Date(element.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
                     element.arbitrator,
                     element._id
                 ]);
@@ -273,9 +279,9 @@
 
         new gridjs.Grid({
             columns: [
-                "Ecole", "Point","Goal Average","Goal"
+                "Ecole", "Point", "Goal Average", "Goal"
             ],
-            data: e.teamPoints.sort((a,b) => {
+            data: e.teamPoints.sort((a, b) => {
                 if (b.points < a.points) return -1;
                 if (b.points > a.points) return 1;
                 if (b.goalAverage < a.goalAverage) return 1;
@@ -285,7 +291,7 @@
                 if (b.random < a.random) return 1;
                 if (b.random > a.random) return -1;
             }).map((element) => [element.team.school.name,
-                element.points,element.goalAverage,element.goal]),
+                element.points, element.goalAverage, element.goal]),
         }).render(document.getElementById(e.name.replace(" ", "_") + "-table-leaderboard"));
     })
 
