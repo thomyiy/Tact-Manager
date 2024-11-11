@@ -68,7 +68,7 @@
                                             <div class="tab-pane <% if(i === 0){ %>active<% } %>"
                                                  id="<%= pools[i].name.replace(" ", "_") %>"
                                                  role="tabpanel">
-                                                <% if(global.user.role == "Arbitrator") { %>
+                                                <% if(global.user.role == "Admin") { %>
                                                     <form action="/match/validatePool" method="post">
                                                         <!-- sample modal content -->
                                                         <div id="modalValidation<%= [i] %>" class="modal fade"
@@ -137,7 +137,7 @@
     </div>
 </div>
 
-<% if(global.user.role == "Arbitrator") { %>
+<% if(global.user.role == "Admin") { %>
 <!-- sample modal content -->
 <div id="modalError" class="modal fade" tabindex="-1"
      aria-labelledby="myModalLabel" aria-hidden="true"
@@ -185,6 +185,8 @@
 <script>
 
     var pools = <%- JSON.stringify(pools) %>;
+    console.log("lalal")
+    console.log(<%- JSON.stringify(global) %>);
 
     function validateModal(modalId, poolIndex) {
         var errorList = []
@@ -253,7 +255,7 @@
                         html += "<ul>"
                         return gridjs.html(html);
                     }
-                }<% if(global.user.role == "Arbitrator") { %>,
+                }<% if(global.user.role == "Admin") { %>,
                 {
                     name: "Action",
                     formatter: (cell, row) => {
