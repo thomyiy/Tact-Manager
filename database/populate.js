@@ -189,7 +189,7 @@ async function createTeams() {
 
         }
     }
-    schoolTable = ["ALLSH", "ARCHI", "CENTRALE", "DROIT", "ESSCA", "IAE", "IMPGT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
+    schoolTable = ["ALLSH", "ARCHI", "CENTRALE", "DROIT", "ESSCA", "GAP", "IAE", "IMPGT", "POLYTECH", "SANTE", "SCIENCESPO", "STAPS"];
     programName = "Féminin"
     for (let i = 0; i < schoolTable.length; i++) {
         let school = await School.findOne({name: schoolTable[i]});

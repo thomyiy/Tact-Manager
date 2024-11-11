@@ -239,10 +239,13 @@ async function createTournamentOfProgram(program, sports) {
 
 
     // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
+    //TODO
+    let seed = Math.floor(Math.random() * 1000);
+
     for (const sport of sports) {
-        let seed = Math.floor(Math.random() * 1000);
 
         const teams = await Team.find({ sport: sport._id, program: program._id });
+
         if (teams.length == 0) {
             console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
             return res.status(204).send();

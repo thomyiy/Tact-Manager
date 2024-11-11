@@ -30,6 +30,17 @@ module.exports = function (route) {
         }
     }
 
+    route.get('/ambiance/global', async (req, res, next) => {
+
+        let global = await utils.getGlobal(req)
+        let schools = await School.find()
+
+        res.render('ambiance/ambiance-global', {
+            global: global,
+            schools:schools
+        });
+    })
+
     route.get('/ambiance/:school/:type', async (req, res, next) => {
 
         const sessionSchool = await School.findOne({name: req.params.school});
@@ -58,7 +69,7 @@ module.exports = function (route) {
                     affectedArbitrators: affectedArbitrators,
                     sessionSchool: sessionSchool,
                     ambianceScores: ambianceScores,
-                    type:type
+                    type: type
                 });
             } else {
                 console.log(global.user)
@@ -72,7 +83,7 @@ module.exports = function (route) {
                     sessionSchool: sessionSchool,
                     ambianceScore: ambianceScore,
                     ambianceScores: ambianceScores,
-                    type:type
+                    type: type
                 });
             }
         }
