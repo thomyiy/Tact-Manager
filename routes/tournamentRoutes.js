@@ -62,8 +62,8 @@ module.exports = function (route) {
                 {
                     $lookup: {
                         from: "teampoints",
-                        localField: "teams._id",
-                        foreignField: "team",
+                        localField: "_id",
+                        foreignField: "pool",
                         as: "teamPoints",
                     },
                 },
