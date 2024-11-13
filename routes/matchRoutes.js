@@ -12,6 +12,7 @@ const Sport = require("../models/SportModel");
 const Program = require("../models/ProgramModel");
 const Team = require("../models/TeamModel");
 const TeamPoint = require("../models/TeamPointModel");
+const Field = require("../models/FieldModel");
 
 module.exports = function (route) {
     route.get('/match/:id', async (req, res, next) => {
@@ -113,6 +114,9 @@ module.exports = function (route) {
         const matchIds = pool.matches.map(e => e._id.toString())
 
         Pool.updateOne({'_id': {$in: req.body.poolId}}, {$set: {isFinished: true}}, async function (err, docs) {
+
+            const principal = await Field.findOne({name: "Principale"});
+
             if (err) {
                 console.log(err)
                 res.sendStatus(500);
@@ -187,12 +191,14 @@ module.exports = function (route) {
                         const demi1 = await Pool.create({
                             name: "Demi-Finale 1",
                             sport: pool.sport._id,
-                            program: pool.program._id
+                            program: pool.program._id,
+                            regularTime: 15
                         });
                         const demi2 = await Pool.create({
                             name: "Demi-Finale 2",
                             sport: pool.sport._id,
-                            program: pool.program._id
+                            program: pool.program._id,
+                            regularTime: 15
                         });
                         if (pools.length === 2) {
                             var pool1 = pools[0].teampoints.sort(sortTeamPoint)
@@ -202,7 +208,8 @@ module.exports = function (route) {
                                 team2: pool2[1].team,
                                 sport: pool.sport,
                                 pool: demi1._id,
-                                program: pool.program
+                                program: pool.program,
+                                field:principal._id
                             });
                             await TeamPoint.create({team: pool1[0].team, pool: demi1._id})
                             await TeamPoint.create({team: pool2[1].team, pool: demi1._id})
@@ -211,7 +218,8 @@ module.exports = function (route) {
                                 team2: pool2[0].team,
                                 sport: pool.sport,
                                 pool: demi2._id,
-                                program: pool.program
+                                program: pool.program,
+                                field:principal._id
                             });
                             await TeamPoint.create({team: pool1[1].team, pool: demi2._id})
                             await TeamPoint.create({team: pool2[0].team, pool: demi2._id})
@@ -233,7 +241,8 @@ module.exports = function (route) {
                                     team2: seconds[0].team,
                                     sport: pool.sport,
                                     pool: demi1._id,
-                                    program: pool.program
+                                    program: pool.program,
+                                    field:principal._id
                                 });
                                 await TeamPoint.create({team: pool2[0].team, pool: demi1._id})
                                 await TeamPoint.create({team: seconds[0].team, pool: demi1._id})
@@ -243,7 +252,8 @@ module.exports = function (route) {
                                     team2: pool3[0].team,
                                     sport: pool.sport,
                                     pool: demi2._id,
-                                    program: pool.program
+                                    program: pool.program,
+                                    field:principal._id
                                 });
                                 await TeamPoint.create({team: pool1[0].team, pool: demi2._id})
                                 await TeamPoint.create({team: pool3[0].team, pool: demi2._id})
@@ -253,7 +263,8 @@ module.exports = function (route) {
                                     team2: seconds[0].team,
                                     sport: pool.sport,
                                     pool: demi1._id,
-                                    program: pool.program
+                                    program: pool.program,
+                                    field:principal._id
                                 });
                                 await TeamPoint.create({team: pool1[0].team, pool: demi1._id})
                                 await TeamPoint.create({team: seconds[0].team, pool: demi1._id})
@@ -262,7 +273,8 @@ module.exports = function (route) {
                                     team2: pool2[0].team,
                                     sport: pool.sport,
                                     pool: demi2._id,
-                                    program: pool.program
+                                    program: pool.program,
+                                    field:principal._id
                                 });
                                 await TeamPoint.create({team: pool1[0].team, pool: demi2._id})
                                 await TeamPoint.create({team: pool2[0].team, pool: demi2._id})
@@ -278,7 +290,8 @@ module.exports = function (route) {
                                 team2: pool2[0].team,
                                 sport: pool.sport,
                                 pool: demi1._id,
-                                program: pool.program
+                                program: pool.program,
+                                field:principal._id
                             });
                             await TeamPoint.create({team: pool1[0].team, pool: demi1._id})
                             await TeamPoint.create({team: pool2[0].team, pool: demi1._id})
@@ -287,16 +300,19 @@ module.exports = function (route) {
                                 team2: pool4[0].team,
                                 sport: pool.sport,
                                 pool: demi2._id,
-                                program: pool.program
+                                program: pool.program,
+                                field:principal._id
                             });
                             await TeamPoint.create({team: pool3[0].team, pool: demi2._id})
                             await TeamPoint.create({team: pool4[0].team, pool: demi2._id})
+                            console.log("alalal")
                         }
                     } else {
                         const final = await Pool.create({
                             name: "Final",
                             sport: pool.sport._id,
-                            program: pool.program._id
+                            program: pool.program._id,
+                            regularTime: 15
                         });
                         var poolDemi = await Pool.aggregate([
                             {
@@ -323,7 +339,8 @@ module.exports = function (route) {
                             team2: pool2[0].team,
                             sport: pool.sport,
                             pool: final._id,
-                            program: pool.program
+                            program: pool.program,
+                            field:principal._id
                         });
                         await TeamPoint.create({team: pool1[0].team, pool: final._id})
                         await TeamPoint.create({team: pool2[0].team, pool: final._id})
