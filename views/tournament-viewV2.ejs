@@ -286,12 +286,12 @@
             data: e.teamPoints.sort((a, b) => {
                 if (b.points < a.points) return -1;
                 if (b.points > a.points) return 1;
-                if (b.goalAverage < a.goalAverage) return 1;
-                if (b.goalAverage > a.goalAverage) return -1;
-                if (b.goal < a.goal) return 1;
-                if (b.goal > a.goal) return -1;
-                if (b.random < a.random) return 1;
-                if (b.random > a.random) return -1;
+                if (b.goalAverage < a.goalAverage) return -1;
+                if (b.goalAverage > a.goalAverage) return 1;
+                if (b.goal < a.goal) return -1;
+                if (b.goal > a.goal) return 1;
+                if (b.random < a.random) return -1;
+                if (b.random > a.random) return 1;
             }).map((element) => [element.team.school.name,
                 element.points, element.goalAverage, element.goal]),
         }).render(document.getElementById(e.name.replace(" ", "_") + "-table-leaderboard"));

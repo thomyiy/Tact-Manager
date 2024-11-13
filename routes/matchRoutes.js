@@ -355,12 +355,12 @@ module.exports = function (route) {
     function sortTeamPoint(a, b) {
         if (b.points < a.points) return -1;
         if (b.points > a.points) return 1;
-        if (b.goalAverage < a.goalAverage) return 1;
-        if (b.goalAverage > a.goalAverage) return -1;
-        if (b.goal < a.goal) return 1;
-        if (b.goal > a.goal) return -1;
-        if (b.random < a.random) return 1;
-        if (b.random > a.random) return -1;
+        if (b.goalAverage < a.goalAverage) return -1;
+        if (b.goalAverage > a.goalAverage) return 1;
+        if (b.goal < a.goal) return -1;
+        if (b.goal > a.goal) return 1;
+        if (b.random < a.random) return -1;
+        if (b.random > a.random) return 1;
     }
 
     function generateRandomNumbers(count, min, max) {
