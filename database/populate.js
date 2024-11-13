@@ -102,7 +102,7 @@ async function createPrograms() {
 
 async function createFields() {
     // creer les terrains
-    const fieldTable = ["Field 1", "Field 2"];
+    const fieldTable = ["Principale", "Annexe"];
 
     for (let i = 0; i < fieldTable.length; i++) {
         var fields = await Field.count({name: fieldTable[i]});

@@ -37,7 +37,10 @@ module.exports = function (route) {
             const affectedArbitrators = await User.find({
                 '_id': affectedArbitratorsId
             });
-            const arbitrators = await User.find({role: "Arbitrator", _id: {$nin: affectedArbitratorsId.map(a => a._id)}})
+            const arbitrators = await User.find({
+                role: "Arbitrator",
+                _id: {$nin: affectedArbitratorsId.map(a => a._id)}
+            })
 
             res.render('cheerleading-average', {
                 global: global,
@@ -57,7 +60,10 @@ module.exports = function (route) {
             var global = await utils.getGlobal(req)
 
             const sessionSchool = await School.findOne({name: req.params.school});
-            var cheerleadingScore = await CheerleadingScore.findOne({arbitrator: req.session.userid});
+            var cheerleadingScore = await CheerleadingScore.findOne({
+                arbitrator: req.session.userid,
+                school: sessionSchool._id
+            });
 
             res.render('cheerleading-form', {
                 global: global,

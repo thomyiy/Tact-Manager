@@ -60,7 +60,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Futsal</h6>
+                                    <h6>Futsal masculin</h6>
                                     <div id="futsal-m-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -70,7 +70,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Basketball</h6>
+                                    <h6>Basketball masculin</h6>
                                     <div id="basketball-m-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -80,7 +80,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Handball</h6>
+                                    <h6>Handball masculin</h6>
                                     <div id="handball-m-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -90,7 +90,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Futsal</h6>
+                                    <h6>Futsal féminin</h6>
                                     <div id="futsal-f-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -100,7 +100,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Basketball</h6>
+                                    <h6>Basketball féminin</h6>
                                     <div id="basketball-f-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -110,7 +110,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-body">
-                                    <h6>Handball</h6>
+                                    <h6>Handball féminin</h6>
                                     <div id="handball-f-table"></div>
                                 </div>
                                 <!-- end card body -->
@@ -241,18 +241,18 @@
     }).render(document.getElementById("handball-f-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(cheerleading) %>
+            return data.map((e) => [e.name, e.score])
         },
     }).render(document.getElementById("cheerleading-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole","Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(ambiance) %>
+            return data.map((e) => [e.name, e.score])
         },
     }).render(document.getElementById("ambiance-table"));
 

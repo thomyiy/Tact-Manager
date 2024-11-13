@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const CheerleadingScoreSchema = new mongoose.Schema({
     school: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "schools",
+        ref: "school",
         required: true
     },
     arbitrator: {

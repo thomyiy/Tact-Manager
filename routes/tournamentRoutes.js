@@ -90,8 +90,8 @@ module.exports = function (route) {
     route.get('/tournament/management', async (req, res, next) => {
         try {
             const football = await Sport.findOne({name: "Football"});
-            const field1 = await Field.findOne({name: "Field 1"});
-            const field2 = await Field.findOne({name: "Field 2"});
+            const field1 = await Field.findOne({name: "Principale"});
+            const field2 = await Field.findOne({name: "Annexe"});
             const teams = await Team.find({});
             const matchsField1 = await Match.find({field: field1._id, sport: football._id})
             .populate({
@@ -99,7 +99,7 @@ module.exports = function (route) {
                 populate: {path: 'school', select: 'name'}
             })
             .populate('sport pool program');
-            
+
             const matchsField2 = await Match.find({field: field2._id, sport: football._id})
             .populate({
                 path: 'team1 team2',
