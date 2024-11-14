@@ -31,8 +31,12 @@
                     <!-- end row -->
                     <div class="row justify-content-center">
                         <div class="d-flex flex-column align-items-center col-md-6 mb-4 male-button-container">
-                            <button type="button" class="btn btn-primary waves-effect waves-light mb-3" onclick="createTournament()">Créer les tournois</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="deleteTournament()">Supprimer les tournois</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light mb-3"
+                                    onclick="createTournament()">Créer les tournois
+                            </button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light"
+                                    onclick="deleteTournament()">Supprimer les tournois
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -40,24 +44,46 @@
         </div>
         <div class="row">
             <div class="col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                <h6>Matchs Salle Principale</h6>
-                <div id="table-field-1"></div>
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Matchs Salle Principale</h6>
+                        <div id="table-field-1"></div>
+                    </div>
+                    <!-- end card body -->
                 </div>
-                <!-- end card body -->
-            </div>
-            <!-- end card -->
+                <!-- end card -->
             </div>
             <div class="col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                <h6>Matchs Salle Annexe</h6>
-                <div id="table-field-2"></div>
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Matchs Salle Annexe</h6>
+                        <div id="table-field-2"></div>
+                    </div>
+                    <!-- end card body -->
                 </div>
-                <!-- end card body -->
+                <!-- end card -->
             </div>
-            <!-- end card -->
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Poules Masculine</h6>
+                        <div id="table-pool-masc"></div>
+                    </div>
+                    <!-- end card body -->
+                </div>
+                <!-- end card -->
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Poules Féminine</h6>
+                        <div id="table-pool-fem"></div>
+                    </div>
+                    <!-- end card body -->
+                </div>
+                <!-- end card -->
             </div>
         </div>
     </div>
@@ -70,6 +96,46 @@
 
 <script>
     new gridjs.Grid({
+        columns: ["Poules", {
+            name: "Ecoles",
+            formatter: (cell, row) => {
+                var html = "<ul>"
+                cell.forEach(e => {
+                    html += "<li>" + e.school.name + "</li>"
+                })
+                html += "<ul>"
+                return gridjs.html(html);
+            }
+        }],
+        data: async () => {
+            var data = <%- JSON.stringify(poolmasc) %>;
+            return data.map((e) => [e.name, e.teams]);
+        },
+        sort: true
+    }).render(document.getElementById("table-pool-masc"));
+
+    new gridjs.Grid({
+        columns: ["Poules", {
+            name: "Ecoles",
+            formatter: (cell, row) => {
+                var html = "<ul>"
+                cell.forEach(e => {
+                    html += "<li>" + e.school.name + "</li>"
+                })
+                html += "<ul>"
+                return gridjs.html(html);
+            }
+        }],
+        data: async () => {
+            var data = <%- JSON.stringify(poolfem) %>;
+            console.log(data)
+            return data.map((e) => [e.name, e.teams]);
+        },
+        sort: true
+    }).render(document.getElementById("table-pool-fem"));
+
+
+    new gridjs.Grid({
         columns: ["Team 1", "Team 2", "Départ", "Poule", "Programme"],
         data: async () => {
             var data = <%- JSON.stringify(matchsField1) %>;
@@ -78,7 +144,7 @@
             return data.map((e) => [
                 e.team1.school.name,
                 e.team2.school.name,
-                new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                new Date(e.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
                 e.pool.name,
                 e.program.name
             ]);
@@ -95,7 +161,7 @@
             return data.map((e) => [
                 e.team1.school.name,
                 e.team2.school.name,
-                new Date(e.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                new Date(e.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
                 e.pool.name,
                 e.program.name
             ]);

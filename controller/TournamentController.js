@@ -14,71 +14,75 @@ var poolsLenghts = 0;
 
 const pouleFactory = {
     8: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 4);
-        poules[`Poule 2`] = teams.slice(4, 8);
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 4)},
+            {name: "Poule 2", teams: teams.slice(4, 8)}];
         return poules;
     },
     9: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 3);
-        poules[`Poule 2`] = teams.slice(3, 6);
-        poules[`Poule 3`] = teams.slice(6, 9);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 3)},
+            {name: "Poule 2", teams: teams.slice(3, 6)},
+            {name: "Poule 3", teams: teams.slice(6, 9)}
+        ];
     },
     10: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 4);
-        poules[`Poule 2`] = teams.slice(4, 7);
-        poules[`Poule 3`] = teams.slice(7, 10);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 4)},
+            {name: "Poule 2", teams: teams.slice(4, 7)},
+            {name: "Poule 3", teams: teams.slice(7, 10)}
+        ];
     },
     11: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 4);
-        poules[`Poule 2`] = teams.slice(4, 8);
-        poules[`Poule 3`] = teams.slice(8, 11);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 4)},
+            {name: "Poule 2", teams: teams.slice(4, 8)},
+            {name: "Poule 3", teams: teams.slice(8, 11)}
+        ];
+
     },
     12: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 3);
-        poules[`Poule 2`] = teams.slice(3, 6);
-        poules[`Poule 3`] = teams.slice(6, 9);
-        poules[`Poule 4`] = teams.slice(9, 12);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 3)},
+            {name: "Poule 2", teams: teams.slice(3, 6)},
+            {name: "Poule 3", teams: teams.slice(6, 9)},
+            {name: "Poule 4", teams: teams.slice(9, 12)}
+        ];
+
     },
     13: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 3);
-        poules[`Poule 2`] = teams.slice(3, 6);
-        poules[`Poule 3`] = teams.slice(6, 9);
-        poules[`Poule 4`] = teams.slice(9, 13);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 3)},
+            {name: "Poule 2", teams: teams.slice(3, 6)},
+            {name: "Poule 3", teams: teams.slice(6, 9)},
+            {name: "Poule 4", teams: teams.slice(9, 13)}
+        ];
+
     },
     14: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 3);
-        poules[`Poule 2`] = teams.slice(3, 6);
-        poules[`Poule 3`] = teams.slice(6, 10);
-        poules[`Poule 4`] = teams.slice(10, 14);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 3)},
+            {name: "Poule 2", teams: teams.slice(3, 6)},
+            {name: "Poule 3", teams: teams.slice(6, 10)},
+            {name: "Poule 4", teams: teams.slice(10, 14)}
+        ];
+
     },
     15: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 4);
-        poules[`Poule 2`] = teams.slice(4, 8);
-        poules[`Poule 3`] = teams.slice(8, 12);
-        poules[`Poule 4`] = teams.slice(12, 15);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 4)},
+            {name: "Poule 2", teams: teams.slice(4, 8)},
+            {name: "Poule 3", teams: teams.slice(8, 12)},
+            {name: "Poule 4", teams: teams.slice(12, 15)}
+        ];
     },
     16: function (teams) {
-        let poules = {};
-        poules[`Poule 1`] = teams.slice(0, 4);
-        poules[`Poule 2`] = teams.slice(4, 8);
-        poules[`Poule 3`] = teams.slice(8, 12);
-        poules[`Poule 4`] = teams.slice(12, 16);
-        return poules;
+        return [
+            {name: "Poule 1", teams: teams.slice(0, 4)},
+            {name: "Poule 2", teams: teams.slice(4, 8)},
+            {name: "Poule 3", teams: teams.slice(8, 12)},
+            {name: "Poule 4", teams: teams.slice(12, 16)}
+        ];
     }
 };
 
@@ -479,140 +483,154 @@ function mergeMatch(matches1, matches2) {
     return result
 }
 
-async function createTournamentOfProgram(program, sports) {
 
-    const field1 = await Field.findOne({name: "Principale"});
-    const field2 = await Field.findOne({name: "Annexe"});
+async function getTeams(program, sportId) {
+    if (program.name === "Masculin") {
+
+        let schools = [
+            await School.findOne({name: "ALLSH"}),
+            await School.findOne({name: "SCIENCESPO"}),
+            await School.findOne({name: "ARCHI"}),
+            await School.findOne({name: "IUT"}),
+            await School.findOne({name: "ARTS&METIERS"}),
+            await School.findOne({name: "CENTRALE"}),
+            await School.findOne({name: "POLYTECH"}),
+            await School.findOne({name: "DROIT"}),
+            await School.findOne({name: "IMPGT"}),
+            await School.findOne({name: "ESSCA"}),
+            await School.findOne({name: "FEG"}),
+            await School.findOne({name: "SANTE"}),
+            await School.findOne({name: "GAP"}),
+            await School.findOne({name: "STAPS"}),
+            await School.findOne({name: "IAE"}),
+        ]
+        return [
+            await Team.findOne({school: schools[0]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[1]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[2]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[3]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[4]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[5]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[6]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[7]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[8]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[9]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[10]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[11]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[12]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[13]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[14]._id, sport: sportId, program: program._id}),
+        ]
+    } else if (program.name === "Féminin") {
+
+        let schools = [
+            await School.findOne({name: "ALLSH"}),
+            await School.findOne({name: "ARCHI"}),
+            await School.findOne({name: "STAPS"}),
+            await School.findOne({name: "CENTRALE"}),
+            await School.findOne({name: "DROIT"}),
+            await School.findOne({name: "ESSCA"}),
+            await School.findOne({name: "SANTE"}),
+            await School.findOne({name: "GAP"}),
+            await School.findOne({name: "IAE"}),
+            await School.findOne({name: "SCIENCESPO"}),
+            await School.findOne({name: "IMPGT"}),
+            await School.findOne({name: "POLYTECH"}),
+        ]
+        return [
+            await Team.findOne({school: schools[0]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[1]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[2]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[3]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[4]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[5]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[6]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[7]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[8]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[9]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[10]._id, sport: sportId, program: program._id}),
+            await Team.findOne({school: schools[11]._id, sport: sportId, program: program._id}),
+        ]
+    }
+}
+
+async function createTournamentOfProgram() {
+
+    const programs = await Program.find()
+    const sports = await Sport.find();
+
+    for (const program of programs) {
+
+        /*const field1 = await Field.findOne({name: "Principale"});
+        const field2 = await Field.findOne({name: "Annexe"});*/
+
+        // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
+        //TODO
+        let seed = Math.floor(Math.random() * 1000);
+
+        for (const sport of sports) {
+            console.log(program.name + " " + sport.name)
+            /*const teams = await Team.find({sport: sport._id, program: program._id});
+
+            if (teams.length == 0) {
+                console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
+                return res.status(204).send();
+            }*/
+            let teams = await getTeams(program, sport._id,)
 
 
-    // algo de creation de match pour chaque poule en fonction du programme et pour chaque sport
-    //TODO
-    let seed = Math.floor(Math.random() * 1000);
+            // creer un nb de poules en fonction du nb de teams
+            const poules = createPoules(teams, seed);
 
-    for (const sport of sports) {
+            for (let poule of poules) {
+                const teamsInPoule = poule.teams;
+                let newPoule = await Pool.create({
+                    name: poule.name,
+                    sport: sport._id,
+                    program: program._id,
+                    regularTime: getRegularTimeOfPool(teamsInPoule)
+                })
+                console.log(newPoule.name)
 
-        /*const teams = await Team.find({sport: sport._id, program: program._id});
+                let teamsToUpdate = await Team.find({_id: {$in: teamsInPoule.map(e => e._id)}})
+                for (teamToUpdate of teamsToUpdate) {
+                    teamsToUpdate = await Team.findOneAndUpdate({_id: teamToUpdate._id}, {$set: {pool: newPoule._id}}, {new: true})
+                    console.log(teamsToUpdate._id)
+                }
 
-        if (teams.length == 0) {
-            console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
-            return res.status(204).send();
-        }*/
-        if (program.name === "Masculin") {
+                TeamPoint.create(teamsInPoule.map(e => {
+                    return {team: e._id, pool: newPoule._id}
+                }))
 
-            var schools = [
-                await School.findOne({name: "ALLSH"}),
-                await School.findOne({name: "SCIENCESPO"}),
-                await School.findOne({name: "ARCHI"}),
-                await School.findOne({name: "IUT"}),
-                await School.findOne({name: "ARTS&METIERS"}),
-                await School.findOne({name: "CENTRALE"}),
-                await School.findOne({name: "POLYTECH"}),
-                await School.findOne({name: "DROIT"}),
-                await School.findOne({name: "IMPGT"}),
-                await School.findOne({name: "ESSCA"}),
-                await School.findOne({name: "FEG"}),
-                await School.findOne({name: "SANTE"}),
-                await School.findOne({name: "GAP"}),
-                await School.findOne({name: "STAPS"}),
-                await School.findOne({name: "IAE"}),
-            ]
-            var teams = [
-                await Team.findOne({school: schools[0]._id}),
-                await Team.findOne({school: schools[1]._id}),
-                await Team.findOne({school: schools[2]._id}),
-                await Team.findOne({school: schools[3]._id}),
-                await Team.findOne({school: schools[4]._id}),
-                await Team.findOne({school: schools[5]._id}),
-                await Team.findOne({school: schools[6]._id}),
-                await Team.findOne({school: schools[7]._id}),
-                await Team.findOne({school: schools[8]._id}),
-                await Team.findOne({school: schools[9]._id}),
-                await Team.findOne({school: schools[10]._id}),
-                await Team.findOne({school: schools[11]._id}),
-                await Team.findOne({school: schools[12]._id}),
-                await Team.findOne({school: schools[13]._id}),
-                await Team.findOne({school: schools[14]._id}),
-            ]
-        } else if (program.name === "Féminin") {
+                for (let i = 0; i < teamsInPoule.length; i++) {
+                    //var currentField;
 
-            var schools = [
-                await School.findOne({name: "ALLSH"}),
-                await School.findOne({name: "ARCHI"}),
-                await School.findOne({name: "STAPS"}),
-                await School.findOne({name: "CENTRALE"}),
-                await School.findOne({name: "DROIT"}),
-                await School.findOne({name: "ESSCA"}),
-                await School.findOne({name: "SANTE"}),
-                await School.findOne({name: "GAP"}),
-                await School.findOne({name: "IAE"}),
-                await School.findOne({name: "SCIENCESPO"}),
-                await School.findOne({name: "IMPGT"}),
-                await School.findOne({name: "POLYTECH"}),
-            ]
-            var teams = [
-                await Team.findOne({school: schools[0]._id}),
-                await Team.findOne({school: schools[1]._id}),
-                await Team.findOne({school: schools[2]._id}),
-                await Team.findOne({school: schools[3]._id}),
-                await Team.findOne({school: schools[4]._id}),
-                await Team.findOne({school: schools[5]._id}),
-                await Team.findOne({school: schools[6]._id}),
-                await Team.findOne({school: schools[7]._id}),
-                await Team.findOne({school: schools[8]._id}),
-                await Team.findOne({school: schools[9]._id}),
-                await Team.findOne({school: schools[10]._id}),
-                await Team.findOne({school: schools[11]._id}),
-            ]
-        }
 
-        // creer un nb de poules en fonction du nb de teams
-        const poules = createPoules(teams, seed);
-        for (let poule in poules) {
-            const teamsInPoule = poules[poule];
-            const newPoule = await Pool.create({
-                name: poule,
-                sport: sport._id,
-                program: program._id,
-                regularTime: getRegularTimeOfPool(teamsInPoule)
-            });
+                    for (let j = i + 1; j < teamsInPoule.length; j++) {
 
-            for (let i = 0; i < teamsInPoule.length; i++) {
-                var currentField;
-                await TeamPoint.create({team: teamsInPoule[i]._id, pool: newPoule._id});
-                for (let j = i + 1; j < teamsInPoule.length; j++) {
+                        /*let matchsInPoule = await Match.count({pool: newPoule._id});
+                        if (matchsInPoule == 0 || matchsInPoule == 2 || matchsInPoule == 5)
+                            currentField = field1;
+                        else
+                            currentField = field2;*/
 
-                    let matchsInPoule = await Match.count({pool: newPoule._id});
-                    if (matchsInPoule == 0 || matchsInPoule == 2 || matchsInPoule == 5)
-                        currentField = field1;
-                    else
-                        currentField = field2;
+                        const match = {
+                            team1: teamsInPoule[i]._id,
+                            team2: teamsInPoule[j]._id,
 
-                    const match = {
-                        team1: teamsInPoule[i]._id,
-                        team2: teamsInPoule[j]._id,
+                            sport: sport._id,
+                            pool: newPoule._id,
+                            program: program._id,
+                            //field: currentField._id
+                        };
 
-                        sport: sport._id,
-                        pool: newPoule._id,
-                        program: program._id,
-                        field: currentField._id
-                    };
+                        Match.create(match);
 
-                    await Match.create(match);
+                        //const team1name = await School.findOne({_id: teamsInPoule[i].school._id});
+                        //const team2name = await School.findOne({_id: teamsInPoule[j].school._id});
 
-                    await Team.findOneAndUpdate(
-                        {_id: teamsInPoule[i]._id, sport: sport._id, program: program._id},
-                        {$set: {pool: newPoule._id}}
-                    );
-
-                    await Team.findOneAndUpdate(
-                        {_id: teamsInPoule[j]._id, sport: sport._id, program: program._id},
-                        {$set: {pool: newPoule._id}}
-                    );
-
-                    const team1name = await School.findOne({_id: teamsInPoule[i].school._id});
-                    const team2name = await School.findOne({_id: teamsInPoule[j].school._id});
-
-                    console.log(`Match créé: ${team1name.name} vs ${team2name.name} sur ${currentField.name} dans ${newPoule.name} pour le programme ${program.name}`);
+                        //console.log(`Match créé: ${team1name.name} vs ${team2name.name} sur ${currentField.name} dans ${newPoule.name} pour le programme ${program.name}`);
+                    }
                 }
             }
         }
@@ -621,12 +639,7 @@ async function createTournamentOfProgram(program, sports) {
 
 const create = async (req, res) => {
     try {
-        const programs = await Program.find();
-        const sports = await Sport.find();
-
-        for (const program of programs) {
-            await createTournamentOfProgram(program, sports);
-        }
+        await createTournamentOfProgram();
 
         //await handleSlots(sports);
         await handleSlotsManualy();
