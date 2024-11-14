@@ -5,15 +5,17 @@ const Field = require("../models/FieldModel");
 const School = require("../models/SchoolModel");
 const Team = require("../models/TeamModel");
 const mongoose = require("mongoose");
+
+
 const populate = async (req, res) => {
 
-    await createAdmin()
-    await createSports()
-    await createPrograms()
-    await createFields()
+    await setTimeout(createAdmin,1000);
+    await setTimeout(createSports,1000);
+    await setTimeout(createPrograms,1000);
+    await setTimeout(createFields,1000);
 
-    await createSchools()
-    await createTeams()
+    await setTimeout(createSchools,1000);
+    await setTimeout(createTeams,1000);
     await createUsers()
 }
 

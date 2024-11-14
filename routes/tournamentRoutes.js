@@ -94,22 +94,62 @@ module.exports = function (route) {
             const field2 = await Field.findOne({name: "Annexe"});
             const teams = await Team.find({});
             const matchsField1 = await Match.find({field: field1._id, sport: football._id})
-            .populate({
-                path: 'team1 team2',
-                populate: {path: 'school', select: 'name'}
-            })
-            .populate('sport pool program');
+                .populate({
+                    path: 'team1 team2',
+                    populate: {path: 'school', select: 'name'}
+                })
+                .populate('sport pool program');
 
             const matchsField2 = await Match.find({field: field2._id, sport: football._id})
-            .populate({
-                path: 'team1 team2',
-                populate: {path: 'school', select: 'name'}
-            })
-            .populate('sport pool program');
+                .populate({
+                    path: 'team1 team2',
+                    populate: {path: 'school', select: 'name'}
+                })
+                .populate('sport pool program');
 
             const global = await utils.getGlobal(req)
+            const programMasc = await Program.findOne({name: "Masculin"})
+            const programFem = await Program.findOne({name: "Féminin"})
+            const sport = await Sport.findOne({name: "Football"})
 
-            res.render('tournament-management', {global: global, teams: teams, matchsField1: matchsField1, matchsField2: matchsField2});
+            var poolmasc = await Pool.aggregate([
+                {
+                    $match: {program: programMasc._id, sport: sport._id, name : { $in : ["Poule 1", "Poule 2", "Poule 3","Poule 4"]}},
+                },
+                {
+                    $lookup: {
+                        from: "teams",
+                        localField: "_id",
+                        foreignField: "pool",
+                        as: "teams",
+                    },
+                },
+            ]);
+            poolmasc = await School.populate(poolmasc, {path: "teams.school", select: 'name'})
+
+            var poolfem = await Pool.aggregate([
+                {
+                    $match: {program: programFem._id, sport: sport._id, name : { $in : ["Poule 1", "Poule 2", "Poule 3","Poule 4"]}},
+                },
+                {
+                    $lookup: {
+                        from: "teams",
+                        localField: "_id",
+                        foreignField: "pool",
+                        as: "teams",
+                    },
+                },
+            ]);
+            poolfem = await School.populate(poolfem, {path: "teams.school", select: 'name'})
+            
+            res.render('tournament-management', {
+                global: global,
+                teams: teams,
+                matchsField1: matchsField1,
+                matchsField2: matchsField2,
+                poolmasc: poolmasc,
+                poolfem: poolfem
+            });
         } catch (err) {
             console.error(err);
             return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
