@@ -497,8 +497,7 @@ async function createTournamentOfProgram(program, sports) {
             console.log(`Aucune équipe créée pour ${sport.name} ${program.name}`);
             return res.status(204).send();
         }*/
-
-        if (program.name === "Masculin"){
+        if (program.name === "Masculin") {
 
             var schools = [
                 await School.findOne({name: "ALLSH"}),
@@ -517,8 +516,7 @@ async function createTournamentOfProgram(program, sports) {
                 await School.findOne({name: "STAPS"}),
                 await School.findOne({name: "IAE"}),
             ]
-
-            var teams =[
+            var teams = [
                 await Team.findOne({school: schools[0]._id}),
                 await Team.findOne({school: schools[1]._id}),
                 await Team.findOne({school: schools[2]._id}),
@@ -535,9 +533,8 @@ async function createTournamentOfProgram(program, sports) {
                 await Team.findOne({school: schools[13]._id}),
                 await Team.findOne({school: schools[14]._id}),
             ]
-        console.log(teams);
-    }
-        else if(program.name === "Féminin") {
+        } else if (program.name === "Féminin") {
+
             var schools = [
                 await School.findOne({name: "POLYTECH"}),
                 await School.findOne({name: "ALLSH"}),
