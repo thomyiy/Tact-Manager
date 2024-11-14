@@ -536,18 +536,18 @@ async function createTournamentOfProgram(program, sports) {
         } else if (program.name === "Féminin") {
 
             var schools = [
-                await School.findOne({name: "POLYTECH"}),
                 await School.findOne({name: "ALLSH"}),
-                await School.findOne({name: "IAE"}),
                 await School.findOne({name: "ARCHI"}),
-                await School.findOne({name: "SCIENCESPO"}),
-                await School.findOne({name: "CENTRALE"}),
-                await School.findOne({name: "IMPGT"}),
-                await School.findOne({name: "DROIT"}),
-                await School.findOne({name: "SANTE"}),
-                await School.findOne({name: "ESSCA"}),
                 await School.findOne({name: "STAPS"}),
+                await School.findOne({name: "CENTRALE"}),
+                await School.findOne({name: "DROIT"}),
+                await School.findOne({name: "ESSCA"}),
+                await School.findOne({name: "SANTE"}),
                 await School.findOne({name: "GAP"}),
+                await School.findOne({name: "IAE"}),
+                await School.findOne({name: "SCIENCESPO"}),
+                await School.findOne({name: "IMPGT"}),
+                await School.findOne({name: "POLYTECH"}),
             ]
             var teams = [
                 await Team.findOne({school: schools[0]._id}),

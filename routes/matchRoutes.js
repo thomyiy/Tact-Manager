@@ -305,7 +305,6 @@ module.exports = function (route) {
                             });
                             await TeamPoint.create({team: pool3[0].team, pool: demi2._id})
                             await TeamPoint.create({team: pool4[0].team, pool: demi2._id})
-                            console.log("alalal")
                         }
                     } else {
                         const final = await Pool.create({
