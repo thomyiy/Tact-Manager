@@ -47,7 +47,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-3">
+                        <div class="col-lg-12">
                             <div class="card">
                                 <div class="card-body">
                                     <h6>Global</h6>
@@ -186,10 +186,48 @@
 <script>
 
     new gridjs.Grid({
-        columns: ["Ecole", "Points"],
+        columns: ["Ecole", "Points", "Futsal M", "Handball M", "Basketball M", "Futsal F", "Handball F", "Basketball F", "Bonus", "Cheerleading", "Ambiance", "Fifa", "Mk"],
         data: async () => {
-            var data = <%- JSON.stringify(globalRanking) %>;
-            return data.map((e) => [e.name, e.totalPoints]);       
+            var globalData = <%- JSON.stringify(globalRanking) %>;
+            var futsalMaleData = <%- JSON.stringify(futsalMaleRanking) %>;
+            var futsalFemaleData = <%- JSON.stringify(futsalFemaleRanking) %>;
+            var basketballMaleData = <%- JSON.stringify(basketballMaleRanking) %>;
+            var basketballFemaleData = <%- JSON.stringify(basketballFemaleRanking) %>;
+            var handballMaleData = <%- JSON.stringify(handballMaleRanking) %>;
+            var handballFemaleData = <%- JSON.stringify(handballFemaleRanking) %>;
+            var cheerleading = <%- JSON.stringify(cheerleading) %>;
+            var ambiance = <%- JSON.stringify(ambiance) %>;
+            var fifa = <%- JSON.stringify(fifa) %>;
+            var mk = <%- JSON.stringify(mk) %>;
+
+            return globalData.map((e) => {
+                let futsalMaleEntry = futsalMaleData.find((futsal) => futsal.team === e.name);
+                let fustaleFemaleEntry = futsalFemaleData.find((futsal) => futsal.team === e.name);
+                let basketballMaleEntry = basketballMaleData.find((basketball) => basketball.team === e.name);
+                let basketballFemaleEntry = basketballFemaleData.find((basketball) => basketball.team === e.name);
+                let handballMaleEntry = handballMaleData.find((handball) => handball.team === e.name);
+                let handballFemaleEntry = handballFemaleData.find((handball) => handball.team === e.name);
+                let cheerleadingEntry = cheerleading.find((cheer) => cheer.name === e.name);
+                let ambianceEntry = ambiance.find((amb) => amb.name === e.name);
+                let fifaEntry = fifa.find((f) => f.name === e.name);
+                let mkEntry = mk.find((m) => m.name === e.name);
+
+                var futsalMPoints = futsalMaleEntry ? futsalMaleEntry.pointsToShow : 0;
+                var futsalFPoints = fustaleFemaleEntry ? fustaleFemaleEntry.pointsToShow : 0;
+                var basketballMPoints = basketballMaleEntry ? basketballMaleEntry.pointsToShow : 0;
+                var basketballFPoints = basketballFemaleEntry ? basketballFemaleEntry.pointsToShow : 0;
+                var handballMPoints = handballMaleEntry ? handballMaleEntry.pointsToShow : 0;
+                var handballFPoints = handballFemaleEntry ? handballFemaleEntry.pointsToShow : 0;
+                var cheerleadingPoints = cheerleadingEntry ? cheerleadingEntry.score : 0;
+                var ambiancePoints = ambianceEntry ? ambianceEntry.score : 0;
+                var fifaPoints = fifaEntry ? (fifaEntry.fifaPosition == 1 ? 50 : 0) : 0;
+                var mkPoints = mkEntry ? (mkEntry.mkPosition == 1 ? 50 : 0) : 0;
+
+                var pointsWithoutBonus = futsalMPoints + handballMPoints + basketballMPoints + futsalFPoints + handballFPoints + basketballFPoints + cheerleadingPoints + ambiancePoints + fifaPoints + mkPoints;
+                var bonusValue = e.totalPoints - pointsWithoutBonus;
+
+                return [e.name, e.totalPoints, futsalMPoints, handballMPoints, basketballMPoints, futsalFPoints, handballFPoints, basketballFPoints, bonusValue, cheerleadingPoints, ambiancePoints, fifaPoints, mkPoints];
+            });
         },
     }).render(document.getElementById("global-table"));
 
