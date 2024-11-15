@@ -94,8 +94,8 @@
 
     new gridjs.Grid({
         columns: [
-            "Equipe 1", "Score Equipe 1", "Equipe 2", "Score Equipe 2", "Temps de jeu",
-            {
+            "Début","Terrain","Sport","temps de jeu","Equipe 1", "Equipe 2",
+            /*{
                 name: "Arbitre",
                 formatter: (cell, row) => {
                     var html = "<ul>"
@@ -105,7 +105,7 @@
                     html += "<ul>"
                     return gridjs.html(html);
                 }
-            },
+            },*/
             {
                 name: "Action",
                 formatter: (cell, row) => {
@@ -114,12 +114,16 @@
             }
         ],
         data: async () => {
-            return matches.map((element) => [element.team1.school.name,
-                element.score.team1Score,
+            return matches.map((element) => [
+                new Date(element.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                element.field.name,
+                element.sport.name,
+                element.pool.regularTime,
+                element.team1.school.name,
+                //element.score.team1Score,
                 element.team2.school.name,
-                element.score.team2Score,
-                element.timePlayed,
-                element.arbitrator,
+                //element.score.team2Score,
+                //element.arbitrator,
                 element._id]);
         },
         sort: true
