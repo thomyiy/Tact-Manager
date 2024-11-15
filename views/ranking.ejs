@@ -197,7 +197,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(futsalMaleRanking) %>;
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("futsal-m-table"));
 
@@ -206,7 +206,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(basketballMaleRanking) %>
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("basketball-m-table"));
 
@@ -214,7 +214,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(handballMaleRanking) %>
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("handball-m-table"));
 
@@ -222,7 +222,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(futsalFemaleRanking) %>
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("futsal-f-table"));
 
@@ -230,7 +230,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(basketballFemaleRanking) %>
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("basketball-f-table"));
 
@@ -238,7 +238,7 @@
         columns: ["Ecole", "Points"],
         data: async () => {
             var data = <%- JSON.stringify(handballFemaleRanking) %>
-            return data.map((e) => [e.team, e.tempPoints]);       
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("handball-f-table"));
 

@@ -205,7 +205,7 @@ module.exports = function (route) {
                 else if (pointOfTeam >= 3) points = 15;
             }
 
-            tempValus.push({team: data[i].team.school.name, tempPoints: points});
+            tempValus.push({team: data[i].team.school.name, pointsToShow: points});
 
             await School.updateOne({ _id: data[i].team.school._id }, { $inc: { totalPoints: points } });
         }
@@ -216,14 +216,14 @@ module.exports = function (route) {
         let result = [];
         const pools = await Pool.find();
 
-        // if (pools.every(pool => pool.isFinished)) {
+        // if (pools.every(pool => pool.isFinished)) { // ajout des points bonus que si toutes les pools sont finis ?
             const schools = await School.find();
             result.push(...schools);
             result = result.sort(sortSchoolPoint);
 
-            // result[0].totalPoints += 20;
-            // result[1].totalPoints += 10;
-            // result[2].totalPoints += 5;
+            result[0].totalPoints += 20;
+            result[1].totalPoints += 10;
+            result[2].totalPoints += 5;
 
             return result;
         // }
