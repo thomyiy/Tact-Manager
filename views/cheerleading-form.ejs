@@ -104,9 +104,9 @@
     var columns = ["Critère", "Note (1 - 80)"];
     var data = <%- JSON.stringify(cheerleadingScore) %>;
 
-    function onInputChange(input, key) {
+    function onInputChange(input, key,max) {
         console.log("onInputChange")
-        if (input.value > 80) input.value = 80
+        if (input.value > max) input.value = max
         if (input.value < 1) input.value = 1
         data[key] = input.value
         fetch("/cheerleading/update", {
@@ -122,55 +122,55 @@
             });
     }
 
-    function buildInput(key, value) {
-        return gridjs.html(`<input type="number" oninput="onInputChange(this,'${key}')" id="name" name="name" value="${value}" min="1" max="80" />`)
+    function buildInput(key, value,max) {
+        return gridjs.html(`<input type="number" oninput="onInputChange(this,'${key}',${max})" id="name" name="name" value="${value}" min="1" max="80" />`)
     }
 
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 65)"],
         data: () => {
-            return [["Difficulté", buildInput("stuntDifficulty", data.stuntDifficulty)],
-                ["Exécution", buildInput("stuntExecution", data.stuntExecution)],
-                ["Synchronisation", buildInput("stuntSynchronization", data.stuntSynchronization)],
-                ["Sécurité", buildInput("stuntSecurity", data.stuntSecurity)]]
+            return [["Difficulté", buildInput("stuntDifficulty", data.stuntDifficulty,65)],
+                ["Exécution", buildInput("stuntExecution", data.stuntExecution,65)],
+                ["Synchronisation", buildInput("stuntSynchronization", data.stuntSynchronization,65)],
+                ["Sécurité", buildInput("stuntSecurity", data.stuntSecurity,65)]]
         },
     }).render(document.getElementById("table-stunt"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 65)"],
         data: () => {
-            return [["Synchronisation", buildInput("choreographySynchronization", data.choreographySynchronization)],
-                ["Rythme avec la musique", buildInput("choreographyRythme", data.choreographyRythme)],
-                ["Fluidité", buildInput("choreographyFluidity", data.choreographyFluidity)]]
+            return [["Synchronisation", buildInput("choreographySynchronization", data.choreographySynchronization,65)],
+                ["Rythme avec la musique", buildInput("choreographyRythme", data.choreographyRythme,65)],
+                ["Fluidité", buildInput("choreographyFluidity", data.choreographyFluidity,65)]]
         },
     }).render(document.getElementById("table-choreography"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 20)"],
         data: () => {
-            return [["Difficulté", buildInput("tumblingDifficulty", data.tumblingDifficulty)],
-                ["Exécution", buildInput("tumblingExecution", data.tumblingExecution)],
-                ["Sécurité", buildInput("tumblingSecurity", data.tumblingSecurity)]]
+            return [["Difficulté", buildInput("tumblingDifficulty", data.tumblingDifficulty,20)],
+                ["Exécution", buildInput("tumblingExecution", data.tumblingExecution,20)],
+                ["Sécurité", buildInput("tumblingSecurity", data.tumblingSecurity,20)]]
         },
     }).render(document.getElementById("table-tumbling"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 20)"],
         data: () => {
-            return [["Difficulté", buildInput("jumpDifficulty", data.jumpDifficulty)],
-                ["Exécution", buildInput("jumpExecution", data.jumpExecution)],
-                ["Synchronisation", buildInput("jumpSynchronization", data.jumpSynchronization)]]
+            return [["Difficulté", buildInput("jumpDifficulty", data.jumpDifficulty,20)],
+                ["Exécution", buildInput("jumpExecution", data.jumpExecution,20)],
+                ["Synchronisation", buildInput("jumpSynchronization", data.jumpSynchronization,20)]]
         },
     }).render(document.getElementById("table-jump"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 15)"],
         data: () => {
-            return [["Créativité", buildInput("interractionCreativity", data.interractionCreativity)],
-                ["Réaction des supporters", buildInput("interractionReaction", data.interractionReaction)]]
+            return [["Créativité", buildInput("interractionCreativity", data.interractionCreativity,15)],
+                ["Réaction des supporters", buildInput("interractionReaction", data.interractionReaction,15)]]
         },
     }).render(document.getElementById("table-interraction"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note (1 - 15)"],
         data: () => {
-            return [["Attitude positive", buildInput("fairplayAttitude", data.fairplayAttitude)],
-                ["respect des adversaires/jury/règles", buildInput("fairplayrespect", data.fairplayrespect)]]
+            return [["Attitude positive", buildInput("fairplayAttitude", data.fairplayAttitude,15)],
+                ["respect des adversaires/jury/règles", buildInput("fairplayrespect", data.fairplayrespect,15)]]
         },
     }).render(document.getElementById("table-fairplay"));
 </script>

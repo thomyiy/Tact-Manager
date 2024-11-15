@@ -145,7 +145,7 @@
     var columns = ["Critère", "Note 1-80"];
     var data = <%- JSON.stringify(cheerleadingScore) %>;
     var grid = new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-65"],
         data: () => {
             return [["Difficulté", data.stuntDifficulty],
                 ["Exécution", data.stuntExecution],
@@ -154,7 +154,7 @@
         },
     }).render(document.getElementById("table-stunt"));
     var grid = new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-65"],
         data: () => {
             return [["Synchronisation", data.choreographySynchronization],
                 ["Rythme avec la musique", data.choreographyRythme],
@@ -162,7 +162,7 @@
         },
     }).render(document.getElementById("table-choreography"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-20"],
         data: () => {
             return [["Difficulté", data.tumblingDifficulty],
                 ["Exécution", data.tumblingExecution],
@@ -170,7 +170,7 @@
         },
     }).render(document.getElementById("table-tumbling"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-20"],
         data: () => {
             return [["Difficulté", data.jumpDifficulty],
                 ["Exécution", data.jumpExecution],
@@ -178,14 +178,14 @@
         },
     }).render(document.getElementById("table-jump"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-15"],
         data: () => {
             return [["Créativité", data.interractionCreativity],
                 ["Réaction des supporters", data.interractionReaction]]
         },
     }).render(document.getElementById("table-interraction"));
     new gridjs.Grid({
-        columns: columns,
+        columns: ["Critère", "Note 1-15"],
         data: () => {
             return [["Attitude positive", data.fairplayAttitude],
                 ["respect des adversaires/jury/règles", data.fairplayrespect]]
