@@ -172,6 +172,7 @@
 <script>
     var match = <%- JSON.stringify(match) %>
         console.log(match)
+    <% if(global.user.role == "Admin") { %>
     new gridjs.Grid({
         columns: ["Nom", "Prenom", "Action"],
         data: () => {
@@ -185,6 +186,7 @@
 </form>`)]);
         },
     }).render(document.getElementById("table-arbitrator"));
+    <%} %>
 
 
     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
