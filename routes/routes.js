@@ -17,6 +17,12 @@ const AmbianceMatchsScore = require("../models/AmbianceMatchsScoreModel");
 const AmbianceStandsScore = require("../models/AmbianceStandsScoreModel");
 const AmbianceFinalScore = require("../models/AmbianceFinalScoreModel");
 const AmbianceHospitalityScore = require("../models/AmbianceHospitalityScoreModel");
+const Team = require('../models/TeamModel');
+const Sport = require('../models/SportModel');
+const Pool = require('../models/PoolModel');
+const Match = require('../models/MatchModel');
+const Program = require('../models/ProgramModel');
+const TeamPoint = require('../models/TeamPointModel');
 
 module.exports = function (route) {
     route.use((req, res, next) => {
@@ -138,21 +144,193 @@ module.exports = function (route) {
     })
 
     route.get('/ranking', async (req, res, next) => {
+        await School.updateMany({}, { totalPoints: 0 });
+        
         const global = await utils.getGlobal(req)
+
         let fifa = await School.find({}, null, {sort: {fifaPosition: 1}})
         let mk = await School.find({}, null, {sort: {mkPosition: 1}})
+        
+        assignBonusPointsBYGame(fifa, mk);
 
         let cheerleading = await orderCheerleading()
         let ambiance = await orderAmbiance()
+        
+        let futsalMaleRanking = await orderSportRanking("Football", "Masculin");
+        futsalMaleRankingTempValues = await rankPoints(futsalMaleRanking);
 
+        let futsalFemaleRanking = await orderSportRanking("Football", "Féminin");
+        futsalFemaleRankingTempValues = await rankPoints(futsalFemaleRanking);
+
+        await assignBonusPointsBySport(futsalMaleRankingTempValues, futsalFemaleRankingTempValues);
+
+        let basketballMaleRanking = await orderSportRanking("Basketball", "Masculin");
+        basketballMaleRankingTempValues = await rankPoints(basketballMaleRanking);
+
+        let basketballFemaleRanking = await orderSportRanking("Basketball", "Féminin");
+        basketballFemaleRankingTempValues = await rankPoints(basketballFemaleRanking);
+
+        await assignBonusPointsBySport(basketballMaleRankingTempValues, basketballFemaleRankingTempValues);
+
+        let handballMaleRanking = await orderSportRanking("Handball", "Masculin");
+        handballMaleRankingTempValues = await rankPoints(handballMaleRanking);
+
+        let handballFemaleRanking = await orderSportRanking("Handball", "Féminin");
+        handballFemaleRankingTempValues = await rankPoints(handballFemaleRanking);
+
+        await assignBonusPointsBySport(handballMaleRankingTempValues, handballFemaleRankingTempValues);
+
+        let globalRanking = await orderGlobalRanking();
+        
         res.render('ranking', {
             global: global,
             fifa: fifa,
             mk: mk,
             cheerleading: cheerleading,
-            ambiance: ambiance
+            ambiance: ambiance,
+            futsalMaleRanking: futsalMaleRankingTempValues,
+            futsalFemaleRanking: futsalFemaleRankingTempValues,
+            basketballMaleRanking: basketballMaleRankingTempValues,
+            basketballFemaleRanking: basketballFemaleRankingTempValues,
+            handballMaleRanking: handballMaleRankingTempValues,
+            handballFemaleRanking: handballFemaleRankingTempValues,
+            globalRanking: globalRanking
         })
     })
+
+    async function assignBonusPointsBYGame(fifa, mk) {
+        await School.updateOne({ name: fifa[0].name }, { $inc: { totalPoints: 50 } });
+        await School.updateOne({ name: mk[0].name }, { $inc: { totalPoints: 50 } });
+    }
+
+    async function assignBonusPointsBySport(MaleRanking, FemaleRanking) {
+
+        if (MaleRanking.length == 0 || FemaleRanking.length == 0) {
+            return;
+        }
+
+        let schoolScores = [];
+
+        for (let i = 0; i < MaleRanking.length; i++) {
+            let school = MaleRanking[i].team;
+    
+            for (let j = 0; j < FemaleRanking.length; j++) {
+                if (school == FemaleRanking[j].team) {
+                    let totalPoints = MaleRanking[i].pointsToShow + FemaleRanking[j].pointsToShow;
+    
+                    schoolScores.push({
+                        school: school,
+                        points: totalPoints,
+                    });
+                }
+            }
+        }
+    
+        schoolScores.sort((a, b) => b.points - a.points);
+
+        await School.updateOne({ name: schoolScores[0].school }, { $inc: { totalPoints: 20 } });
+        await School.updateOne({ name: schoolScores[1].school }, { $inc: { totalPoints: 10 } });
+        await School.updateOne({ name: schoolScores[2].school }, { $inc: { totalPoints: 5 } });
+    
+        return schoolScores.slice(0, 3);
+    }
+    
+    async function rankPoints(data) {
+        let tempValus = [];
+        for (let i = 0; i < data.length; i++) {
+            let points;
+            let pointOfTeam = data[i].points;
+
+            if (i === 0) points = 60; 
+            else if (i === 1) points = 40;
+            else if (i === 2 || i === 3) points = 25;
+            else {
+                if (pointOfTeam == 0) points = 5;
+                else if (pointOfTeam == 1) points = 10;
+                else if (pointOfTeam >= 3) points = 15;
+            }
+
+            tempValus.push({team: data[i].team.school.name, pointsToShow: points});
+
+            await School.updateOne({ _id: data[i].team.school._id }, { $inc: { totalPoints: points } });
+        }
+        return tempValus;
+    }
+
+    async function orderGlobalRanking() {
+        let result = [];
+
+        const schools = await School.find();
+        result.push(...schools);
+        result = result.sort(sortSchoolPoint);
+
+        return result;
+    }
+
+    async function orderSportRanking(sportName, programName) {
+        let result = [];
+
+        const sport = await Sport.findOne({ name: sportName });
+        const program = await Program.findOne({ name: programName });
+        
+        const finalPool = await Pool.findOne({ name: "Final" , sport: sport._id, program: program._id });
+        if (finalPool == null || !finalPool.isFinished) {
+            return result;
+        }
+
+        const teamPoints = await TeamPoint.find({ pool: finalPool._id }).populate({
+            path: 'team',
+            populate: {path: 'school', select: 'name totalPoints'}
+        });
+
+        result = teamPoints.sort(sortTeamPoint);
+
+        const semiFinalPool = await Pool.find({
+            $or:[ {'name': "Demi-Finale 1"}, {'name': "Demi-Finale 2"} ],
+            sport: sport._id,
+            program: program._id
+        });
+
+        const semiFinalTP = await TeamPoint.find({pool: {$in: semiFinalPool.map(pool => pool._id)}, team: {$nin: result.map(teamPoint => teamPoint.team)} })
+        .populate({
+            path: 'team',
+            populate: {path: 'school', select: 'name totalPoints'}
+        });
+        result = result.concat(semiFinalTP.sort(sortTeamPoint));
+
+        const otherPools = await Pool.find({
+            sport: sport._id,
+            program: program._id,
+            name: { $nin: ["Final", "Demi-finale 1", "Demi-finale 2"] }
+        });
+
+        const otherPoolsTP = await TeamPoint.find({pool: {$in: otherPools.map(pool => pool._id)}, team: {$nin: result.map(teamPoint => teamPoint.team)} })
+        .populate({
+            path: 'team',
+            populate: {path: 'school', select: 'name totalPoints'}
+        });
+        result = result.concat(otherPoolsTP.sort(sortTeamPoint));
+
+        return result;
+    }
+
+    function sortSchoolPoint(a, b) {
+        if (b.totalPoints < a.totalPoints) return -1;
+        if (b.totalPoints > a.totalPoints) return 1;
+        return 0;
+    }
+
+    function sortTeamPoint(a, b) {
+        if (b.points < a.points) return -1;
+        if (b.points > a.points) return 1;
+        if (b.goalAverage < a.goalAverage) return -1;
+        if (b.goalAverage > a.goalAverage) return 1;
+        if (b.goal < a.goal) return -1;
+        if (b.goal > a.goal) return 1;
+        if (b.random < a.random) return -1;
+        if (b.random > a.random) return 1;
+        return 0;
+    }
 
     async function orderCheerleading() {
         let result = [];
@@ -183,6 +361,8 @@ module.exports = function (route) {
                     cheerleadingScores.reduce((total, next) => total + next.fairplayrespect, 0) / cheerleadingScores.length
             }
             if (!cheerleadingScore.score) cheerleadingScore.score = 0
+            await School.updateOne({ _id: school._id }, { $inc: { totalPoints: cheerleadingScore.score } });
+
             result.push(cheerleadingScore)
         }
 
@@ -275,6 +455,8 @@ module.exports = function (route) {
                     ambianceFinalScore +
                     ambianceHospitalityScore
             }
+            await School.updateOne({ _id: school._id }, { $inc: { totalPoints: ambianceScore.score } });
+
             result.push(ambianceScore)
         }
 

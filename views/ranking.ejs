@@ -184,59 +184,61 @@
 <script src="/assets/libs/flatpickr/flatpickr.min.js"></script>
 <script src="/assets/js/pages/form-validation.init.js"></script>
 <script>
-    new gridjs.Grid({
-        columns: ["Ecole"],
-        data: async () => {
 
-            return [["School1"]]
+    new gridjs.Grid({
+        columns: ["Ecole", "Points"],
+        data: async () => {
+            var data = <%- JSON.stringify(globalRanking) %>;
+            return data.map((e) => [e.name, e.totalPoints]);       
         },
     }).render(document.getElementById("global-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(futsalMaleRanking) %>;
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("futsal-m-table"));
 
-    new gridjs.Grid({
-        columns: ["Ecole"],
-        data: async () => {
 
-            return [["School1"]]
+    new gridjs.Grid({
+        columns: ["Ecole", "Points"],
+        data: async () => {
+            var data = <%- JSON.stringify(basketballMaleRanking) %>
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("basketball-m-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(handballMaleRanking) %>
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("handball-m-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(futsalFemaleRanking) %>
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("futsal-f-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(basketballFemaleRanking) %>
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("basketball-f-table"));
 
     new gridjs.Grid({
-        columns: ["Ecole"],
+        columns: ["Ecole", "Points"],
         data: async () => {
-
-            return [["School1"]]
+            var data = <%- JSON.stringify(handballFemaleRanking) %>
+            return data.map((e) => [e.team, e.pointsToShow]);       
         },
     }).render(document.getElementById("handball-f-table"));
 
@@ -272,4 +274,3 @@
         },
     }).render(document.getElementById("mariokart-table"));
 </script>
-
