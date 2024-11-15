@@ -18,30 +18,32 @@
 
 <div class="row">
     <div class="col-xl-12 col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div>
-                                <h5>Gestion de tournois</h5>
+        <% if(global.user.role == "Admin") { %>
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div>
+                                    <h5>Gestion de tournois</h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- end row -->
-                    <div class="row justify-content-center">
-                        <div class="d-flex flex-column align-items-center col-md-6 mb-4 male-button-container">
-                            <button type="button" class="btn btn-primary waves-effect waves-light mb-3"
-                                    onclick="createTournament()">Créer les tournois
-                            </button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light"
-                                    onclick="deleteTournament()">Supprimer les tournois
-                            </button>
+                        <!-- end row -->
+                        <div class="row justify-content-center">
+                            <div class="d-flex flex-column align-items-center col-md-6 mb-4 male-button-container">
+                                <button type="button" class="btn btn-primary waves-effect waves-light mb-3"
+                                        onclick="createTournament()">Créer les tournois
+                                </button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light"
+                                        onclick="deleteTournament()">Supprimer les tournois
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        <% } %>
         <div class="row">
             <div class="col-lg-6">
                 <div class="card">
@@ -128,7 +130,6 @@
         }],
         data: async () => {
             var data = <%- JSON.stringify(poolfem) %>;
-            console.log(data)
             return data.map((e) => [e.name, e.teams]);
         },
         sort: true
@@ -136,15 +137,15 @@
 
 
     new gridjs.Grid({
-        columns: ["Team 1", "Team 2", "Départ", "Poule", "Programme"],
+        columns: ["Départ", "Equipes", "Score", "Poule", "Programme"],
         data: async () => {
             var data = <%- JSON.stringify(matchsField1) %>;
             data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
             return data.map((e) => [
-                e.team1.school.name,
-                e.team2.school.name,
                 new Date(e.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                e.team1.school.name + " - " + e.team2.school.name,
+                e.score.team1Score + " - " + e.score.team2Score,
                 e.pool.name,
                 e.program.name
             ]);
@@ -153,15 +154,15 @@
     }).render(document.getElementById("table-field-1"));
 
     new gridjs.Grid({
-        columns: ["Team 1", "Team 2", "Départ", "Poule", "Programme"],
+        columns: ["Départ", "Equipes", "Score", "Poule", "Programme"],
         data: async () => {
             var data = <%- JSON.stringify(matchsField2) %>;
             data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
             return data.map((e) => [
-                e.team1.school.name,
-                e.team2.school.name,
                 new Date(e.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                e.team1.school.name + " - " + e.team2.school.name,
+                e.score.team1Score + " - " + e.score.team2Score,
                 e.pool.name,
                 e.program.name
             ]);
