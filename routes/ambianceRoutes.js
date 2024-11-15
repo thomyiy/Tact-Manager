@@ -37,9 +37,18 @@ module.exports = function (route) {
 
         res.render('ambiance/ambiance-global', {
             global: global,
-            schools:schools
+            schools: schools
         });
     })
+
+    route.get('/ambiance/sequence/:sequence', async (req, res, next) => {
+        var global = await utils.getGlobal(req)
+
+        res.render('ambiance/sequence-arbitrator-list', {
+            global: global,
+            sequence:req.params.sequence
+        });
+    });
 
     route.get('/ambiance/:school/:type', async (req, res, next) => {
 
@@ -72,12 +81,12 @@ module.exports = function (route) {
                     type: type
                 });
             } else {
-                console.log(global.user)
                 const ambianceScore = await ambianceModel.findOne({
                     arbitrator: global.user.userid,
                     school: sessionSchool._id
                 }).populate("arbitrator");
 
+                console.log(ambianceScore)
                 res.render('ambiance/ambiance-arbitrator', {
                     global: global,
                     sessionSchool: sessionSchool,
@@ -147,6 +156,8 @@ module.exports = function (route) {
         }
     })
 
+
+
     route.get('/ambiance/:school', async (req, res, next) => {
         try {
             var global = await utils.getGlobal(req)
@@ -174,4 +185,6 @@ module.exports = function (route) {
             return res.status(500).json({error: 'Erreur serveur lors du chargement des routes.'});
         }
     });
+
+
 }
