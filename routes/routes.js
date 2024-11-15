@@ -214,16 +214,19 @@ module.exports = function (route) {
 
     async function orderGlobalRanking() {
         let result = [];
-        const schools = await School.find();
-    
-        result.push(...schools);
-        result = result.sort(sortSchoolPoint);
+        const pools = await Pool.find();
 
-        result[0].totalPoints += 20;
-        result[1].totalPoints += 10;
-        result[2].totalPoints += 5;
+        // if (pools.every(pool => pool.isFinished)) {
+            const schools = await School.find();
+            result.push(...schools);
+            result = result.sort(sortSchoolPoint);
 
-        return result;
+            // result[0].totalPoints += 20;
+            // result[1].totalPoints += 10;
+            // result[2].totalPoints += 5;
+
+            return result;
+        // }
     }
 
     async function orderSportRanking(sportName, programName) {
