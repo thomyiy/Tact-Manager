@@ -199,8 +199,11 @@ module.exports = function (route) {
     })
 
     async function assignBonusPointsBYGame(fifa, mk) {
-        await School.updateOne({ name: fifa[0].name }, { $inc: { totalPoints: 50 } });
-        await School.updateOne({ name: mk[0].name }, { $inc: { totalPoints: 50 } });
+        if (fifa[0].totalPoints > 0)
+            await School.updateOne({ name: fifa[0].name }, { $inc: { totalPoints: 50 } });
+
+        if (mk[0].totalPoints > 0)
+            await School.updateOne({ name: mk[0].name }, { $inc: { totalPoints: 50 } });
     }
 
     async function assignBonusPointsBySport(MaleRanking, FemaleRanking) {
@@ -236,7 +239,7 @@ module.exports = function (route) {
     }
     
     async function rankPoints(data) {
-        let tempValus = [];
+        let tempValues = [];
         for (let i = 0; i < data.length; i++) {
             let points;
             let pointOfTeam = data[i].points;
@@ -250,11 +253,11 @@ module.exports = function (route) {
                 else if (pointOfTeam >= 3) points = 15;
             }
 
-            tempValus.push({team: data[i].team.school.name, pointsToShow: points});
+            tempValues.push({team: data[i].team.school.name, pointsToShow: points});
 
             await School.updateOne({ _id: data[i].team.school._id }, { $inc: { totalPoints: points } });
         }
-        return tempValus;
+        return tempValues;
     }
 
     async function orderGlobalRanking() {
