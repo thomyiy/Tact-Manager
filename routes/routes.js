@@ -199,10 +199,10 @@ module.exports = function (route) {
     })
 
     async function assignBonusPointsBYGame(fifa, mk) {
-        if (fifa[0].totalPoints > 0)
+        if (fifa[0].fifaPosition == 1)
             await School.updateOne({ name: fifa[0].name }, { $inc: { totalPoints: 50 } });
 
-        if (mk[0].totalPoints > 0)
+        if (mk[0].mkPosition == 1)
             await School.updateOne({ name: mk[0].name }, { $inc: { totalPoints: 50 } });
     }
 
