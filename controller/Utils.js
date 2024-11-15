@@ -3,6 +3,9 @@ const CheerleadingScore = require("../models/CheerleadingScoreModel");
 const Match = require("../models/MatchModel");
 const Team = require("../models/TeamModel");
 const User = require("../models/UserModel");
+const Field = require("../models/FieldModel");
+const Pool = require("../models/PoolModel");
+const Sport = require("../models/SportModel");
 const AmbianceCortegeScore = require("../models/AmbianceCortegeScoreModel");
 const AmbianceOpeningScore = require("../models/AmbianceOpeningScoreModel");
 const AmbianceMatchsScore = require("../models/AmbianceMatchsScoreModel");
@@ -24,6 +27,9 @@ const getGlobal = async (req) => {
         matches = await Team.populate(matches, {path: "team1 team2 ", select: 'school'})
         matches = await School.populate(matches, {path: "team1.school team2.school", select: 'name'})
         matches = await User.populate(matches, {path: "arbitrator", select: 'firstname lastname'})
+        matches = await Field.populate(matches, {path: "field", select: 'name'})
+        matches = await Pool.populate(matches, {path: "pool"})
+        matches = await Sport.populate(matches, {path: "sport", select: 'name'})
 
         var cheerleadingSchoolsId = await CheerleadingScore.find({arbitrator: user.userid}).distinct('school');
         cheerleadingSchools = await School.find({

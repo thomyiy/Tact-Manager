@@ -1,5 +1,5 @@
 <%- contentFor('HeaderCss') %>
-<%- include("partials/title-meta", {"title": "Accueil"}) %>
+<%- include("../partials/title-meta", {"title": "Accueil"}) %>
 
 <!-- nouisliderribute css -->
 <link rel="stylesheet" href="/assets/libs/nouislider/nouislider.min.css">
@@ -18,12 +18,12 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
-            <h4 class="mb-0">Matches </h4>
+            <h4 class="mb-0"><%= sequence %> </h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="javascript: void(0);">Matches</a></li>
-                    <li class="breadcrumb-item active">Match :</li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);"><%= sequence %></a></li>
+                    <li class="breadcrumb-item active"><%= sequence %> :</li>
                 </ol>
             </div>
 
@@ -42,7 +42,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div>
-                                <h5>Matches</h5>
+                                <h5><%= sequence %></h5>
                             </div>
                         </div>
                     </div>
@@ -53,8 +53,8 @@
                             <div class="card-header">
                             </div><!-- end card header -->
                             <br class="card-body">
-                            <h5>Matches</h5>
-                            <div id="table-arbitrator"></div>
+                            <h5>Corteges</h5>
+                            <div id="table-cortege"></div>
 
                         </div>
                         <!-- end card body -->
@@ -88,46 +88,43 @@
 </script>
 
 <script>
-    var matches = <%- JSON.stringify(global.matches) %>
-        console.log(matches)
+    <% if(sequence === "cortege") { %>
+    let data = <%- JSON.stringify(global.ambianceCortegeSchools) %>
+    <% } if(sequence === "opening") { %>
+        let data = <%- JSON.stringify(global.ambianceOpeningSchools) %>
 
+    <% } if(sequence === "matchs") { %>
+        let data = <%- JSON.stringify(global.ambianceMatchsSchools) %>
+    <% } if(sequence === "stands") { %>
+        let data = <%- JSON.stringify(global.ambianceStandsSchools) %>
 
-    new gridjs.Grid({
-        columns: [
-            "Début","Terrain","Sport","temps de jeu","Equipe 1", "Equipe 2",
-            /*{
-                name: "Arbitre",
-                formatter: (cell, row) => {
-                    var html = "<ul>"
-                    cell.forEach(e => {
-                        html += "<li>" + e.firstname + " " + e.lastname + "</li>"
-                    })
-                    html += "<ul>"
-                    return gridjs.html(html);
+    <% } if(sequence === "final") { %>
+        let data = <%- JSON.stringify(global.ambianceFinalSchools) %>
+
+    <% } if(sequence === "hospitality") { %>
+        let data = <%- JSON.stringify(global.ambianceHospitalitySchools) %>
+    <% } %>
+
+        new gridjs.Grid({
+            columns: [
+                "Ecole",
+
+                {
+                    name: "Action",
+                    formatter: (cell, row) => {
+                        return gridjs.html(`<a href="/ambiance/${cell}/<%= sequence %>" ><button class="btn btn-info" >Voir</button></a>`);
+                    }
                 }
-            },*/
-            {
-                name: "Action",
-                formatter: (cell, row) => {
-                    return gridjs.html(`<a href="/match/${cell}" ><button class="btn btn-info" >Voir</button></a>`);
-                }
-            }
-        ],
-        data: async () => {
-            return matches.map((element) => [
-                new Date(element.startTime).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
-                element.field.name,
-                element.sport.name,
-                element.pool.regularTime,
-                element.team1.school.name,
-                //element.score.team1Score,
-                element.team2.school.name,
-                //element.score.team2Score,
-                //element.arbitrator,
-                element._id]);
-        },
-        sort: true
-    }).render(document.getElementById("table-arbitrator"));
+            ],
+            data: async () => {
+
+                return data.map((d) => [
+                    d.name,
+                    d.name,
+                ]);
+            },
+            sort: true
+        }).render(document.getElementById("table-cortege"));
 
 </script>
 
